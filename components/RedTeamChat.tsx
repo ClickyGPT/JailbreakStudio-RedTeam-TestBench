@@ -40,7 +40,9 @@ const RedTeamChat: React.FC = () => {
     return (
         <button 
             onClick={() => setIsOpen(true)}
-            className="fixed bottom-6 right-6 bg-cyber-lime text-black p-4 rounded-full shadow-[0_0_20px_rgba(211,253,80,0.4)] hover:scale-105 hover:bg-white transition-all z-50 flex items-center gap-2 font-bold font-sans tracking-wide"
+            className="fixed bottom-6 right-6 bg-cyber-lime text-black p-4 rounded-full shadow-[0_0_20px_rgba(211,253,80,0.4)] hover:scale-105 hover:bg-white transition-all z-50 flex items-center gap-2 font-bold font-sans tracking-wide focus-visible:ring-2 focus-visible:ring-black focus:outline-none"
+            aria-label="Open Zephyr AI Chat"
+            title="Open Zephyr AI Chat"
         >
             <Bot size={24} />
             <span className="hidden md:inline">ZEPHYR AI</span>
@@ -58,13 +60,23 @@ const RedTeamChat: React.FC = () => {
                 </div>
                 <span className="text-black font-black text-sm tracking-widest uppercase">RedTeam Consultant</span>
             </div>
-            <button onClick={() => setIsOpen(false)} className="text-black hover:text-white transition-colors">
+            <button
+                onClick={() => setIsOpen(false)}
+                className="text-black hover:text-white transition-colors focus-visible:ring-2 focus-visible:ring-black rounded-sm focus:outline-none"
+                aria-label="Close chat"
+                title="Close chat"
+            >
                 <X size={20} />
             </button>
         </div>
 
         {/* Messages */}
-        <div ref={scrollRef} className="flex-1 overflow-y-auto p-5 space-y-6 bg-[#0a0a0a]">
+        <div
+            ref={scrollRef}
+            className="flex-1 overflow-y-auto p-5 space-y-6 bg-[#0a0a0a]"
+            role="log"
+            aria-live="polite"
+        >
             {messages.map((m, i) => (
                 <div key={i} className={`flex gap-3 ${m.role === 'user' ? 'flex-row-reverse' : ''}`}>
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 border border-gray-800 ${m.role === 'user' ? 'bg-gray-800' : 'bg-black text-cyber-lime'}`}>
@@ -101,11 +113,14 @@ const RedTeamChat: React.FC = () => {
                 onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                 placeholder="Query RedTeam Database..."
                 className="flex-1 bg-gray-900 border border-gray-800 rounded px-4 py-3 text-sm text-white focus:outline-none focus:border-cyber-lime focus:bg-black transition-colors font-mono"
+                aria-label="Chat input"
             />
             <button 
                 onClick={handleSend}
                 disabled={isTyping || !input.trim()}
-                className="bg-cyber-lime text-black p-3 rounded hover:bg-white transition-colors disabled:opacity-50 disabled:bg-gray-800 disabled:text-gray-500"
+                className="bg-cyber-lime text-black p-3 rounded hover:bg-white transition-colors disabled:opacity-50 disabled:bg-gray-800 disabled:text-gray-500 focus-visible:ring-2 focus-visible:ring-black focus:outline-none"
+                aria-label="Send message"
+                title="Send message"
             >
                 <Send size={18} />
             </button>
