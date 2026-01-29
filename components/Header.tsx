@@ -17,11 +17,11 @@ const Header: React.FC = () => {
           <p className="text-xs text-cyber-muted font-sans tracking-wide">ChinaMenTor Edition • Digital Kineticism</p>
         </div>
       </div>
-      <div className="flex gap-6 text-sm font-sans font-medium text-cyber-muted">
-        <span className="hover:text-cyber-lime cursor-pointer transition-colors duration-300">DOCS</span>
-        <span className="hover:text-cyber-lime cursor-pointer transition-colors duration-300">ARSENAL</span>
-        <span className="hover:text-cyber-lime cursor-pointer transition-colors duration-300">FORUM</span>
-      </div>
+      <nav className="flex gap-6 text-sm font-sans font-medium text-cyber-muted">
+        <button type="button" className="hover:text-cyber-lime transition-colors duration-300 focus-visible:text-cyber-lime focus-visible:outline-none">DOCS</button>
+        <button type="button" className="hover:text-cyber-lime transition-colors duration-300 focus-visible:text-cyber-lime focus-visible:outline-none">ARSENAL</button>
+        <button type="button" className="hover:text-cyber-lime transition-colors duration-300 focus-visible:text-cyber-lime focus-visible:outline-none">FORUM</button>
+      </nav>
     </header>
   );
 };

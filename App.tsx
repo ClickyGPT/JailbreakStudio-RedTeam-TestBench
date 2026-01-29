@@ -123,6 +123,7 @@ const App: React.FC = () => {
         <button 
             className="bg-cyber-gray border border-gray-600 rounded-full p-3 shadow-lg text-white hover:border-cyber-lime hover:text-cyber-lime transition-colors"
             onClick={() => { alert("Library access limited on mobile in MVP"); }}
+            aria-label="Open Template Library"
         >
             📚
         </button>
