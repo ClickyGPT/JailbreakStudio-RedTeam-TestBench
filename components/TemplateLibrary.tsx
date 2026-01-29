@@ -7,7 +7,7 @@ interface TemplateLibraryProps {
   onSelectTemplate: (template: PromptTemplate) => void;
 }
 
-const TemplateLibrary: React.FC<TemplateLibraryProps> = ({ 
+const TemplateLibrary: React.FC<TemplateLibraryProps> = React.memo(({
   onSelectTemplate
 }) => {
   return (
@@ -74,6 +74,6 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
       </div>
     </div>
   );
-};
+});
 
 export default TemplateLibrary;

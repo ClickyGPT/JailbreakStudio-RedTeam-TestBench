@@ -13,7 +13,7 @@ interface ComposerProps {
   onShare: () => void;
 }
 
-const Composer: React.FC<ComposerProps> = ({ prompt, setPrompt, onRunTest, isRunning, onShare }) => {
+const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRunTest, isRunning, onShare }) => {
   const [textAreaRef, setTextAreaRef] = useState<HTMLTextAreaElement | null>(null);
   const [isAugmenting, setIsAugmenting] = useState(false);
   const [showVarManager, setShowVarManager] = useState(false);
@@ -260,6 +260,6 @@ const Composer: React.FC<ComposerProps> = ({ prompt, setPrompt, onRunTest, isRun
       )}
     </div>
   );
-};
+});
 
 export default Composer;

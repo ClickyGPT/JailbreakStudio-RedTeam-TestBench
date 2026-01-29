@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { MessageSquare, X, Send, Bot, User } from 'lucide-react';
 import { chatWithExpert } from '../services/geminiService';
 
-const RedTeamChat: React.FC = () => {
+const RedTeamChat: React.FC = React.memo(() => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<{role: 'user' | 'model', text: string}[]>([
     { role: 'model', text: "Greetings. I am Zephyr, your Red Team consultant. How can I assist with your prompt engineering today?" }
@@ -112,6 +112,6 @@ const RedTeamChat: React.FC = () => {
         </div>
     </div>
   );
-};
+});
 
 export default RedTeamChat;

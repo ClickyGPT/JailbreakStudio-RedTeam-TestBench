@@ -9,7 +9,7 @@ interface SimulationPanelProps {
   currentPrompt: string;
 }
 
-const SimulationPanel: React.FC<SimulationPanelProps> = ({ result, isRunning, currentPrompt }) => {
+const SimulationPanel: React.FC<SimulationPanelProps> = React.memo(({ result, isRunning, currentPrompt }) => {
   const [analysis, setAnalysis] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
@@ -112,6 +112,6 @@ const SimulationPanel: React.FC<SimulationPanelProps> = ({ result, isRunning, cu
       </div>
     </div>
   );
-};
+});
 
 export default SimulationPanel;
