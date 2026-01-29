@@ -1,0 +1,5 @@
+{
+  "name": "RedTeam Studio",
+  "description": "A defensive red-teaming environment for creating, testing, and sharing prompt injection strategies against AI safety filters.",
+  "requestFramePermissions": []
+}
