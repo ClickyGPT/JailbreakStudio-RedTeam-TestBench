@@ -203,6 +203,7 @@ const Composer: React.FC<ComposerProps> = ({ prompt, setPrompt, onRunTest, isRun
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             placeholder="// Enter your adversarial prompt here..."
+            aria-label="Adversarial prompt input"
             className="w-full h-full bg-transparent text-gray-200 font-mono p-6 resize-none focus:outline-none focus:ring-0 text-sm leading-relaxed placeholder-gray-800 selection:bg-cyber-lime selection:text-black"
             spellCheck={false}
         />

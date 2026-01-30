@@ -21,7 +21,11 @@ const ShareModal: React.FC<ShareModalProps> = ({ shareUrl, onClose }) => {
       <div className="bg-cyber-black border border-gray-800 w-full max-w-md rounded-lg shadow-2xl overflow-hidden">
         <div className="p-5 border-b border-gray-800 flex justify-between items-center bg-gray-900/50">
           <h3 className="font-sans font-black text-white text-lg tracking-tight uppercase">Share Vector</h3>
-          <button onClick={onClose} className="text-gray-500 hover:text-white transition-colors">
+          <button
+            onClick={onClose}
+            aria-label="Close modal"
+            className="text-gray-500 hover:text-white transition-colors"
+          >
             <X size={20} />
           </button>
         </div>
@@ -32,12 +36,14 @@ const ShareModal: React.FC<ShareModalProps> = ({ shareUrl, onClose }) => {
                 <div className="flex justify-center gap-4">
                     <button 
                         onClick={() => setVoted('up')}
+                        aria-label="Vote Up"
                         className={`p-4 rounded-full border transition-all ${voted === 'up' ? 'bg-cyber-lime text-black border-cyber-lime' : 'border-gray-700 hover:border-cyber-lime text-gray-500 hover:text-cyber-lime'}`}
                     >
                         <ThumbsUp size={24} />
                     </button>
                     <button 
                         onClick={() => setVoted('down')}
+                        aria-label="Vote Down"
                         className={`p-4 rounded-full border transition-all ${voted === 'down' ? 'bg-cyber-red text-black border-cyber-red' : 'border-gray-700 hover:border-cyber-red text-gray-500 hover:text-cyber-red'}`}
                     >
                         <ThumbsDown size={24} />
@@ -55,6 +61,7 @@ const ShareModal: React.FC<ShareModalProps> = ({ shareUrl, onClose }) => {
                     />
                     <button 
                         onClick={handleCopy}
+                        aria-label="Copy share link"
                         className="bg-cyber-lime/10 border border-cyber-lime/50 text-cyber-lime px-4 rounded hover:bg-cyber-lime hover:text-black transition-all font-bold"
                     >
                         {copied ? 'COPIED' : <Copy size={18} />}
