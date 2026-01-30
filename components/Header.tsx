@@ -1,7 +1,7 @@
 import React from 'react';
 import { ShieldAlert } from 'lucide-react';
 
-const Header: React.FC = () => {
+const Header: React.FC = React.memo(() => {
   return (
     <header className="border-b border-gray-900 bg-cyber-black p-4 flex items-center justify-between sticky top-0 z-50">
       <div className="flex items-center gap-3">
@@ -24,6 +24,6 @@ const Header: React.FC = () => {
       </nav>
     </header>
   );
-};
+});
 
 export default Header;
