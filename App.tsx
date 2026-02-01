@@ -15,6 +15,12 @@ const App: React.FC = () => {
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [showShare, setShowShare] = useState<boolean>(false);
   
+  // Track prompt in ref for stable callbacks to prevent child re-renders
+  const promptRef = useRef<string>(prompt);
+  useEffect(() => {
+    promptRef.current = prompt;
+  }, [prompt]);
+
   // Cursor Physics State
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -29,16 +35,23 @@ const App: React.FC = () => {
     }
   }, []);
 
-  // Track Mouse for Spotlight - Use CSS variables to avoid React re-renders
+  // Track Mouse for Spotlight - Use CSS variables and RAF for performance
   useEffect(() => {
+    let rafId: number;
     const handleMouseMove = (e: MouseEvent) => {
-        if (containerRef.current) {
-            containerRef.current.style.setProperty('--mouse-x', `${e.clientX}px`);
-            containerRef.current.style.setProperty('--mouse-y', `${e.clientY}px`);
-        }
+        if (rafId) cancelAnimationFrame(rafId);
+        rafId = requestAnimationFrame(() => {
+            if (containerRef.current) {
+                containerRef.current.style.setProperty('--mouse-x', `${e.clientX}px`);
+                containerRef.current.style.setProperty('--mouse-y', `${e.clientY}px`);
+            }
+        });
     };
     window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    return () => {
+        window.removeEventListener('mousemove', handleMouseMove);
+        if (rafId) cancelAnimationFrame(rafId);
+    };
   }, []);
 
   const handleSelectTemplate = React.useCallback((template: PromptTemplate) => {
@@ -47,41 +60,30 @@ const App: React.FC = () => {
   }, []);
 
   const handleRunTest = React.useCallback(async () => {
-    if (!prompt.trim()) return;
+    const currentPrompt = promptRef.current;
+    if (!currentPrompt.trim()) return;
     
     setIsRunning(true);
     setResult(null); // Clear previous result
     
-    // Simulate API delay for dramatic effect in UI if response is too fast
-    const start = Date.now();
+    const simResult = await simulateAttack(currentPrompt);
     
-    const simResult = await simulateAttack(prompt);
-    
-    const duration = Date.now() - start;
-    if (duration < 600) {
-        await new Promise(resolve => setTimeout(resolve, 600 - duration));
-    }
-
     setResult(simResult);
     setIsRunning(false);
-  }, [prompt]);
+  }, []); // Stable: uses promptRef
 
   const handleShare = React.useCallback(() => {
-    const hash = encodeStateToHash({ prompt, lastResult: result || undefined });
+    const currentPrompt = promptRef.current;
+    const hash = encodeStateToHash({ prompt: currentPrompt, lastResult: result || undefined });
     window.history.pushState(null, '', `#${hash}`);
     setShowShare(true);
-  }, [prompt, result]);
+  }, [result]); // result is still needed for sharing consistency
 
   return (
     <div className="flex flex-col h-screen bg-cyber-black text-cyber-text font-sans overflow-hidden relative selection:bg-cyber-lime selection:text-black" ref={containerRef}>
       
-      {/* Cursor Physics: Spotlight Effect */}
-      <div 
-        className="pointer-events-none fixed inset-0 z-50 transition-opacity duration-300 opacity-30"
-        style={{
-            background: `radial-gradient(600px circle at var(--mouse-x, 0px) var(--mouse-y, 0px), rgba(211, 253, 80, 0.1), transparent 40%)`
-        }}
-      />
+      {/* Cursor Physics: Spotlight Effect - Memoized to prevent re-renders */}
+      <Spotlight />
 
       <Header />
       
@@ -111,7 +113,7 @@ const App: React.FC = () => {
                 <SimulationPanel 
                   result={result} 
                   isRunning={isRunning} 
-                  currentPrompt={prompt}
+                  promptRef={promptRef}
                 />
             </div>
         </div>
@@ -140,5 +142,14 @@ const App: React.FC = () => {
     </div>
   );
 };
+
+const Spotlight: React.FC = React.memo(() => (
+    <div
+      className="pointer-events-none fixed inset-0 z-50 transition-opacity duration-300 opacity-30"
+      style={{
+          background: `radial-gradient(600px circle at var(--mouse-x, 0px) var(--mouse-y, 0px), rgba(211, 253, 80, 0.1), transparent 40%)`
+      }}
+    />
+));
 
 export default App;
