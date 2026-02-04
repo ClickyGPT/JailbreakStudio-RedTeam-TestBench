@@ -31,10 +31,25 @@ const App: React.FC = () => {
 
   // Track Mouse for Spotlight - Use CSS variables to avoid React re-renders
   useEffect(() => {
+    let ticking = false;
+    let latestX = 0;
+    let latestY = 0;
+
     const handleMouseMove = (e: MouseEvent) => {
-        if (containerRef.current) {
-            containerRef.current.style.setProperty('--mouse-x', `${e.clientX}px`);
-            containerRef.current.style.setProperty('--mouse-y', `${e.clientY}px`);
+        latestX = e.clientX;
+        latestY = e.clientY;
+
+        if (!ticking) {
+            // PERFORMANCE: Throttle mouse movement updates to animation frames to reduce main thread load
+            // and prevent layout thrashing from excessive style updates.
+            window.requestAnimationFrame(() => {
+                if (containerRef.current) {
+                    containerRef.current.style.setProperty('--mouse-x', `${latestX}px`);
+                    containerRef.current.style.setProperty('--mouse-y', `${latestY}px`);
+                }
+                ticking = false;
+            });
+            ticking = true;
         }
     };
     window.addEventListener('mousemove', handleMouseMove);
@@ -52,15 +67,8 @@ const App: React.FC = () => {
     setIsRunning(true);
     setResult(null); // Clear previous result
     
-    // Simulate API delay for dramatic effect in UI if response is too fast
-    const start = Date.now();
-    
+    // PERFORMANCE: Removed artificial 600ms delay to improve perceived responsiveness and efficiency.
     const simResult = await simulateAttack(prompt);
-    
-    const duration = Date.now() - start;
-    if (duration < 600) {
-        await new Promise(resolve => setTimeout(resolve, 600 - duration));
-    }
 
     setResult(simResult);
     setIsRunning(false);
