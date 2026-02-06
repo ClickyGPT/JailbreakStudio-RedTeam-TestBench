@@ -12,6 +12,8 @@ import { encodeStateToHash, decodeStateFromHash } from './utils/urlUtils';
 const App: React.FC = () => {
   const [prompt, setPrompt] = useState<string>('');
   const [result, setResult] = useState<SimulationResult | null>(null);
+  // Track the prompt used for the active/latest result to avoid SimulationPanel clearing during runs
+  const [activePrompt, setActivePrompt] = useState<string>('');
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [showShare, setShowShare] = useState<boolean>(false);
   
@@ -25,6 +27,9 @@ const App: React.FC = () => {
         setPrompt(sharedState.prompt);
         if (sharedState.lastResult) {
             setResult(sharedState.lastResult);
+            if (sharedState.lastResult.prompt) {
+                setActivePrompt(sharedState.lastResult.prompt);
+            }
         }
     }
   }, []);
@@ -49,20 +54,14 @@ const App: React.FC = () => {
   const handleRunTest = React.useCallback(async () => {
     if (!prompt.trim()) return;
     
+    setActivePrompt(prompt);
     setIsRunning(true);
     setResult(null); // Clear previous result
     
-    // Simulate API delay for dramatic effect in UI if response is too fast
-    const start = Date.now();
-    
     const simResult = await simulateAttack(prompt);
     
-    const duration = Date.now() - start;
-    if (duration < 600) {
-        await new Promise(resolve => setTimeout(resolve, 600 - duration));
-    }
-
-    setResult(simResult);
+    // Store result with the prompt that generated it
+    setResult({ ...simResult, prompt });
     setIsRunning(false);
   }, [prompt]);
 
@@ -111,7 +110,7 @@ const App: React.FC = () => {
                 <SimulationPanel 
                   result={result} 
                   isRunning={isRunning} 
-                  currentPrompt={prompt}
+                  currentPrompt={activePrompt}
                 />
             </div>
         </div>
