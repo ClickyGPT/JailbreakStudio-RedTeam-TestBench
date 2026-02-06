@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, Copy, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { useEscapeKey } from '../utils/useEscapeKey';
 
 interface ShareModalProps {
   shareUrl: string;
@@ -8,6 +9,8 @@ interface ShareModalProps {
 
 const ShareModal: React.FC<ShareModalProps> = ({ shareUrl, onClose }) => {
   const [copied, setCopied] = useState(false);
+
+  useEscapeKey(onClose);
   const [voted, setVoted] = useState<'up' | 'down' | null>(null);
 
   const handleCopy = () => {
