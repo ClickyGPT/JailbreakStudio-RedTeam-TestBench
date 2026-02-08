@@ -11,12 +11,15 @@ import { encodeStateToHash, decodeStateFromHash } from './utils/urlUtils';
 
 const App: React.FC = () => {
   const [prompt, setPrompt] = useState<string>('');
+  const [testedPrompt, setTestedPrompt] = useState<string>('');
   const [result, setResult] = useState<SimulationResult | null>(null);
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [showShare, setShowShare] = useState<boolean>(false);
   
   // Cursor Physics State
   const containerRef = useRef<HTMLDivElement>(null);
+  const mousePos = useRef({ x: 0, y: 0 });
+  const rafId = useRef<number | null>(null);
 
   // Load state from URL if present on mount
   useEffect(() => {
@@ -25,20 +28,36 @@ const App: React.FC = () => {
         setPrompt(sharedState.prompt);
         if (sharedState.lastResult) {
             setResult(sharedState.lastResult);
+            setTestedPrompt(sharedState.prompt);
         }
     }
   }, []);
 
-  // Track Mouse for Spotlight - Use CSS variables to avoid React re-renders
+  // Track Mouse for Spotlight - Use requestAnimationFrame for throttling
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
+    const updateMousePos = () => {
         if (containerRef.current) {
-            containerRef.current.style.setProperty('--mouse-x', `${e.clientX}px`);
-            containerRef.current.style.setProperty('--mouse-y', `${e.clientY}px`);
+            containerRef.current.style.setProperty('--mouse-x', `${mousePos.current.x}px`);
+            containerRef.current.style.setProperty('--mouse-y', `${mousePos.current.y}px`);
+        }
+        rafId.current = null;
+    };
+
+    const handleMouseMove = (e: MouseEvent) => {
+        mousePos.current = { x: e.clientX, y: e.clientY };
+
+        if (rafId.current === null) {
+            rafId.current = requestAnimationFrame(updateMousePos);
         }
     };
+
     window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    return () => {
+        window.removeEventListener('mousemove', handleMouseMove);
+        if (rafId.current !== null) {
+            cancelAnimationFrame(rafId.current);
+        }
+    };
   }, []);
 
   const handleSelectTemplate = React.useCallback((template: PromptTemplate) => {
@@ -51,17 +70,10 @@ const App: React.FC = () => {
     
     setIsRunning(true);
     setResult(null); // Clear previous result
-    
-    // Simulate API delay for dramatic effect in UI if response is too fast
-    const start = Date.now();
+    setTestedPrompt(prompt); // Decouple SimulationPanel from live prompt
     
     const simResult = await simulateAttack(prompt);
     
-    const duration = Date.now() - start;
-    if (duration < 600) {
-        await new Promise(resolve => setTimeout(resolve, 600 - duration));
-    }
-
     setResult(simResult);
     setIsRunning(false);
   }, [prompt]);
@@ -111,7 +123,7 @@ const App: React.FC = () => {
                 <SimulationPanel 
                   result={result} 
                   isRunning={isRunning} 
-                  currentPrompt={prompt}
+                  currentPrompt={testedPrompt}
                 />
             </div>
         </div>
