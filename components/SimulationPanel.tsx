@@ -6,17 +6,16 @@ import { analyzeFailure } from '../services/geminiService';
 interface SimulationPanelProps {
   result: SimulationResult | null;
   isRunning: boolean;
-  currentPrompt: string;
 }
 
-const SimulationPanel: React.FC<SimulationPanelProps> = React.memo(({ result, isRunning, currentPrompt }) => {
+const SimulationPanel: React.FC<SimulationPanelProps> = React.memo(({ result, isRunning }) => {
   const [analysis, setAnalysis] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const handleAnalyze = async () => {
     if (!result) return;
     setIsAnalyzing(true);
-    const analysisText = await analyzeFailure(currentPrompt, result.output);
+    const analysisText = await analyzeFailure(result.testedPrompt || '', result.output);
     setAnalysis(analysisText);
     setIsAnalyzing(false);
   };
