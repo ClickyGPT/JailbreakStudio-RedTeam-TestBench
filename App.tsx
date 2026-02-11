@@ -52,17 +52,11 @@ const App: React.FC = () => {
     setIsRunning(true);
     setResult(null); // Clear previous result
     
-    // Simulate API delay for dramatic effect in UI if response is too fast
-    const start = Date.now();
+    // Capture prompt at the moment of testing to prevent UI drift or redundant re-renders
+    const promptToTest = prompt;
+    const simResult = await simulateAttack(promptToTest);
     
-    const simResult = await simulateAttack(prompt);
-    
-    const duration = Date.now() - start;
-    if (duration < 600) {
-        await new Promise(resolve => setTimeout(resolve, 600 - duration));
-    }
-
-    setResult(simResult);
+    setResult({ ...simResult, testedPrompt: promptToTest });
     setIsRunning(false);
   }, [prompt]);
 
@@ -111,7 +105,6 @@ const App: React.FC = () => {
                 <SimulationPanel 
                   result={result} 
                   isRunning={isRunning} 
-                  currentPrompt={prompt}
                 />
             </div>
         </div>
