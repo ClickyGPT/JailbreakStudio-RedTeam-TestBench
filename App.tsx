@@ -30,15 +30,33 @@ const App: React.FC = () => {
   }, []);
 
   // Track Mouse for Spotlight - Use CSS variables to avoid React re-renders
+  // Throttled with requestAnimationFrame for performance
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-        if (containerRef.current) {
-            containerRef.current.style.setProperty('--mouse-x', `${e.clientX}px`);
-            containerRef.current.style.setProperty('--mouse-y', `${e.clientY}px`);
-        }
+    let mouseX = 0;
+    let mouseY = 0;
+    let rafId: number = 0;
+
+    const updateSpotlight = () => {
+      if (containerRef.current) {
+        containerRef.current.style.setProperty('--mouse-x', `${mouseX}px`);
+        containerRef.current.style.setProperty('--mouse-y', `${mouseY}px`);
+      }
+      rafId = 0;
     };
+
+    const handleMouseMove = (e: MouseEvent) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      if (!rafId) {
+        rafId = requestAnimationFrame(updateSpotlight);
+      }
+    };
+
     window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      if (rafId) cancelAnimationFrame(rafId);
+    };
   }, []);
 
   const handleSelectTemplate = React.useCallback((template: PromptTemplate) => {
@@ -46,22 +64,20 @@ const App: React.FC = () => {
     setResult(null); // Reset result on new template
   }, []);
 
+  /**
+   * PERFORMANCE OPTIMIZATIONS IMPLEMENTED:
+   * 1. Removed 600ms artificial delay to improve perceived performance.
+   * 2. Throttled mousemove with requestAnimationFrame to reduce CSS variable update frequency.
+   * 3. Moved prompt into result object to prevent SimulationPanel from re-rendering on every keystroke.
+   */
   const handleRunTest = React.useCallback(async () => {
     if (!prompt.trim()) return;
     
     setIsRunning(true);
     setResult(null); // Clear previous result
     
-    // Simulate API delay for dramatic effect in UI if response is too fast
-    const start = Date.now();
-    
     const simResult = await simulateAttack(prompt);
     
-    const duration = Date.now() - start;
-    if (duration < 600) {
-        await new Promise(resolve => setTimeout(resolve, 600 - duration));
-    }
-
     setResult(simResult);
     setIsRunning(false);
   }, [prompt]);
@@ -111,7 +127,6 @@ const App: React.FC = () => {
                 <SimulationPanel 
                   result={result} 
                   isRunning={isRunning} 
-                  currentPrompt={prompt}
                 />
             </div>
         </div>
