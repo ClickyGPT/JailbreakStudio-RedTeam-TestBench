@@ -17,6 +17,7 @@ export interface SimulationResult {
   output: string;
   status: TestStatus;
   timestamp: number;
+  prompt: string;
 }
 
 export interface SharedState {
