@@ -29,16 +29,29 @@ const App: React.FC = () => {
     }
   }, []);
 
-  // Track Mouse for Spotlight - Use CSS variables to avoid React re-renders
+  // Track Mouse for Spotlight - Use CSS variables and requestAnimationFrame to avoid React re-renders and throttle updates
+  const mousePos = useRef({ x: 0, y: 0 });
+  const rafId = useRef<number | null>(null);
+
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-        if (containerRef.current) {
-            containerRef.current.style.setProperty('--mouse-x', `${e.clientX}px`);
-            containerRef.current.style.setProperty('--mouse-y', `${e.clientY}px`);
+        mousePos.current = { x: e.clientX, y: e.clientY };
+
+        if (rafId.current === null) {
+            rafId.current = requestAnimationFrame(() => {
+                if (containerRef.current) {
+                    containerRef.current.style.setProperty('--mouse-x', `${mousePos.current.x}px`);
+                    containerRef.current.style.setProperty('--mouse-y', `${mousePos.current.y}px`);
+                }
+                rafId.current = null;
+            });
         }
     };
     window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    return () => {
+        window.removeEventListener('mousemove', handleMouseMove);
+        if (rafId.current !== null) cancelAnimationFrame(rafId.current);
+    };
   }, []);
 
   const handleSelectTemplate = React.useCallback((template: PromptTemplate) => {
@@ -52,17 +65,10 @@ const App: React.FC = () => {
     setIsRunning(true);
     setResult(null); // Clear previous result
     
-    // Simulate API delay for dramatic effect in UI if response is too fast
-    const start = Date.now();
-    
     const simResult = await simulateAttack(prompt);
     
-    const duration = Date.now() - start;
-    if (duration < 600) {
-        await new Promise(resolve => setTimeout(resolve, 600 - duration));
-    }
-
-    setResult(simResult);
+    // Store result along with the prompt that generated it to decouple from live typing state
+    setResult({ ...simResult, prompt });
     setIsRunning(false);
   }, [prompt]);
 
@@ -111,7 +117,6 @@ const App: React.FC = () => {
                 <SimulationPanel 
                   result={result} 
                   isRunning={isRunning} 
-                  currentPrompt={prompt}
                 />
             </div>
         </div>
