@@ -16,6 +16,7 @@ export const simulateAttack = async (prompt: string): Promise<SimulationResult> 
     };
   }
 
+  const start = Date.now();
   try {
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
@@ -25,6 +26,7 @@ export const simulateAttack = async (prompt: string): Promise<SimulationResult> 
       }
     });
 
+    const latency = Date.now() - start;
     const outputText = response.text || "";
     
     if (!outputText && response.candidates && response.candidates.length > 0) {
@@ -33,7 +35,8 @@ export const simulateAttack = async (prompt: string): Promise<SimulationResult> 
              return {
                 output: "[SYSTEM]: Blocked by Safety Filters (Hard Refusal).",
                 status: TestStatus.FAILED,
-                timestamp: Date.now()
+                timestamp: Date.now(),
+                latency
             };
         }
     }
@@ -47,22 +50,26 @@ export const simulateAttack = async (prompt: string): Promise<SimulationResult> 
     return {
       output: outputText,
       status,
-      timestamp: Date.now()
+      timestamp: Date.now(),
+      latency
     };
 
   } catch (error: any) {
+    const latency = Date.now() - start;
     if (error.message && (error.message.includes("SAFETY") || error.message.includes("400"))) {
          return {
             output: "[SYSTEM]: Request rejected by API Safety Layer.",
             status: TestStatus.FAILED,
-            timestamp: Date.now()
+            timestamp: Date.now(),
+            latency
         };
     }
 
     return {
       output: `System Error: ${error.message || 'Unknown error occurred during simulation.'}`,
       status: TestStatus.ERROR,
-      timestamp: Date.now()
+      timestamp: Date.now(),
+      latency
     };
   }
 };
