@@ -81,7 +81,8 @@ const SimulationPanel: React.FC<SimulationPanelProps> = React.memo(({ result, is
                 </div>
                 <div className="flex justify-between">
                     <span className="text-gray-600">Latency</span>
-                    <span>~450ms</span>
+                    {/* BOLT OPTIMIZATION: Displaying real measured latency instead of hardcoded value */}
+                    <span>{result.latency !== undefined ? `${result.latency}ms` : '~450ms'}</span>
                 </div>
             </div>
         </div>
