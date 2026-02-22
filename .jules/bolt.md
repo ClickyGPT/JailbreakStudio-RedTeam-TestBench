@@ -1,3 +1,9 @@
-## 2025-01-24 - [Unnecessary Re-renders from Mouse Tracking]
-**Learning:** Updating React state on every `mousemove` event in a top-level component (like `App.tsx`) causes the entire application to re-render, leading to significant performance degradation, especially in complex applications.
-**Action:** Use CSS variables or direct DOM manipulation via refs for high-frequency updates like mouse position to avoid React's reconciliation cycle.
+# Bolt's Performance Journal
+
+## 2024-05-15 - Removed Artificial UI Delay
+**Learning:** The application had an intentional 600ms artificial delay in the simulation execution loop, likely for "dramatic effect." While intended to simulate processing time, it creates a significant bottleneck in a tool meant for rapid iteration.
+**Action:** Always check for `setTimeout` or `delay` calls in primary user action flows and verify if they are strictly necessary for UX or just adding overhead.
+
+## 2025-01-24 - Decoupling Results from Live Input State
+**Learning:** Passing live input state (e.g., `currentPrompt`) as a prop to results display components causes expensive re-renders on every keystroke, even if the result itself hasn't changed.
+**Action:** Capture the specific input state at the moment of execution and store it within the result object. Reference the result's captured state in display components to decouple them from live input updates.
