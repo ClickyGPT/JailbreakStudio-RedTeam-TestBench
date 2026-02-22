@@ -17,6 +17,8 @@ export interface SimulationResult {
   output: string;
   status: TestStatus;
   timestamp: number;
+  prompt?: string;
+  latency?: number;
 }
 
 export interface SharedState {
