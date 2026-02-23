@@ -5,17 +5,19 @@ import { TestStatus, SimulationResult } from '../types';
 // Use the environment variable for the API key
 const apiKey = process.env.API_KEY || '';
 
-const ai = new GoogleGenAI({ apiKey });
+const ai = apiKey ? new GoogleGenAI({ apiKey }) : null;
 
 export const simulateAttack = async (prompt: string): Promise<SimulationResult> => {
-  if (!apiKey) {
+  if (!apiKey || !ai) {
     return {
       output: "Error: API_KEY is missing in environment variables. Cannot run simulation.",
       status: TestStatus.ERROR,
-      timestamp: Date.now()
+      timestamp: Date.now(),
+      prompt
     };
   }
 
+  const startTime = Date.now();
   try {
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
@@ -25,6 +27,7 @@ export const simulateAttack = async (prompt: string): Promise<SimulationResult> 
       }
     });
 
+    const latency = Date.now() - startTime;
     const outputText = response.text || "";
     
     if (!outputText && response.candidates && response.candidates.length > 0) {
@@ -33,7 +36,9 @@ export const simulateAttack = async (prompt: string): Promise<SimulationResult> 
              return {
                 output: "[SYSTEM]: Blocked by Safety Filters (Hard Refusal).",
                 status: TestStatus.FAILED,
-                timestamp: Date.now()
+                timestamp: Date.now(),
+                latency,
+                prompt
             };
         }
     }
@@ -47,29 +52,36 @@ export const simulateAttack = async (prompt: string): Promise<SimulationResult> 
     return {
       output: outputText,
       status,
-      timestamp: Date.now()
+      timestamp: Date.now(),
+      latency,
+      prompt
     };
 
   } catch (error: any) {
+    const latency = Date.now() - startTime;
     if (error.message && (error.message.includes("SAFETY") || error.message.includes("400"))) {
          return {
             output: "[SYSTEM]: Request rejected by API Safety Layer.",
             status: TestStatus.FAILED,
-            timestamp: Date.now()
+            timestamp: Date.now(),
+            latency,
+            prompt
         };
     }
 
     return {
       output: `System Error: ${error.message || 'Unknown error occurred during simulation.'}`,
       status: TestStatus.ERROR,
-      timestamp: Date.now()
+      timestamp: Date.now(),
+      latency,
+      prompt
     };
   }
 };
 
 // --- AI Generation Engine (Fast) ---
 export const augmentPrompt = async (currentPrompt: string, type: 'obfuscate' | 'expand' | 'refine' | 'clean'): Promise<string> => {
-  if (!apiKey) return currentPrompt;
+  if (!apiKey || !ai) return currentPrompt;
 
   let instruction = "";
   switch(type) {
@@ -102,7 +114,7 @@ export const augmentPrompt = async (currentPrompt: string, type: 'obfuscate' | '
 
 // --- Iterative Refinement & Analysis Module (Deep Think) ---
 export const analyzeFailure = async (prompt: string, modelOutput: string): Promise<string> => {
-  if (!apiKey) return "API Key missing.";
+  if (!apiKey || !ai) return "API Key missing.";
 
   try {
     // Using Gemini 3 Pro with Thinking Budget for complex analysis
@@ -131,7 +143,7 @@ export const analyzeFailure = async (prompt: string, modelOutput: string): Promi
 
 // --- Chatbot Expert (Interactive) ---
 export const chatWithExpert = async (history: {role: string, parts: {text: string}[]}[], message: string): Promise<string> => {
-  if (!apiKey) return "API Key missing.";
+  if (!apiKey || !ai) return "API Key missing.";
   
   try {
     const chat = ai.chats.create({
