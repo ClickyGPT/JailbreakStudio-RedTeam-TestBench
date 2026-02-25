@@ -6,17 +6,18 @@ import { analyzeFailure } from '../services/geminiService';
 interface SimulationPanelProps {
   result: SimulationResult | null;
   isRunning: boolean;
-  currentPrompt: string;
 }
 
-const SimulationPanel: React.FC<SimulationPanelProps> = React.memo(({ result, isRunning, currentPrompt }) => {
+// Bolt: SimulationPanel is memoized to prevent re-renders when the parent App state changes
+// (specifically when typing in the Composer) if the result itself hasn't changed.
+const SimulationPanel: React.FC<SimulationPanelProps> = React.memo(({ result, isRunning }) => {
   const [analysis, setAnalysis] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const handleAnalyze = async () => {
     if (!result) return;
     setIsAnalyzing(true);
-    const analysisText = await analyzeFailure(currentPrompt, result.output);
+    const analysisText = await analyzeFailure(result.prompt, result.output);
     setAnalysis(analysisText);
     setIsAnalyzing(false);
   };
