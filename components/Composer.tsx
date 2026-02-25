@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { DEFAULT_VARIABLES } from '../constants';
 import { PromptVariable } from '../types';
 import { Terminal, Play, Share2, Wand2, RefreshCw, Settings, Sparkles, Box, Copy, Check } from 'lucide-react';
@@ -78,8 +78,9 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
     }
   };
 
-  const systemVars = variables.filter(v => v.isSystem);
-  const customVars = variables.filter(v => !v.isSystem);
+  // Bolt: Memoize variable filtering to prevent redundant O(n) calculations on every render
+  const systemVars = useMemo(() => variables.filter(v => v.isSystem), [variables]);
+  const customVars = useMemo(() => variables.filter(v => !v.isSystem), [variables]);
 
   return (
     <div className="flex-1 flex flex-col h-full relative">

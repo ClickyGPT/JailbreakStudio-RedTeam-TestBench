@@ -52,17 +52,15 @@ const App: React.FC = () => {
     setIsRunning(true);
     setResult(null); // Clear previous result
     
-    // Simulate API delay for dramatic effect in UI if response is too fast
-    const start = Date.now();
-    
+    const startTime = performance.now();
     const simResult = await simulateAttack(prompt);
+    const duration = performance.now() - startTime;
     
-    const duration = Date.now() - start;
-    if (duration < 600) {
-        await new Promise(resolve => setTimeout(resolve, 600 - duration));
-    }
-
-    setResult(simResult);
+    // Bolt: Removed artificial 600ms delay to provide immediate feedback
+    setResult({
+      ...simResult,
+      latency: duration
+    });
     setIsRunning(false);
   }, [prompt]);
 
@@ -108,10 +106,10 @@ const App: React.FC = () => {
 
             {/* Right/Bottom: Results */}
             <div className="w-full md:w-[450px] bg-cyber-black min-w-0 border-t md:border-t-0 border-gray-900">
+                {/* Bolt: SimulationPanel now uses prompt from result object to avoid re-renders while typing */}
                 <SimulationPanel 
                   result={result} 
                   isRunning={isRunning} 
-                  currentPrompt={prompt}
                 />
             </div>
         </div>
