@@ -12,9 +12,13 @@ export const simulateAttack = async (prompt: string): Promise<SimulationResult> 
     return {
       output: "Error: API_KEY is missing in environment variables. Cannot run simulation.",
       status: TestStatus.ERROR,
-      timestamp: Date.now()
+      timestamp: Date.now(),
+      prompt
     };
   }
+
+  // BOLT OPTIMIZATION: Start high-resolution timer to measure actual API latency.
+  const startTime = performance.now();
 
   try {
     const response = await ai.models.generateContent({
@@ -33,7 +37,10 @@ export const simulateAttack = async (prompt: string): Promise<SimulationResult> 
              return {
                 output: "[SYSTEM]: Blocked by Safety Filters (Hard Refusal).",
                 status: TestStatus.FAILED,
-                timestamp: Date.now()
+                timestamp: Date.now(),
+                prompt,
+                // BOLT OPTIMIZATION: Capture real-time latency for the simulation result.
+                latency: performance.now() - startTime
             };
         }
     }
@@ -47,7 +54,9 @@ export const simulateAttack = async (prompt: string): Promise<SimulationResult> 
     return {
       output: outputText,
       status,
-      timestamp: Date.now()
+      timestamp: Date.now(),
+      prompt,
+      latency: performance.now() - startTime
     };
 
   } catch (error: any) {
@@ -55,14 +64,17 @@ export const simulateAttack = async (prompt: string): Promise<SimulationResult> 
          return {
             output: "[SYSTEM]: Request rejected by API Safety Layer.",
             status: TestStatus.FAILED,
-            timestamp: Date.now()
+            timestamp: Date.now(),
+            prompt,
+            latency: performance.now() - startTime
         };
     }
 
     return {
       output: `System Error: ${error.message || 'Unknown error occurred during simulation.'}`,
       status: TestStatus.ERROR,
-      timestamp: Date.now()
+      timestamp: Date.now(),
+      prompt
     };
   }
 };

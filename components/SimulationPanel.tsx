@@ -3,20 +3,25 @@ import { SimulationResult, TestStatus } from '../types';
 import { AlertTriangle, CheckCircle, XCircle, Activity, BrainCircuit } from 'lucide-react';
 import { analyzeFailure } from '../services/geminiService';
 
+/**
+ * PERFORMANCE OPTIMIZATION:
+ * 1. Decoupled from live 'currentPrompt' state to prevent unnecessary re-renders
+ *    during typing in the Composer. Uses 'result.prompt' instead.
+ * 2. Displays real-time API latency measured in the geminiService.
+ */
 interface SimulationPanelProps {
   result: SimulationResult | null;
   isRunning: boolean;
-  currentPrompt: string;
 }
 
-const SimulationPanel: React.FC<SimulationPanelProps> = React.memo(({ result, isRunning, currentPrompt }) => {
+const SimulationPanel: React.FC<SimulationPanelProps> = React.memo(({ result, isRunning }) => {
   const [analysis, setAnalysis] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const handleAnalyze = async () => {
     if (!result) return;
     setIsAnalyzing(true);
-    const analysisText = await analyzeFailure(currentPrompt, result.output);
+    const analysisText = await analyzeFailure(result.prompt, result.output);
     setAnalysis(analysisText);
     setIsAnalyzing(false);
   };
@@ -81,7 +86,8 @@ const SimulationPanel: React.FC<SimulationPanelProps> = React.memo(({ result, is
                 </div>
                 <div className="flex justify-between">
                     <span className="text-gray-600">Latency</span>
-                    <span>~450ms</span>
+                    {/* Using optional chaining for extra safety although null guards are present above */}
+                    <span>{result?.latency ? `~${Math.round(result.latency)}ms` : '---'}</span>
                 </div>
             </div>
         </div>
