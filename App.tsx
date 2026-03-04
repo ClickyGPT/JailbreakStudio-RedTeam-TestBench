@@ -15,6 +15,12 @@ const App: React.FC = () => {
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [showShare, setShowShare] = useState<boolean>(false);
   
+  // BOLT OPTIMIZATION: Use ref to track current prompt for stable callbacks
+  const promptRef = useRef(prompt);
+  useEffect(() => {
+    promptRef.current = prompt;
+  }, [prompt]);
+
   // Cursor Physics State
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -22,7 +28,9 @@ const App: React.FC = () => {
   useEffect(() => {
     const sharedState = decodeStateFromHash();
     if (sharedState) {
-        setPrompt(sharedState.prompt);
+        const loadedPrompt = sharedState.prompt;
+        setPrompt(loadedPrompt);
+        promptRef.current = loadedPrompt;
         if (sharedState.lastResult) {
             setResult(sharedState.lastResult);
         }
@@ -46,31 +54,27 @@ const App: React.FC = () => {
     setResult(null); // Reset result on new template
   }, []);
 
+  // BOLT OPTIMIZATION: Stable callback using promptRef to prevent unnecessary recreations
   const handleRunTest = React.useCallback(async () => {
-    if (!prompt.trim()) return;
+    const currentPromptValue = promptRef.current;
+    if (!currentPromptValue.trim()) return;
     
     setIsRunning(true);
     setResult(null); // Clear previous result
     
-    // Simulate API delay for dramatic effect in UI if response is too fast
-    const start = Date.now();
-    
-    const simResult = await simulateAttack(prompt);
-    
-    const duration = Date.now() - start;
-    if (duration < 600) {
-        await new Promise(resolve => setTimeout(resolve, 600 - duration));
-    }
+    // BOLT OPTIMIZATION: Removed artificial 600ms delay for maximum responsiveness
+    const simResult = await simulateAttack(currentPromptValue);
 
     setResult(simResult);
     setIsRunning(false);
-  }, [prompt]);
+  }, []);
 
+  // BOLT OPTIMIZATION: Stable callback using promptRef
   const handleShare = React.useCallback(() => {
-    const hash = encodeStateToHash({ prompt, lastResult: result || undefined });
+    const hash = encodeStateToHash({ prompt: promptRef.current, lastResult: result || undefined });
     window.history.pushState(null, '', `#${hash}`);
     setShowShare(true);
-  }, [prompt, result]);
+  }, [result]);
 
   return (
     <div className="flex flex-col h-screen bg-cyber-black text-cyber-text font-sans overflow-hidden relative selection:bg-cyber-lime selection:text-black" ref={containerRef}>
@@ -108,10 +112,10 @@ const App: React.FC = () => {
 
             {/* Right/Bottom: Results */}
             <div className="w-full md:w-[450px] bg-cyber-black min-w-0 border-t md:border-t-0 border-gray-900">
+                {/* BOLT OPTIMIZATION: Decoupled SimulationPanel from live 'prompt' state to eliminate keystroke re-renders */}
                 <SimulationPanel 
                   result={result} 
                   isRunning={isRunning} 
-                  currentPrompt={prompt}
                 />
             </div>
         </div>

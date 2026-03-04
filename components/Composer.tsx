@@ -78,8 +78,13 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
     }
   };
 
-  const systemVars = variables.filter(v => v.isSystem);
-  const customVars = variables.filter(v => !v.isSystem);
+  // BOLT OPTIMIZATION: Memoize variable filtering to avoid redundant O(n) calculations on every keystroke
+  const { systemVars, customVars } = React.useMemo(() => {
+    return {
+      systemVars: variables.filter(v => v.isSystem),
+      customVars: variables.filter(v => !v.isSystem)
+    };
+  }, [variables]);
 
   return (
     <div className="flex-1 flex flex-col h-full relative">
