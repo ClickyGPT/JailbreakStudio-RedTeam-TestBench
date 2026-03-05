@@ -18,6 +18,18 @@ const App: React.FC = () => {
   // Cursor Physics State
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // BOLT OPTIMIZATION: Stable references for callbacks to prevent re-renders in children
+  const promptRef = useRef(prompt);
+  const resultRef = useRef(result);
+
+  useEffect(() => {
+    promptRef.current = prompt;
+  }, [prompt]);
+
+  useEffect(() => {
+    resultRef.current = result;
+  }, [result]);
+
   // Load state from URL if present on mount
   useEffect(() => {
     const sharedState = decodeStateFromHash();
@@ -47,30 +59,29 @@ const App: React.FC = () => {
   }, []);
 
   const handleRunTest = React.useCallback(async () => {
-    if (!prompt.trim()) return;
+    const currentPrompt = promptRef.current;
+    if (!currentPrompt.trim()) return;
     
     setIsRunning(true);
     setResult(null); // Clear previous result
     
-    // Simulate API delay for dramatic effect in UI if response is too fast
-    const start = Date.now();
+    // BOLT OPTIMIZATION: Removed artificial delay and added high-resolution latency measurement
+    const start = performance.now();
     
-    const simResult = await simulateAttack(prompt);
+    const simResult = await simulateAttack(currentPrompt);
     
-    const duration = Date.now() - start;
-    if (duration < 600) {
-        await new Promise(resolve => setTimeout(resolve, 600 - duration));
-    }
+    const latency = performance.now() - start;
+    simResult.latency = Math.round(latency);
 
     setResult(simResult);
     setIsRunning(false);
-  }, [prompt]);
+  }, []);
 
   const handleShare = React.useCallback(() => {
-    const hash = encodeStateToHash({ prompt, lastResult: result || undefined });
+    const hash = encodeStateToHash({ prompt: promptRef.current, lastResult: resultRef.current || undefined });
     window.history.pushState(null, '', `#${hash}`);
     setShowShare(true);
-  }, [prompt, result]);
+  }, []);
 
   return (
     <div className="flex flex-col h-screen bg-cyber-black text-cyber-text font-sans overflow-hidden relative selection:bg-cyber-lime selection:text-black" ref={containerRef}>
@@ -111,7 +122,6 @@ const App: React.FC = () => {
                 <SimulationPanel 
                   result={result} 
                   isRunning={isRunning} 
-                  currentPrompt={prompt}
                 />
             </div>
         </div>
