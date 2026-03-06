@@ -79,6 +79,11 @@
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
       }
+
+      /* BOLT OPTIMIZATION: Move spotlight gradient to CSS class with variables to avoid React re-render string interpolation */
+      .spotlight-effect {
+        background: radial-gradient(600px circle at var(--mouse-x, 0px) var(--mouse-y, 0px), rgba(211, 253, 80, 0.1), transparent 40%);
+      }
     </style>
   <script type="importmap">
 {

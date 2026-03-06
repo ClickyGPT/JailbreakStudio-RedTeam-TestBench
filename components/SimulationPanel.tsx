@@ -6,17 +6,17 @@ import { analyzeFailure } from '../services/geminiService';
 interface SimulationPanelProps {
   result: SimulationResult | null;
   isRunning: boolean;
-  currentPrompt: string;
 }
 
-const SimulationPanel: React.FC<SimulationPanelProps> = React.memo(({ result, isRunning, currentPrompt }) => {
+const SimulationPanel: React.FC<SimulationPanelProps> = React.memo(({ result, isRunning }) => {
   const [analysis, setAnalysis] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const handleAnalyze = async () => {
     if (!result) return;
     setIsAnalyzing(true);
-    const analysisText = await analyzeFailure(currentPrompt, result.output);
+    // BOLT OPTIMIZATION: Use the prompt associated with the result, not the live prompt from Composer
+    const analysisText = await analyzeFailure(result.prompt, result.output);
     setAnalysis(analysisText);
     setIsAnalyzing(false);
   };
@@ -81,7 +81,7 @@ const SimulationPanel: React.FC<SimulationPanelProps> = React.memo(({ result, is
                 </div>
                 <div className="flex justify-between">
                     <span className="text-gray-600">Latency</span>
-                    <span>~450ms</span>
+                    <span>{result.latency ? `~${result.latency}ms` : 'N/A'}</span>
                 </div>
             </div>
         </div>
