@@ -81,6 +81,15 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
   const systemVars = variables.filter(v => v.isSystem);
   const customVars = variables.filter(v => !v.isSystem);
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      e.preventDefault();
+      if (!isRunning && prompt.trim()) {
+        onRunTest();
+      }
+    }
+  };
+
   return (
     <div className="flex-1 flex flex-col h-full relative">
       <div className="p-3 border-b border-gray-900 flex justify-between items-center bg-cyber-black">
@@ -108,24 +117,24 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
                 >
                    <Wand2 size={12} /> {isAugmenting ? 'PROCESSING...' : 'AI AUGMENT'}
                 </button>
-                <div className="absolute right-0 top-full mt-1 w-48 bg-cyber-black border border-gray-800 rounded shadow-[0_0_20px_rgba(0,0,0,0.8)] hidden group-hover:block z-20 backdrop-blur-xl">
+                <div className="absolute right-0 top-full mt-1 w-48 bg-cyber-black border border-gray-800 rounded shadow-[0_0_20px_rgba(0,0,0,0.8)] hidden group-hover:block group-focus-within:block z-20 backdrop-blur-xl">
                     <button 
                         onClick={() => handleAugment('obfuscate')} 
-                        className="block w-full text-left px-4 py-3 text-xs hover:bg-cyber-lime hover:text-black text-gray-300 transition-colors border-b border-gray-900"
+                        className="block w-full text-left px-4 py-3 text-xs hover:bg-cyber-lime hover:text-black focus-visible:bg-cyber-lime focus-visible:text-black focus-visible:outline-none text-gray-300 transition-colors border-b border-gray-900"
                         title="Apply stealth techniques (Base64, Leetspeak) to hide intent"
                     >
                         ⚡ Obfuscate (Stealth)
                     </button>
                     <button 
                         onClick={() => handleAugment('expand')} 
-                        className="block w-full text-left px-4 py-3 text-xs hover:bg-cyber-lime hover:text-black text-gray-300 transition-colors border-b border-gray-900"
+                        className="block w-full text-left px-4 py-3 text-xs hover:bg-cyber-lime hover:text-black focus-visible:bg-cyber-lime focus-visible:text-black focus-visible:outline-none text-gray-300 transition-colors border-b border-gray-900"
                         title="Wrap prompt in complex roleplay or emotional scenarios"
                     >
                         🎭 Persona (Framing)
                     </button>
                     <button 
                         onClick={() => handleAugment('refine')} 
-                        className="block w-full text-left px-4 py-3 text-xs hover:bg-cyber-lime hover:text-black text-gray-300 transition-colors"
+                        className="block w-full text-left px-4 py-3 text-xs hover:bg-cyber-lime hover:text-black focus-visible:bg-cyber-lime focus-visible:text-black focus-visible:outline-none text-gray-300 transition-colors"
                         title="Insert direct system overrides and developer commands"
                     >
                         💉 Inject (Override)
@@ -140,7 +149,7 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
                 >
                    + VARS
                 </button>
-                <div className="absolute right-0 top-full mt-1 w-64 bg-cyber-black border border-gray-800 rounded shadow-2xl hidden group-hover:block z-20 max-h-80 overflow-y-auto backdrop-blur-xl">
+                <div className="absolute right-0 top-full mt-1 w-64 bg-cyber-black border border-gray-800 rounded shadow-2xl hidden group-hover:block group-focus-within:block z-20 max-h-80 overflow-y-auto backdrop-blur-xl">
                     {systemVars.length > 0 && (
                         <div className="bg-gray-900/90 px-4 py-2 border-b border-gray-800 sticky top-0 z-10">
                         <span className="text-[10px] font-bold text-cyber-muted uppercase flex items-center gap-1 tracking-widest">
@@ -152,7 +161,7 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
                         <button 
                             key={v.id}
                             onClick={() => insertVariable(v.value)}
-                            className="block w-full text-left px-4 py-2 text-xs hover:bg-cyber-lime hover:text-black text-gray-300 border-b border-gray-900 last:border-0 group/item transition-all"
+                            className="block w-full text-left px-4 py-2 text-xs hover:bg-cyber-lime hover:text-black focus-visible:bg-cyber-lime focus-visible:text-black focus-visible:outline-none text-gray-300 border-b border-gray-900 last:border-0 group/item transition-all"
                             title={`Insert: ${v.value}`}
                         >
                             <div className="flex justify-between items-center">
@@ -173,7 +182,7 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
                         <button 
                             key={v.id}
                             onClick={() => insertVariable(v.value)}
-                            className="block w-full text-left px-4 py-2 text-xs hover:bg-cyber-lime hover:text-black text-gray-300 border-b border-gray-900 last:border-0 group/item transition-all"
+                            className="block w-full text-left px-4 py-2 text-xs hover:bg-cyber-lime hover:text-black focus-visible:bg-cyber-lime focus-visible:text-black focus-visible:outline-none text-gray-300 border-b border-gray-900 last:border-0 group/item transition-all"
                             title={`Insert: ${v.value}`}
                         >
                             <div className="flex justify-between items-center">
@@ -186,7 +195,7 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
                     <div className="border-t border-gray-800 sticky bottom-0 bg-cyber-black">
                         <button 
                             onClick={() => setShowVarManager(true)}
-                            className="block w-full text-left px-4 py-3 text-xs bg-gray-900 hover:bg-gray-800 text-cyber-lime font-bold flex items-center gap-2 transition-colors uppercase"
+                            className="block w-full text-left px-4 py-3 text-xs bg-gray-900 hover:bg-gray-800 focus-visible:bg-gray-800 focus-visible:outline-none text-cyber-lime font-bold flex items-center gap-2 transition-colors uppercase"
                             title="Add, edit, or remove custom variables"
                         >
                             <Settings size={12} /> MANAGE VARIABLES
@@ -202,11 +211,21 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
             ref={setTextAreaRef}
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
+            onKeyDown={handleKeyDown}
             placeholder="// Enter your adversarial prompt here..."
             aria-label="Adversarial prompt input"
             className="w-full h-full bg-transparent text-gray-200 font-mono p-6 resize-none focus:outline-none focus:ring-0 text-sm leading-relaxed placeholder-gray-800 selection:bg-cyber-lime selection:text-black"
             spellCheck={false}
         />
+
+        <div className="absolute bottom-4 right-6 pointer-events-none select-none flex flex-col items-end gap-1">
+            <div className="text-[10px] font-mono text-cyber-muted bg-black/40 px-2 py-0.5 rounded border border-gray-900 backdrop-blur-sm">
+                CHARS: <span className={prompt.length > 2000 ? 'text-cyber-red' : 'text-cyber-lime'}>{prompt.length.toLocaleString()}</span>
+            </div>
+            <div className="text-[9px] font-mono text-gray-600 uppercase tracking-tighter opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
+                Ctrl + Enter to run
+            </div>
+        </div>
         
         {isAugmenting && (
             <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-10">
