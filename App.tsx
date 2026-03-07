@@ -15,6 +15,18 @@ const App: React.FC = () => {
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [showShare, setShowShare] = useState<boolean>(false);
   
+  // Stable references for performance optimization in callbacks
+  const promptRef = useRef(prompt);
+  const resultRef = useRef(result);
+
+  useEffect(() => {
+    promptRef.current = prompt;
+  }, [prompt]);
+
+  useEffect(() => {
+    resultRef.current = result;
+  }, [result]);
+
   // Cursor Physics State
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -47,30 +59,27 @@ const App: React.FC = () => {
   }, []);
 
   const handleRunTest = React.useCallback(async () => {
-    if (!prompt.trim()) return;
+    const currentPrompt = promptRef.current;
+    if (!currentPrompt.trim()) return;
     
     setIsRunning(true);
     setResult(null); // Clear previous result
     
-    // Simulate API delay for dramatic effect in UI if response is too fast
-    const start = Date.now();
+    // BOLT OPTIMIZATION: Removed artificial delay to improve latency
+    const simResult = await simulateAttack(currentPrompt);
     
-    const simResult = await simulateAttack(prompt);
-    
-    const duration = Date.now() - start;
-    if (duration < 600) {
-        await new Promise(resolve => setTimeout(resolve, 600 - duration));
-    }
-
     setResult(simResult);
     setIsRunning(false);
-  }, [prompt]);
+  }, []); // Empty deps because of promptRef
 
   const handleShare = React.useCallback(() => {
-    const hash = encodeStateToHash({ prompt, lastResult: result || undefined });
+    const hash = encodeStateToHash({
+        prompt: promptRef.current,
+        lastResult: resultRef.current || undefined
+    });
     window.history.pushState(null, '', `#${hash}`);
     setShowShare(true);
-  }, [prompt, result]);
+  }, []); // Empty deps because of promptRef/resultRef
 
   return (
     <div className="flex flex-col h-screen bg-cyber-black text-cyber-text font-sans overflow-hidden relative selection:bg-cyber-lime selection:text-black" ref={containerRef}>
@@ -111,7 +120,6 @@ const App: React.FC = () => {
                 <SimulationPanel 
                   result={result} 
                   isRunning={isRunning} 
-                  currentPrompt={prompt}
                 />
             </div>
         </div>
