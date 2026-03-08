@@ -14,9 +14,11 @@ export interface PromptTemplate {
 }
 
 export interface SimulationResult {
+  prompt: string;
   output: string;
   status: TestStatus;
   timestamp: number;
+  latency?: number;
 }
 
 export interface SharedState {
