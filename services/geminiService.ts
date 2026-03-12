@@ -8,11 +8,14 @@ const apiKey = process.env.API_KEY || '';
 const ai = new GoogleGenAI({ apiKey });
 
 export const simulateAttack = async (prompt: string): Promise<SimulationResult> => {
+  const startTime = performance.now();
   if (!apiKey) {
     return {
+      prompt,
       output: "Error: API_KEY is missing in environment variables. Cannot run simulation.",
       status: TestStatus.ERROR,
-      timestamp: Date.now()
+      timestamp: Date.now(),
+      latency: 0
     };
   }
 
@@ -25,15 +28,18 @@ export const simulateAttack = async (prompt: string): Promise<SimulationResult> 
       }
     });
 
+    const latency = performance.now() - startTime;
     const outputText = response.text || "";
     
     if (!outputText && response.candidates && response.candidates.length > 0) {
         const candidate = response.candidates[0];
         if (candidate.finishReason === "SAFETY") {
              return {
+                prompt,
                 output: "[SYSTEM]: Blocked by Safety Filters (Hard Refusal).",
                 status: TestStatus.FAILED,
-                timestamp: Date.now()
+                timestamp: Date.now(),
+                latency
             };
         }
     }
@@ -45,24 +51,31 @@ export const simulateAttack = async (prompt: string): Promise<SimulationResult> 
     const status = isRefusal ? TestStatus.FAILED : TestStatus.PASSED;
 
     return {
+      prompt,
       output: outputText,
       status,
-      timestamp: Date.now()
+      timestamp: Date.now(),
+      latency
     };
 
   } catch (error: any) {
+    const latency = performance.now() - startTime;
     if (error.message && (error.message.includes("SAFETY") || error.message.includes("400"))) {
          return {
+            prompt,
             output: "[SYSTEM]: Request rejected by API Safety Layer.",
             status: TestStatus.FAILED,
-            timestamp: Date.now()
+            timestamp: Date.now(),
+            latency
         };
     }
 
     return {
+      prompt,
       output: `System Error: ${error.message || 'Unknown error occurred during simulation.'}`,
       status: TestStatus.ERROR,
-      timestamp: Date.now()
+      timestamp: Date.now(),
+      latency
     };
   }
 };

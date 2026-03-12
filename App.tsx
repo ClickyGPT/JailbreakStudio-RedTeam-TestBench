@@ -15,6 +15,15 @@ const App: React.FC = () => {
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [showShare, setShowShare] = useState<boolean>(false);
   
+  // BOLT OPTIMIZATION: Use refs to provide stable callback references
+  // This prevents unnecessary re-renders of the Composer component when the user is typing
+  const promptRef = useRef(prompt);
+  const resultRef = useRef(result);
+
+  // Sync refs in the render body to ensure availability before callback calls
+  promptRef.current = prompt;
+  resultRef.current = result;
+
   // Cursor Physics State
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -46,31 +55,28 @@ const App: React.FC = () => {
     setResult(null); // Reset result on new template
   }, []);
 
+  // BOLT OPTIMIZATION: Remove artificial delay and use stable prompt reference
   const handleRunTest = React.useCallback(async () => {
-    if (!prompt.trim()) return;
+    const currentPrompt = promptRef.current;
+    if (!currentPrompt.trim()) return;
     
     setIsRunning(true);
     setResult(null); // Clear previous result
     
-    // Simulate API delay for dramatic effect in UI if response is too fast
-    const start = Date.now();
+    const simResult = await simulateAttack(currentPrompt);
     
-    const simResult = await simulateAttack(prompt);
-    
-    const duration = Date.now() - start;
-    if (duration < 600) {
-        await new Promise(resolve => setTimeout(resolve, 600 - duration));
-    }
-
     setResult(simResult);
     setIsRunning(false);
-  }, [prompt]);
+  }, []); // Stable reference
 
+  // BOLT OPTIMIZATION: Use stable refs for sharing
   const handleShare = React.useCallback(() => {
-    const hash = encodeStateToHash({ prompt, lastResult: result || undefined });
+    const currentPrompt = promptRef.current;
+    const currentResult = resultRef.current;
+    const hash = encodeStateToHash({ prompt: currentPrompt, lastResult: currentResult || undefined });
     window.history.pushState(null, '', `#${hash}`);
     setShowShare(true);
-  }, [prompt, result]);
+  }, []); // Stable reference
 
   return (
     <div className="flex flex-col h-screen bg-cyber-black text-cyber-text font-sans overflow-hidden relative selection:bg-cyber-lime selection:text-black" ref={containerRef}>
@@ -111,7 +117,6 @@ const App: React.FC = () => {
                 <SimulationPanel 
                   result={result} 
                   isRunning={isRunning} 
-                  currentPrompt={prompt}
                 />
             </div>
         </div>
