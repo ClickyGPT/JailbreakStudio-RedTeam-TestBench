@@ -8,11 +8,14 @@ const apiKey = process.env.API_KEY || '';
 const ai = new GoogleGenAI({ apiKey });
 
 export const simulateAttack = async (prompt: string): Promise<SimulationResult> => {
+  const startTime = Date.now();
   if (!apiKey) {
     return {
       output: "Error: API_KEY is missing in environment variables. Cannot run simulation.",
       status: TestStatus.ERROR,
-      timestamp: Date.now()
+      timestamp: Date.now(),
+      latency: 0,
+      prompt
     };
   }
 
@@ -33,7 +36,9 @@ export const simulateAttack = async (prompt: string): Promise<SimulationResult> 
              return {
                 output: "[SYSTEM]: Blocked by Safety Filters (Hard Refusal).",
                 status: TestStatus.FAILED,
-                timestamp: Date.now()
+                timestamp: Date.now(),
+                latency: Date.now() - startTime,
+                prompt
             };
         }
     }
@@ -47,22 +52,29 @@ export const simulateAttack = async (prompt: string): Promise<SimulationResult> 
     return {
       output: outputText,
       status,
-      timestamp: Date.now()
+      timestamp: Date.now(),
+      latency: Date.now() - startTime,
+      prompt
     };
 
   } catch (error: any) {
+    const latency = Date.now() - startTime;
     if (error.message && (error.message.includes("SAFETY") || error.message.includes("400"))) {
          return {
             output: "[SYSTEM]: Request rejected by API Safety Layer.",
             status: TestStatus.FAILED,
-            timestamp: Date.now()
+            timestamp: Date.now(),
+            latency,
+            prompt
         };
     }
 
     return {
       output: `System Error: ${error.message || 'Unknown error occurred during simulation.'}`,
       status: TestStatus.ERROR,
-      timestamp: Date.now()
+      timestamp: Date.now(),
+      latency,
+      prompt
     };
   }
 };
