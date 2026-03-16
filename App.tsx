@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import Header from './components/Header';
 import TemplateLibrary from './components/TemplateLibrary';
 import Composer from './components/Composer';
@@ -15,6 +15,15 @@ const App: React.FC = () => {
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [showShare, setShowShare] = useState<boolean>(false);
   
+  // Stable refs for callbacks to prevent unnecessary re-renders of children
+  const promptRef = useRef(prompt);
+  const resultRef = useRef(result);
+
+  useLayoutEffect(() => {
+    promptRef.current = prompt;
+    resultRef.current = result;
+  });
+
   // Cursor Physics State
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -47,30 +56,27 @@ const App: React.FC = () => {
   }, []);
 
   const handleRunTest = React.useCallback(async () => {
-    if (!prompt.trim()) return;
+    const currentPrompt = promptRef.current;
+    if (!currentPrompt.trim()) return;
     
     setIsRunning(true);
     setResult(null); // Clear previous result
     
-    // Simulate API delay for dramatic effect in UI if response is too fast
-    const start = Date.now();
-    
-    const simResult = await simulateAttack(prompt);
-    
-    const duration = Date.now() - start;
-    if (duration < 600) {
-        await new Promise(resolve => setTimeout(resolve, 600 - duration));
-    }
+    // BOLT OPTIMIZATION: Removed artificial 600ms delay to provide immediate feedback
+    const simResult = await simulateAttack(currentPrompt);
 
     setResult(simResult);
     setIsRunning(false);
-  }, [prompt]);
+  }, []); // Stable identity
 
   const handleShare = React.useCallback(() => {
-    const hash = encodeStateToHash({ prompt, lastResult: result || undefined });
+    const hash = encodeStateToHash({
+      prompt: promptRef.current,
+      lastResult: resultRef.current || undefined
+    });
     window.history.pushState(null, '', `#${hash}`);
     setShowShare(true);
-  }, [prompt, result]);
+  }, []); // Stable identity
 
   return (
     <div className="flex flex-col h-screen bg-cyber-black text-cyber-text font-sans overflow-hidden relative selection:bg-cyber-lime selection:text-black" ref={containerRef}>
@@ -110,8 +116,7 @@ const App: React.FC = () => {
             <div className="w-full md:w-[450px] bg-cyber-black min-w-0 border-t md:border-t-0 border-gray-900">
                 <SimulationPanel 
                   result={result} 
-                  isRunning={isRunning} 
-                  currentPrompt={prompt}
+                  isRunning={isRunning}
                 />
             </div>
         </div>

@@ -10,11 +10,14 @@ const ai = new GoogleGenAI({ apiKey });
 export const simulateAttack = async (prompt: string): Promise<SimulationResult> => {
   if (!apiKey) {
     return {
+      prompt,
       output: "Error: API_KEY is missing in environment variables. Cannot run simulation.",
       status: TestStatus.ERROR,
       timestamp: Date.now()
     };
   }
+
+  const startTime = performance.now();
 
   try {
     const response = await ai.models.generateContent({
@@ -25,14 +28,17 @@ export const simulateAttack = async (prompt: string): Promise<SimulationResult> 
       }
     });
 
+    const latency = Math.round(performance.now() - startTime);
     const outputText = response.text || "";
     
     if (!outputText && response.candidates && response.candidates.length > 0) {
         const candidate = response.candidates[0];
         if (candidate.finishReason === "SAFETY") {
              return {
+                prompt,
                 output: "[SYSTEM]: Blocked by Safety Filters (Hard Refusal).",
                 status: TestStatus.FAILED,
+                latency,
                 timestamp: Date.now()
             };
         }
@@ -45,23 +51,30 @@ export const simulateAttack = async (prompt: string): Promise<SimulationResult> 
     const status = isRefusal ? TestStatus.FAILED : TestStatus.PASSED;
 
     return {
+      prompt,
       output: outputText,
       status,
+      latency,
       timestamp: Date.now()
     };
 
   } catch (error: any) {
+    const latency = Math.round(performance.now() - startTime);
     if (error.message && (error.message.includes("SAFETY") || error.message.includes("400"))) {
          return {
+            prompt,
             output: "[SYSTEM]: Request rejected by API Safety Layer.",
             status: TestStatus.FAILED,
+            latency,
             timestamp: Date.now()
         };
     }
 
     return {
+      prompt,
       output: `System Error: ${error.message || 'Unknown error occurred during simulation.'}`,
       status: TestStatus.ERROR,
+      latency,
       timestamp: Date.now()
     };
   }
