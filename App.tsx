@@ -10,8 +10,18 @@ import { simulateAttack } from './services/geminiService';
 import { encodeStateToHash, decodeStateFromHash } from './utils/urlUtils';
 
 const App: React.FC = () => {
-  const [prompt, setPrompt] = useState<string>('');
-  const [result, setResult] = useState<SimulationResult | null>(null);
+  // BOLT OPTIMIZATION: Use lazy state initialization to load state from URL hash
+  // on the first render, avoiding an extra post-mount useEffect render cycle.
+  const [prompt, setPrompt] = useState<string>(() => {
+    const state = decodeStateFromHash();
+    return state?.prompt || '';
+  });
+
+  const [result, setResult] = useState<SimulationResult | null>(() => {
+    const state = decodeStateFromHash();
+    return state?.lastResult || null;
+  });
+
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [showShare, setShowShare] = useState<boolean>(false);
   
@@ -27,17 +37,6 @@ const App: React.FC = () => {
 
   // Cursor Physics State
   const containerRef = useRef<HTMLDivElement>(null);
-
-  // Load state from URL if present on mount
-  useEffect(() => {
-    const sharedState = decodeStateFromHash();
-    if (sharedState) {
-        setPrompt(sharedState.prompt);
-        if (sharedState.lastResult) {
-            setResult(sharedState.lastResult);
-        }
-    }
-  }, []);
 
   // Track Mouse for Spotlight - Use CSS variables to avoid React re-renders
   useEffect(() => {
