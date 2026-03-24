@@ -5,3 +5,7 @@
 ## 2026-03-17 - [Keystroke-driven Re-render Bottleneck]
 **Learning:** Passing top-level state (like a live prompt string) as a prop to complex sibling components (like a results panel) causes expensive re-renders on every single keystroke.
 **Action:** Decouple the secondary components from live state by bundling the necessary snapshot (e.g., the prompt that triggered the test) into the result object, and use stable callback references (refs + useLayoutEffect) to prevent child component updates during high-frequency input.
+
+## 2026-03-17 - [Redundant String Lowercasing in Loops]
+**Learning:** Performing `.toLowerCase()` on a large input string inside a loop with multiple keywords creates significant memory pressure and CPU overhead due to redundant allocations.
+**Action:** Lowercase the target string once before the loop and ensure keyword constants are pre-lowercased to achieve O(N) performance for string checks.
