@@ -82,6 +82,18 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
   const systemVars = useMemo(() => variables.filter(v => v.isSystem), [variables]);
   const customVars = useMemo(() => variables.filter(v => !v.isSystem), [variables]);
 
+  const isMac = useMemo(() =>
+    typeof window !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.userAgent),
+  []);
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+      if (!isRunning && prompt.trim()) {
+        onRunTest();
+      }
+    }
+  };
+
   return (
     <div className="flex-1 flex flex-col h-full relative">
       <div className="p-3 border-b border-gray-900 flex justify-between items-center bg-cyber-black">
@@ -203,11 +215,21 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
             ref={setTextAreaRef}
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
+            onKeyDown={handleKeyDown}
             placeholder="// Enter your adversarial prompt here..."
             aria-label="Adversarial prompt input"
             className="w-full h-full bg-transparent text-gray-200 font-mono p-6 resize-none focus:outline-none focus:ring-0 text-sm leading-relaxed placeholder-gray-800 selection:bg-cyber-lime selection:text-black"
             spellCheck={false}
         />
+
+        <div className="absolute bottom-4 right-6 text-[10px] font-mono text-cyber-muted/40 pointer-events-none select-none flex flex-col items-end gap-0.5">
+            <span className="bg-black/40 px-2 py-0.5 rounded border border-gray-900/50">
+                {prompt.length.toLocaleString()} CHR
+            </span>
+            <span className="text-[9px] opacity-0 group-focus-within:opacity-40 transition-opacity duration-500">
+                {isMac ? '⌘' : 'Ctrl'} + Enter to Run
+            </span>
+        </div>
         
         {isAugmenting && (
             <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-10">
@@ -244,7 +266,7 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
                 ? 'bg-gray-800 text-gray-500 cursor-not-allowed' 
                 : 'bg-cyber-lime text-black hover:bg-[#c0ff00] hover:shadow-[0_0_20px_rgba(211,253,80,0.4)]'
             }`}
-            title="Simulate this attack against the safety filter"
+            title={`Simulate this attack against the safety filter (${isMac ? '⌘' : 'Ctrl'} + Enter)`}
         >
             <span className="relative z-10 flex items-center gap-2">
                 <Play size={16} fill="currentColor" />
