@@ -205,10 +205,14 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
             onChange={(e) => setPrompt(e.target.value)}
             placeholder="// Enter your adversarial prompt here..."
             aria-label="Adversarial prompt input"
-            className="w-full h-full bg-transparent text-gray-200 font-mono p-6 resize-none focus:outline-none focus:ring-0 text-sm leading-relaxed placeholder-gray-800 selection:bg-cyber-lime selection:text-black"
+            className="w-full h-full bg-transparent text-gray-200 font-mono p-6 pb-12 resize-none focus:outline-none focus:ring-0 text-sm leading-relaxed placeholder-gray-800 selection:bg-cyber-lime selection:text-black"
             spellCheck={false}
         />
         
+        <div className="absolute bottom-4 right-6 text-[10px] font-mono text-gray-600 pointer-events-none select-none">
+            {prompt.length.toLocaleString()} CHARS
+        </div>
+
         {isAugmenting && (
             <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-10">
                 <RefreshCw className="animate-spin text-cyber-lime w-8 h-8" />
