@@ -205,9 +205,22 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
             onChange={(e) => setPrompt(e.target.value)}
             placeholder="// Enter your adversarial prompt here..."
             aria-label="Adversarial prompt input"
+            aria-describedby="char-counter"
             className="w-full h-full bg-transparent text-gray-200 font-mono p-6 resize-none focus:outline-none focus:ring-0 text-sm leading-relaxed placeholder-gray-800 selection:bg-cyber-lime selection:text-black"
             spellCheck={false}
         />
+
+        {/* Character Counter Overlay */}
+        <div
+            id="char-counter"
+            className="absolute bottom-4 right-6 pointer-events-none select-none"
+            aria-label={`${prompt.length} characters`}
+            aria-live="polite"
+        >
+            <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest bg-black/20 px-2 py-1 rounded-sm backdrop-blur-sm border border-white/5">
+                {prompt.length.toLocaleString()} CHR
+            </span>
+        </div>
         
         {isAugmenting && (
             <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-10">
