@@ -60,18 +60,20 @@ export const RESEARCH_TEMPLATES: PromptTemplate[] = [
   }
 ];
 
+// BOLT OPTIMIZATION: Keywords are maintained in lowercase to avoid redundant
+// string transformations during runtime matching logic in geminiService.ts.
 export const REFUSAL_KEYWORDS = [
-  "I cannot",
-  "I can't",
-  "I am unable",
+  "i cannot",
+  "i can't",
+  "i am unable",
   "sorry",
   "against my programming",
   "safety guidelines",
   "harmful",
   "illegal",
   "unethical",
-  "I decline",
-  "as an AI",
+  "i decline",
+  "as an ai",
   "not able to",
   "ethical guidelines",
   "harmful content",
