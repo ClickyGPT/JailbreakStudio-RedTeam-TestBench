@@ -54,6 +54,15 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
     setIsAugmenting(false);
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault();
+      if (!isRunning && prompt.trim()) {
+        onRunTest();
+      }
+    }
+  };
+
   const handleCopy = () => {
     if (!prompt) return;
     if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -203,6 +212,7 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
             ref={setTextAreaRef}
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
+            onKeyDown={handleKeyDown}
             placeholder="// Enter your adversarial prompt here..."
             aria-label="Adversarial prompt input"
             className="w-full h-full bg-transparent text-gray-200 font-mono p-6 resize-none focus:outline-none focus:ring-0 text-sm leading-relaxed placeholder-gray-800 selection:bg-cyber-lime selection:text-black"
