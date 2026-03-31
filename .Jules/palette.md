@@ -5,3 +5,7 @@
 ## 2025-05-15 - [Environment Dependencies for UI Rendering]
 **Learning:** Environment variables (like `GEMINI_API_KEY`) being required at initialization time can prevent even basic UI tests from running if not mocked or provided in a `.env.local`.
 **Action:** When a repository fails to render in dev mode, check for module-level initialization of third-party SDKs that might be crashing the app due to missing keys.
+
+## 2026-03-17 - [Contextual Keyboard Hints]
+**Learning:** In minimalist "Studio" or "Technical" interfaces, permanent UI hints (like keyboard shortcuts) can clutter the workspace. Using `group-focus-within` allows for "just-in-time" discoverability, showing hints only when the user is actively interacting with the input.
+**Action:** Implement non-intrusive keyboard hints that appear on focus for high-frequency actions, combined with platform-aware symbols (⌘↵ vs Ctrl+↵) to ensure immediate usability without visual noise.
