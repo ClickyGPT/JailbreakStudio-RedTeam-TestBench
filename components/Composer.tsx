@@ -203,11 +203,25 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
             ref={setTextAreaRef}
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
+            onKeyDown={(e) => {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                    e.preventDefault();
+                    if (!isRunning && prompt.trim()) {
+                        onRunTest();
+                    }
+                }
+            }}
             placeholder="// Enter your adversarial prompt here..."
             aria-label="Adversarial prompt input"
             className="w-full h-full bg-transparent text-gray-200 font-mono p-6 resize-none focus:outline-none focus:ring-0 text-sm leading-relaxed placeholder-gray-800 selection:bg-cyber-lime selection:text-black"
             spellCheck={false}
         />
+
+        <div className="absolute bottom-4 right-6 pointer-events-none">
+            <span className="text-[10px] font-mono text-gray-700 bg-black/40 px-2 py-1 rounded backdrop-blur-sm border border-gray-900/50">
+                {prompt.length.toLocaleString()} CHARS
+            </span>
+        </div>
         
         {isAugmenting && (
             <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-10">
@@ -244,7 +258,7 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
                 ? 'bg-gray-800 text-gray-500 cursor-not-allowed' 
                 : 'bg-cyber-lime text-black hover:bg-[#c0ff00] hover:shadow-[0_0_20px_rgba(211,253,80,0.4)]'
             }`}
-            title="Simulate this attack against the safety filter"
+            title="Simulate this attack against the safety filter (Ctrl+Enter)"
         >
             <span className="relative z-10 flex items-center gap-2">
                 <Play size={16} fill="currentColor" />
