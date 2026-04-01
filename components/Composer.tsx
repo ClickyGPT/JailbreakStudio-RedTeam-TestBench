@@ -33,6 +33,15 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
     localStorage.setItem('redteam_variables', JSON.stringify(variables));
   }, [variables]);
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      e.preventDefault();
+      if (!isRunning && prompt.trim()) {
+        onRunTest();
+      }
+    }
+  };
+
   const insertVariable = (textToInsert: string) => {
     if (!textAreaRef) return;
     const start = textAreaRef.selectionStart;
@@ -95,7 +104,7 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
              <button
                 onClick={() => handleAugment('clean')}
                 disabled={isAugmenting || !prompt.trim()}
-                className="px-3 py-1 text-xs font-mono font-bold bg-cyber-lime/5 text-cyber-lime border border-cyber-lime/30 rounded hover:bg-cyber-lime hover:text-black flex items-center gap-1 transition-all disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wider"
+                className="px-3 py-1 text-xs font-mono font-bold bg-cyber-lime/5 text-cyber-lime border border-cyber-lime/30 rounded hover:bg-cyber-lime hover:text-black focus-visible:ring-1 focus-visible:ring-cyber-lime focus-visible:ring-offset-1 focus-visible:ring-offset-black outline-none flex items-center gap-1 transition-all disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wider"
                 title="Optimize prompt for maximum viability (remove noise, fix structure)"
              >
                 🧼 {isAugmenting ? 'CLEANING...' : 'CLEAN'}
@@ -103,13 +112,13 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
 
              <div className="relative group">
                 <button 
-                    className="px-3 py-1 text-xs font-mono font-bold bg-cyber-lime/5 text-cyber-lime border border-cyber-lime/30 rounded hover:bg-cyber-lime hover:text-black flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed transition-all uppercase tracking-wider"
+                    className="px-3 py-1 text-xs font-mono font-bold bg-cyber-lime/5 text-cyber-lime border border-cyber-lime/30 rounded hover:bg-cyber-lime hover:text-black focus-visible:ring-1 focus-visible:ring-cyber-lime focus-visible:ring-offset-1 focus-visible:ring-offset-black outline-none flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed transition-all uppercase tracking-wider"
                     disabled={isAugmenting}
                     title="Use AI to rewrite and enhance your attack vector"
                 >
                    <Wand2 size={12} /> {isAugmenting ? 'PROCESSING...' : 'AI AUGMENT'}
                 </button>
-                <div className="absolute right-0 top-full mt-1 w-48 bg-cyber-black border border-gray-800 rounded shadow-[0_0_20px_rgba(0,0,0,0.8)] hidden group-hover:block z-20 backdrop-blur-xl">
+                <div className="absolute right-0 top-full mt-1 w-48 bg-cyber-black border border-gray-800 rounded shadow-[0_0_20px_rgba(0,0,0,0.8)] invisible opacity-0 group-hover:visible group-hover:opacity-100 focus-within:visible focus-within:opacity-100 transition-all duration-200 z-20 backdrop-blur-xl">
                     <button 
                         onClick={() => handleAugment('obfuscate')} 
                         className="block w-full text-left px-4 py-3 text-xs hover:bg-cyber-lime hover:text-black text-gray-300 transition-colors border-b border-gray-900"
@@ -136,12 +145,12 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
 
              <div className="relative group">
                 <button 
-                    className="px-3 py-1 text-xs font-mono font-bold bg-gray-900 text-cyber-muted border border-gray-700 rounded hover:border-cyber-lime hover:text-cyber-lime transition-all uppercase tracking-wider"
+                    className="px-3 py-1 text-xs font-mono font-bold bg-gray-900 text-cyber-muted border border-gray-700 rounded hover:border-cyber-lime hover:text-cyber-lime focus-visible:ring-1 focus-visible:ring-cyber-lime focus-visible:ring-offset-1 focus-visible:ring-offset-black outline-none transition-all uppercase tracking-wider"
                     title="Insert predefined or custom prompt variables"
                 >
                    + VARS
                 </button>
-                <div className="absolute right-0 top-full mt-1 w-64 bg-cyber-black border border-gray-800 rounded shadow-2xl hidden group-hover:block z-20 max-h-80 overflow-y-auto backdrop-blur-xl">
+                <div className="absolute right-0 top-full mt-1 w-64 bg-cyber-black border border-gray-800 rounded shadow-2xl invisible opacity-0 group-hover:visible group-hover:opacity-100 focus-within:visible focus-within:opacity-100 transition-all duration-200 z-20 max-h-80 overflow-y-auto backdrop-blur-xl">
                     {systemVars.length > 0 && (
                         <div className="bg-gray-900/90 px-4 py-2 border-b border-gray-800 sticky top-0 z-10">
                         <span className="text-[10px] font-bold text-cyber-muted uppercase flex items-center gap-1 tracking-widest">
@@ -203,12 +212,18 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
             ref={setTextAreaRef}
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
+            onKeyDown={handleKeyDown}
             placeholder="// Enter your adversarial prompt here..."
             aria-label="Adversarial prompt input"
             className="w-full h-full bg-transparent text-gray-200 font-mono p-6 resize-none focus:outline-none focus:ring-0 text-sm leading-relaxed placeholder-gray-800 selection:bg-cyber-lime selection:text-black"
             spellCheck={false}
         />
         
+        <div className="absolute bottom-4 right-6 pointer-events-none select-none text-[10px] font-mono text-cyber-muted flex items-center gap-1 opacity-50 group-focus-within:opacity-100 transition-opacity">
+            <span>{prompt.length}</span>
+            <span className="tracking-widest">CHARS</span>
+        </div>
+
         {isAugmenting && (
             <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-10">
                 <RefreshCw className="animate-spin text-cyber-lime w-8 h-8" />
@@ -220,7 +235,7 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
         <div className="flex items-center gap-4">
             <button
                 onClick={onShare}
-                className="flex items-center gap-2 text-xs font-bold font-sans text-cyber-muted hover:text-white transition-colors uppercase tracking-widest"
+                className="flex items-center gap-2 text-xs font-bold font-sans text-cyber-muted hover:text-white focus-visible:ring-1 focus-visible:ring-cyber-lime focus-visible:ring-offset-1 focus-visible:ring-offset-black outline-none transition-colors uppercase tracking-widest"
                 title="Generate a unique link to share this prompt vector"
             >
                 <Share2 size={14} /> SHARE VECTOR
@@ -228,7 +243,7 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
             <button
                 onClick={handleCopy}
                 disabled={!prompt.trim()}
-                className="flex items-center gap-2 text-xs font-bold font-sans text-cyber-muted hover:text-white transition-colors uppercase tracking-widest disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 text-xs font-bold font-sans text-cyber-muted hover:text-white focus-visible:ring-1 focus-visible:ring-cyber-lime focus-visible:ring-offset-1 focus-visible:ring-offset-black outline-none transition-colors uppercase tracking-widest disabled:opacity-50 disabled:cursor-not-allowed"
                 title="Copy prompt to clipboard"
             >
                 {isCopied ? <Check size={14} className="text-cyber-lime" /> : <Copy size={14} />}
@@ -239,12 +254,12 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
         <button
             onClick={onRunTest}
             disabled={isRunning || !prompt.trim()}
-            className={`flex items-center gap-2 px-8 py-3 text-sm font-bold font-sans tracking-wider transition-all duration-300 relative overflow-hidden group ${
+            className={`flex items-center gap-2 px-8 py-3 text-sm font-bold font-sans tracking-wider transition-all duration-300 relative overflow-hidden group focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black outline-none ${
                 isRunning 
                 ? 'bg-gray-800 text-gray-500 cursor-not-allowed' 
                 : 'bg-cyber-lime text-black hover:bg-[#c0ff00] hover:shadow-[0_0_20px_rgba(211,253,80,0.4)]'
             }`}
-            title="Simulate this attack against the safety filter"
+            title="Simulate this attack against the safety filter (Ctrl+Enter)"
         >
             <span className="relative z-10 flex items-center gap-2">
                 <Play size={16} fill="currentColor" />
