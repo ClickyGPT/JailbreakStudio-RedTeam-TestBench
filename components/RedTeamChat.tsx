@@ -1,6 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { MessageSquare, X, Send, Bot, User } from 'lucide-react';
 import { chatWithExpert } from '../services/geminiService';
+import { useEscapeKey } from '../utils/useEscapeKey';
 
 const RedTeamChat: React.FC = React.memo(() => {
   const [isOpen, setIsOpen] = useState(false);
@@ -10,6 +11,14 @@ const RedTeamChat: React.FC = React.memo(() => {
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  const handleEscape = useCallback(() => {
+    if (isOpen) {
+      setIsOpen(false);
+    }
+  }, [isOpen]);
+
+  useEscapeKey(handleEscape);
 
   useEffect(() => {
     if (scrollRef.current) {
