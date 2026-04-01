@@ -5,3 +5,7 @@
 ## 2025-05-15 - [Environment Dependencies for UI Rendering]
 **Learning:** Environment variables (like `GEMINI_API_KEY`) being required at initialization time can prevent even basic UI tests from running if not mocked or provided in a `.env.local`.
 **Action:** When a repository fails to render in dev mode, check for module-level initialization of third-party SDKs that might be crashing the app due to missing keys.
+
+## 2024-05-16 - [Focus and Keyboard Escapability for Overlays]
+**Learning:** For interactive sidebars or chat overlays, accessibility is greatly improved by ensuring the primary input is focused on open and that the overlay can be dismissed using the global 'Escape' key.
+**Action:** Add a `useEffect` for auto-focus and a global `keydown` event listener for 'Escape' in overlay components to ensure they follow standard UX patterns for dismissible content.
