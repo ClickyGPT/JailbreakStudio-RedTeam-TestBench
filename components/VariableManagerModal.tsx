@@ -105,7 +105,7 @@ const VariableManagerModal: React.FC<VariableManagerModalProps> = ({ variables, 
           <h3 className="font-mono text-white font-bold flex items-center gap-2">
             <Tag size={16} className="text-cyber-blue"/> MANAGE VARIABLES
           </h3>
-          <button onClick={onClose} className="text-gray-500 hover:text-white">
+          <button onClick={onClose} className="text-gray-500 hover:text-white" aria-label="Close modal">
             <X size={20} />
           </button>
         </div>

@@ -13,6 +13,8 @@ interface ComposerProps {
   onShare: () => void;
 }
 
+const isMac = typeof window !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.userAgent || '');
+
 const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRunTest, isRunning, onShare }) => {
   const [textAreaRef, setTextAreaRef] = useState<HTMLTextAreaElement | null>(null);
   const [isAugmenting, setIsAugmenting] = useState(false);
@@ -82,6 +84,15 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
   const systemVars = useMemo(() => variables.filter(v => v.isSystem), [variables]);
   const customVars = useMemo(() => variables.filter(v => !v.isSystem), [variables]);
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+      e.preventDefault();
+      if (!isRunning && prompt.trim()) {
+        onRunTest();
+      }
+    }
+  };
+
   return (
     <div className="flex-1 flex flex-col h-full relative">
       <div className="p-3 border-b border-gray-900 flex justify-between items-center bg-cyber-black">
@@ -103,13 +114,14 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
 
              <div className="relative group">
                 <button 
-                    className="px-3 py-1 text-xs font-mono font-bold bg-cyber-lime/5 text-cyber-lime border border-cyber-lime/30 rounded hover:bg-cyber-lime hover:text-black flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed transition-all uppercase tracking-wider"
+                    className="px-3 py-1 text-xs font-mono font-bold bg-cyber-lime/5 text-cyber-lime border border-cyber-lime/30 rounded hover:bg-cyber-lime hover:text-black flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed transition-all uppercase tracking-wider focus-visible:ring-1 focus-visible:ring-cyber-lime focus-visible:outline-none"
                     disabled={isAugmenting}
+                    aria-haspopup="true"
                     title="Use AI to rewrite and enhance your attack vector"
                 >
                    <Wand2 size={12} /> {isAugmenting ? 'PROCESSING...' : 'AI AUGMENT'}
                 </button>
-                <div className="absolute right-0 top-full mt-1 w-48 bg-cyber-black border border-gray-800 rounded shadow-[0_0_20px_rgba(0,0,0,0.8)] hidden group-hover:block z-20 backdrop-blur-xl">
+                <div className="absolute right-0 top-full mt-1 w-48 bg-cyber-black border border-gray-800 rounded shadow-[0_0_20px_rgba(0,0,0,0.8)] hidden group-hover:block group-focus-within:block z-20 backdrop-blur-xl">
                     <button 
                         onClick={() => handleAugment('obfuscate')} 
                         className="block w-full text-left px-4 py-3 text-xs hover:bg-cyber-lime hover:text-black text-gray-300 transition-colors border-b border-gray-900"
@@ -136,12 +148,13 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
 
              <div className="relative group">
                 <button 
-                    className="px-3 py-1 text-xs font-mono font-bold bg-gray-900 text-cyber-muted border border-gray-700 rounded hover:border-cyber-lime hover:text-cyber-lime transition-all uppercase tracking-wider"
+                    className="px-3 py-1 text-xs font-mono font-bold bg-gray-900 text-cyber-muted border border-gray-700 rounded hover:border-cyber-lime hover:text-cyber-lime transition-all uppercase tracking-wider focus-visible:ring-1 focus-visible:ring-cyber-lime focus-visible:outline-none"
+                    aria-haspopup="true"
                     title="Insert predefined or custom prompt variables"
                 >
                    + VARS
                 </button>
-                <div className="absolute right-0 top-full mt-1 w-64 bg-cyber-black border border-gray-800 rounded shadow-2xl hidden group-hover:block z-20 max-h-80 overflow-y-auto backdrop-blur-xl">
+                <div className="absolute right-0 top-full mt-1 w-64 bg-cyber-black border border-gray-800 rounded shadow-2xl hidden group-hover:block group-focus-within:block z-20 max-h-80 overflow-y-auto backdrop-blur-xl">
                     {systemVars.length > 0 && (
                         <div className="bg-gray-900/90 px-4 py-2 border-b border-gray-800 sticky top-0 z-10">
                         <span className="text-[10px] font-bold text-cyber-muted uppercase flex items-center gap-1 tracking-widest">
@@ -203,11 +216,16 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
             ref={setTextAreaRef}
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
+            onKeyDown={handleKeyDown}
             placeholder="// Enter your adversarial prompt here..."
             aria-label="Adversarial prompt input"
             className="w-full h-full bg-transparent text-gray-200 font-mono p-6 resize-none focus:outline-none focus:ring-0 text-sm leading-relaxed placeholder-gray-800 selection:bg-cyber-lime selection:text-black"
             spellCheck={false}
         />
+
+        <div className="absolute bottom-4 right-6 pointer-events-none select-none text-[10px] font-mono text-cyber-muted/40 group-focus-within:text-cyber-lime/30 transition-colors">
+            {prompt.length.toLocaleString()} chars
+        </div>
         
         {isAugmenting && (
             <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-10">
@@ -248,7 +266,11 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
         >
             <span className="relative z-10 flex items-center gap-2">
                 <Play size={16} fill="currentColor" />
-                {isRunning ? 'SIMULATING...' : 'INITIATE TEST'}
+                {isRunning ? 'SIMULATING...' : (
+                  <>
+                    INITIATE TEST <span className="text-[10px] opacity-50 font-mono ml-1">({isMac ? '⌘' : 'Ctrl+'}↵)</span>
+                  </>
+                )}
             </span>
         </button>
       </div>
