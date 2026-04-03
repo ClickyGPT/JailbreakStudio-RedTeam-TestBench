@@ -69,7 +69,12 @@ const RedTeamChat: React.FC = React.memo(() => {
         </div>
 
         {/* Messages */}
-        <div ref={scrollRef} className="flex-1 overflow-y-auto p-5 space-y-6 bg-[#0a0a0a]">
+        <div
+            ref={scrollRef}
+            className="flex-1 overflow-y-auto p-5 space-y-6 bg-[#0a0a0a]"
+            role="log"
+            aria-live="polite"
+        >
             {messages.map((m, i) => (
                 <div key={i} className={`flex gap-3 ${m.role === 'user' ? 'flex-row-reverse' : ''}`}>
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 border border-gray-800 ${m.role === 'user' ? 'bg-gray-800' : 'bg-black text-cyber-lime'}`}>
@@ -104,6 +109,7 @@ const RedTeamChat: React.FC = React.memo(() => {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                autoFocus
                 placeholder="Query RedTeam Database..."
                 className="flex-1 bg-gray-900 border border-gray-800 rounded px-4 py-3 text-sm text-white focus:outline-none focus:border-cyber-lime focus:bg-black transition-colors font-mono"
             />
