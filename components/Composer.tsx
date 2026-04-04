@@ -78,6 +78,14 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+      if (!isRunning && prompt.trim() && !isAugmenting) {
+        onRunTest();
+      }
+    }
+  };
+
   // BOLT OPTIMIZATION: Memoize variable filtering to avoid redundant array operations on every stroke.
   const systemVars = useMemo(() => variables.filter(v => v.isSystem), [variables]);
   const customVars = useMemo(() => variables.filter(v => !v.isSystem), [variables]);
@@ -203,6 +211,7 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
             ref={setTextAreaRef}
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
+            onKeyDown={handleKeyDown}
             placeholder="// Enter your adversarial prompt here..."
             aria-label="Adversarial prompt input"
             className="w-full h-full bg-transparent text-gray-200 font-mono p-6 resize-none focus:outline-none focus:ring-0 text-sm leading-relaxed placeholder-gray-800 selection:bg-cyber-lime selection:text-black"
@@ -244,7 +253,7 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
                 ? 'bg-gray-800 text-gray-500 cursor-not-allowed' 
                 : 'bg-cyber-lime text-black hover:bg-[#c0ff00] hover:shadow-[0_0_20px_rgba(211,253,80,0.4)]'
             }`}
-            title="Simulate this attack against the safety filter"
+            title="Simulate this attack against the safety filter (Cmd+Enter)"
         >
             <span className="relative z-10 flex items-center gap-2">
                 <Play size={16} fill="currentColor" />
