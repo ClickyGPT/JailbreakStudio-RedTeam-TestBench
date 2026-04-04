@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, Copy, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { useEscapeKey } from '../utils/useEscapeKey';
 
 interface ShareModalProps {
   shareUrl: string;
@@ -7,6 +8,7 @@ interface ShareModalProps {
 }
 
 const ShareModal: React.FC<ShareModalProps> = ({ shareUrl, onClose }) => {
+  useEscapeKey(onClose);
   const [copied, setCopied] = useState(false);
   const [voted, setVoted] = useState<'up' | 'down' | null>(null);
 
@@ -18,9 +20,14 @@ const ShareModal: React.FC<ShareModalProps> = ({ shareUrl, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4 backdrop-blur-md">
-      <div className="bg-cyber-black border border-gray-800 w-full max-w-md rounded-lg shadow-2xl overflow-hidden">
+      <div
+        className="bg-cyber-black border border-gray-800 w-full max-w-md rounded-lg shadow-2xl overflow-hidden"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="share-modal-title"
+      >
         <div className="p-5 border-b border-gray-800 flex justify-between items-center bg-gray-900/50">
-          <h3 className="font-sans font-black text-white text-lg tracking-tight uppercase">Share Vector</h3>
+          <h3 id="share-modal-title" className="font-sans font-black text-white text-lg tracking-tight uppercase">Share Vector</h3>
           <button
             onClick={onClose}
             aria-label="Close modal"
