@@ -43,8 +43,11 @@ export const simulateAttack = async (prompt: string): Promise<SimulationResult> 
         }
     }
 
+    // BOLT OPTIMIZATION: Perform a single toLowerCase() call on the output text
+    // instead of once per keyword check. Keywords in constants.ts are already lowercase.
+    const lowerOutput = outputText.toLowerCase();
     const isRefusal = REFUSAL_KEYWORDS.some(keyword => 
-      outputText.toLowerCase().includes(keyword.toLowerCase())
+      lowerOutput.includes(keyword)
     );
 
     const status = isRefusal ? TestStatus.FAILED : TestStatus.PASSED;
