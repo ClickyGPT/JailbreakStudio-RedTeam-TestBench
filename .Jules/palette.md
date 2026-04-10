@@ -5,3 +5,7 @@
 ## 2025-05-15 - [Environment Dependencies for UI Rendering]
 **Learning:** Environment variables (like `GEMINI_API_KEY`) being required at initialization time can prevent even basic UI tests from running if not mocked or provided in a `.env.local`.
 **Action:** When a repository fails to render in dev mode, check for module-level initialization of third-party SDKs that might be crashing the app due to missing keys.
+
+## 2026-04-10 - [Keyboard Access for Hover-Activated Menus]
+**Learning:** In UIs that use hover to reveal secondary menus (e.g., "AI Augment" or "+ Vars"), keyboard-only users are locked out unless `group-focus-within` or similar focus-aware classes are used.
+**Action:** Always implement `group-focus-within` on containers that have hover-triggered children to ensure menu items are reachable via Tab navigation.
