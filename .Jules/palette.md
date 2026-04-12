@@ -5,3 +5,7 @@
 ## 2025-05-15 - [Environment Dependencies for UI Rendering]
 **Learning:** Environment variables (like `GEMINI_API_KEY`) being required at initialization time can prevent even basic UI tests from running if not mocked or provided in a `.env.local`.
 **Action:** When a repository fails to render in dev mode, check for module-level initialization of third-party SDKs that might be crashing the app due to missing keys.
+
+## 2026-03-24 - [Keyboard Accessibility for Hover Dropdowns]
+**Learning:** In UIs that rely heavily on Tailwind `group-hover` for dropdown menus (like the 'AI AUGMENT' menu in Composer.tsx), keyboard users are often locked out of sub-options because the hover state cannot be triggered via Tab.
+**Action:** Always combine `group-hover:block` with `group-focus-within:block` on the menu container. This ensures that when the parent button or any menu item receives focus, the menu remains visible and interactive for keyboard users.
