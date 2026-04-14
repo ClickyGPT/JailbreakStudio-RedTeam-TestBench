@@ -82,8 +82,19 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
   const systemVars = useMemo(() => variables.filter(v => v.isSystem), [variables]);
   const customVars = useMemo(() => variables.filter(v => !v.isSystem), [variables]);
 
+  const isMac = useMemo(() => typeof navigator !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.userAgent), []);
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+      e.preventDefault();
+      if (!isRunning && prompt.trim()) {
+        onRunTest();
+      }
+    }
+  };
+
   return (
-    <div className="flex-1 flex flex-col h-full relative">
+    <div className="flex-1 flex flex-col h-full relative group/composer">
       <div className="p-3 border-b border-gray-900 flex justify-between items-center bg-cyber-black">
         <div className="flex items-center gap-2">
             <Terminal size={16} className="text-cyber-muted" />
@@ -109,7 +120,7 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
                 >
                    <Wand2 size={12} /> {isAugmenting ? 'PROCESSING...' : 'AI AUGMENT'}
                 </button>
-                <div className="absolute right-0 top-full mt-1 w-48 bg-cyber-black border border-gray-800 rounded shadow-[0_0_20px_rgba(0,0,0,0.8)] hidden group-hover:block z-20 backdrop-blur-xl">
+                <div className="absolute right-0 top-full mt-1 w-48 bg-cyber-black border border-gray-800 rounded shadow-[0_0_20px_rgba(0,0,0,0.8)] hidden group-hover:block group-focus-within:block z-20 backdrop-blur-xl">
                     <button 
                         onClick={() => handleAugment('obfuscate')} 
                         className="block w-full text-left px-4 py-3 text-xs hover:bg-cyber-lime hover:text-black text-gray-300 transition-colors border-b border-gray-900"
@@ -141,7 +152,7 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
                 >
                    + VARS
                 </button>
-                <div className="absolute right-0 top-full mt-1 w-64 bg-cyber-black border border-gray-800 rounded shadow-2xl hidden group-hover:block z-20 max-h-80 overflow-y-auto backdrop-blur-xl">
+                <div className="absolute right-0 top-full mt-1 w-64 bg-cyber-black border border-gray-800 rounded shadow-2xl hidden group-hover:block group-focus-within:block z-20 max-h-80 overflow-y-auto backdrop-blur-xl">
                     {systemVars.length > 0 && (
                         <div className="bg-gray-900/90 px-4 py-2 border-b border-gray-800 sticky top-0 z-10">
                         <span className="text-[10px] font-bold text-cyber-muted uppercase flex items-center gap-1 tracking-widest">
@@ -203,6 +214,7 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
             ref={setTextAreaRef}
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
+            onKeyDown={handleKeyDown}
             placeholder="// Enter your adversarial prompt here..."
             aria-label="Adversarial prompt input"
             aria-describedby="char-counter"
@@ -252,11 +264,16 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
                 ? 'bg-gray-800 text-gray-500 cursor-not-allowed' 
                 : 'bg-cyber-lime text-black hover:bg-[#c0ff00] hover:shadow-[0_0_20px_rgba(211,253,80,0.4)]'
             }`}
-            title="Simulate this attack against the safety filter"
+            title={`Simulate this attack (${isMac ? '⌘↵' : 'Ctrl+Enter'})`}
         >
             <span className="relative z-10 flex items-center gap-2">
                 <Play size={16} fill="currentColor" />
                 {isRunning ? 'SIMULATING...' : 'INITIATE TEST'}
+                {!isRunning && (
+                    <span className="text-[10px] font-mono opacity-0 group-focus-within/composer:opacity-60 transition-opacity ml-1 select-none">
+                        ({isMac ? '⌘↵' : 'Ctrl+Enter'})
+                    </span>
+                )}
             </span>
         </button>
       </div>
