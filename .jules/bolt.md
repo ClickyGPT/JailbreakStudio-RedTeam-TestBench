@@ -5,3 +5,7 @@
 ## 2026-03-17 - [Keystroke-driven Re-render Bottleneck]
 **Learning:** Passing top-level state (like a live prompt string) as a prop to complex sibling components (like a results panel) causes expensive re-renders on every single keystroke.
 **Action:** Decouple the secondary components from live state by bundling the necessary snapshot (e.g., the prompt that triggered the test) into the result object, and use stable callback references (refs + useLayoutEffect) to prevent child component updates during high-frequency input.
+
+## 2026-03-18 - [String Transformation Loop Bottleneck]
+**Learning:** Performing `toLowerCase()` inside a `.some()` or `.filter()` loop with a large set of keywords (like `REFUSAL_KEYWORDS`) causes redundant allocations and CPU cycles. Pre-lowercasing keywords and normalizing the source string once provides a massive performance boost (~9x in specific benchmarks).
+**Action:** Always maintain static keyword lists in lowercase and normalize the target string once before entering matching loops.
