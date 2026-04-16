@@ -29,6 +29,10 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
     }
   });
 
+  const isMac = useMemo(() =>
+    typeof window !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.userAgent),
+  []);
+
   useEffect(() => {
     localStorage.setItem('redteam_variables', JSON.stringify(variables));
   }, [variables]);
@@ -203,18 +207,34 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
             ref={setTextAreaRef}
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
+            onKeyDown={(e) => {
+                if (e.key === 'Enter' && (isMac ? e.metaKey : e.ctrlKey)) {
+                    e.preventDefault();
+                    if (!isRunning && prompt.trim()) {
+                        onRunTest();
+                    }
+                }
+            }}
             placeholder="// Enter your adversarial prompt here..."
             aria-label="Adversarial prompt input"
-            aria-describedby="char-counter"
+            aria-describedby="char-counter shortcut-hint"
             className="w-full h-full bg-transparent text-gray-200 font-mono p-6 resize-none focus:outline-none focus:ring-0 text-sm leading-relaxed placeholder-gray-800 selection:bg-cyber-lime selection:text-black"
             spellCheck={false}
         />
 
-        <div
-            id="char-counter"
-            className="absolute bottom-4 right-6 text-[10px] font-mono text-cyber-muted pointer-events-none select-none opacity-50 group-focus-within:opacity-100 transition-opacity"
-        >
-            {prompt.length.toLocaleString()} CHARS
+        <div className="absolute bottom-4 left-6 right-6 flex justify-between items-center pointer-events-none select-none">
+            <div
+                id="shortcut-hint"
+                className="text-[10px] font-mono text-cyber-muted opacity-0 group-focus-within:opacity-50 transition-opacity flex items-center gap-1"
+            >
+                <Play size={10} /> {isMac ? '⌘' : 'CTRL'}+ENTER TO RUN
+            </div>
+            <div
+                id="char-counter"
+                className="text-[10px] font-mono text-cyber-muted opacity-50 group-focus-within:opacity-100 transition-opacity"
+            >
+                {prompt.length.toLocaleString()} CHARS
+            </div>
         </div>
         
         {isAugmenting && (
@@ -252,7 +272,7 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
                 ? 'bg-gray-800 text-gray-500 cursor-not-allowed' 
                 : 'bg-cyber-lime text-black hover:bg-[#c0ff00] hover:shadow-[0_0_20px_rgba(211,253,80,0.4)]'
             }`}
-            title="Simulate this attack against the safety filter"
+            title={`Simulate this attack against the safety filter (${isMac ? '⌘' : 'Ctrl+'}Enter)`}
         >
             <span className="relative z-10 flex items-center gap-2">
                 <Play size={16} fill="currentColor" />
