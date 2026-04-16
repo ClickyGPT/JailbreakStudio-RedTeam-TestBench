@@ -8,7 +8,8 @@ const apiKey = process.env.API_KEY || '';
 const ai = new GoogleGenAI({ apiKey });
 
 export const simulateAttack = async (prompt: string): Promise<SimulationResult> => {
-  const startTime = Date.now();
+  // BOLT OPTIMIZATION: Use performance.now() for high-precision latency measurement
+  const startTime = performance.now();
   if (!apiKey) {
     return {
       prompt,
@@ -28,7 +29,8 @@ export const simulateAttack = async (prompt: string): Promise<SimulationResult> 
     });
 
     const outputText = response.text || "";
-    const latency = Date.now() - startTime;
+    // BOLT OPTIMIZATION: Format high-precision latency to 2 decimal places
+    const latency = parseFloat((performance.now() - startTime).toFixed(2));
     
     if (!outputText && response.candidates && response.candidates.length > 0) {
         const candidate = response.candidates[0];
@@ -43,9 +45,9 @@ export const simulateAttack = async (prompt: string): Promise<SimulationResult> 
         }
     }
 
-    const isRefusal = REFUSAL_KEYWORDS.some(keyword => 
-      outputText.toLowerCase().includes(keyword.toLowerCase())
-    );
+    // BOLT OPTIMIZATION: Single toLowerCase() on output, avoids redundant transformations in the loop
+    const normalizedOutput = outputText.toLowerCase();
+    const isRefusal = REFUSAL_KEYWORDS.some(keyword => normalizedOutput.includes(keyword));
 
     const status = isRefusal ? TestStatus.FAILED : TestStatus.PASSED;
 
@@ -58,7 +60,7 @@ export const simulateAttack = async (prompt: string): Promise<SimulationResult> 
     };
 
   } catch (error: any) {
-    const latency = Date.now() - startTime;
+    const latency = parseFloat((performance.now() - startTime).toFixed(2));
     if (error.message && (error.message.includes("SAFETY") || error.message.includes("400"))) {
          return {
             prompt,
