@@ -54,6 +54,15 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
     setIsAugmenting(false);
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+      e.preventDefault();
+      if (!isRunning && prompt.trim()) {
+        onRunTest();
+      }
+    }
+  };
+
   const handleCopy = () => {
     if (!prompt) return;
     if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -81,6 +90,13 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
   // BOLT OPTIMIZATION: Memoize variable filtering to avoid redundant array operations on every stroke.
   const systemVars = useMemo(() => variables.filter(v => v.isSystem), [variables]);
   const customVars = useMemo(() => variables.filter(v => !v.isSystem), [variables]);
+
+  const isMac = useMemo(() => {
+    if (typeof window === 'undefined') return false;
+    return /Mac|iPod|iPhone|iPad/.test(navigator.userAgent);
+  }, []);
+
+  const shortcutLabel = isMac ? '(⌘↵)' : '(Ctrl+Enter)';
 
   return (
     <div className="flex-1 flex flex-col h-full relative">
@@ -203,6 +219,7 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
             ref={setTextAreaRef}
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
+            onKeyDown={handleKeyDown}
             placeholder="// Enter your adversarial prompt here..."
             aria-label="Adversarial prompt input"
             aria-describedby="char-counter"
@@ -211,10 +228,13 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
         />
 
         <div
-            id="char-counter"
-            className="absolute bottom-4 right-6 text-[10px] font-mono text-cyber-muted pointer-events-none select-none opacity-50 group-focus-within:opacity-100 transition-opacity"
+          id="char-counter"
+          className="absolute bottom-4 right-6 text-[10px] font-mono text-cyber-muted pointer-events-none select-none opacity-50 group-focus-within:opacity-100 transition-opacity flex items-center gap-3"
         >
-            {prompt.length.toLocaleString()} CHARS
+          <span className="opacity-0 group-focus-within:opacity-100 transition-opacity text-cyber-lime/70 font-bold">
+            INITIATE {shortcutLabel}
+          </span>
+          <span>{prompt.length.toLocaleString()} CHARS</span>
         </div>
         
         {isAugmenting && (
@@ -252,7 +272,7 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
                 ? 'bg-gray-800 text-gray-500 cursor-not-allowed' 
                 : 'bg-cyber-lime text-black hover:bg-[#c0ff00] hover:shadow-[0_0_20px_rgba(211,253,80,0.4)]'
             }`}
-            title="Simulate this attack against the safety filter"
+            title={`Simulate this attack against the safety filter ${shortcutLabel}`}
         >
             <span className="relative z-10 flex items-center gap-2">
                 <Play size={16} fill="currentColor" />
