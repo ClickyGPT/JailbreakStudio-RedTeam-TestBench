@@ -105,7 +105,11 @@ const VariableManagerModal: React.FC<VariableManagerModalProps> = ({ variables, 
           <h3 className="font-mono text-white font-bold flex items-center gap-2">
             <Tag size={16} className="text-cyber-blue"/> MANAGE VARIABLES
           </h3>
-          <button onClick={onClose} className="text-gray-500 hover:text-white">
+          <button
+            onClick={onClose}
+            aria-label="Close modal"
+            className="text-gray-500 hover:text-white focus-visible:ring-1 focus-visible:ring-cyber-blue/50 focus-visible:outline-none"
+          >
             <X size={20} />
           </button>
         </div>
@@ -132,7 +136,8 @@ const VariableManagerModal: React.FC<VariableManagerModalProps> = ({ variables, 
                 <button 
                     onClick={handleAdd}
                     disabled={!newName.trim()}
-                    className="bg-cyber-blue/10 border border-cyber-blue/30 text-cyber-blue py-2 rounded text-xs font-bold font-mono hover:bg-cyber-blue/20 flex items-center justify-center gap-2 disabled:opacity-50"
+                    aria-label="Add new variable"
+                    className="bg-cyber-blue/10 border border-cyber-blue/30 text-cyber-blue py-2 rounded text-xs font-bold font-mono hover:bg-cyber-blue/20 flex items-center justify-center gap-2 disabled:opacity-50 focus-visible:ring-1 focus-visible:ring-cyber-blue/50 focus-visible:outline-none"
                 >
                     <Plus size={14} /> ADD VARIABLE
                 </button>
@@ -158,7 +163,10 @@ const VariableManagerModal: React.FC<VariableManagerModalProps> = ({ variables, 
                         onDragOver={handleDragOver}
                         className="flex items-center gap-2 p-2 bg-black/40 border border-gray-800 rounded group transition-colors hover:border-gray-600 cursor-move"
                     >
-                        <div className="text-gray-600 hover:text-gray-400 cursor-grab active:cursor-grabbing px-1">
+                        <div
+                            aria-label="Drag to reorder"
+                            className="text-gray-600 hover:text-gray-400 cursor-grab active:cursor-grabbing px-1"
+                        >
                             <GripVertical size={14} />
                         </div>
                         
@@ -187,8 +195,9 @@ const VariableManagerModal: React.FC<VariableManagerModalProps> = ({ variables, 
                             {!v.isSystem ? (
                                 <button 
                                     onClick={() => handleDelete(v.id)}
-                                    className="text-gray-600 hover:text-cyber-red p-1 opacity-50 group-hover:opacity-100 transition-opacity"
-                                    title="Delete Variable"
+                                    aria-label="Delete variable"
+                                    className="text-gray-600 hover:text-cyber-red p-1 opacity-50 group-hover:opacity-100 transition-opacity focus-visible:ring-1 focus-visible:ring-cyber-red/50 focus-visible:outline-none"
+                                    title="Delete variable"
                                 >
                                     <Trash2 size={14} />
                                 </button>
@@ -205,13 +214,15 @@ const VariableManagerModal: React.FC<VariableManagerModalProps> = ({ variables, 
         <div className="p-4 border-t border-gray-700 bg-cyber-black flex justify-end gap-3">
             <button
               onClick={onClose}
-              className="px-4 py-2 text-xs font-mono text-gray-400 hover:text-white"
+              aria-label="Cancel and close modal"
+              className="px-4 py-2 text-xs font-mono text-gray-400 hover:text-white focus-visible:ring-1 focus-visible:ring-cyber-blue/50 focus-visible:outline-none"
             >
               CANCEL
             </button>
             <button
               onClick={handleSaveAll}
-              className="bg-cyber-blue text-black px-6 py-2 rounded text-xs font-bold font-mono hover:bg-cyan-400 flex items-center gap-2"
+              aria-label="Save changes and close modal"
+              className="bg-cyber-blue text-black px-6 py-2 rounded text-xs font-bold font-mono hover:bg-cyan-400 flex items-center gap-2 focus-visible:ring-1 focus-visible:ring-cyber-blue/50 focus-visible:outline-none"
             >
               <Save size={14} />
               SAVE CHANGES
