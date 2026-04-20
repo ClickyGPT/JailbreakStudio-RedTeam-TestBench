@@ -10,12 +10,19 @@ const RedTeamChat: React.FC = React.memo(() => {
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (scrollRef.current) {
         scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages, isOpen]);
+
+  useEffect(() => {
+    if (isOpen) {
+        inputRef.current?.focus();
+    }
+  }, [isOpen]);
 
   const handleSend = async () => {
     if (!input.trim() || isTyping) return;
@@ -41,9 +48,9 @@ const RedTeamChat: React.FC = React.memo(() => {
         <button 
             onClick={() => setIsOpen(true)}
             aria-label="Open Zephyr AI Chat"
-            className="fixed bottom-6 right-6 bg-cyber-lime text-black p-4 rounded-full shadow-[0_0_20px_rgba(211,253,80,0.4)] hover:scale-105 hover:bg-white transition-all z-50 flex items-center gap-2 font-bold font-sans tracking-wide"
+            className="fixed bottom-6 right-6 bg-cyber-lime text-black p-4 rounded-full shadow-[0_0_20px_rgba(211,253,80,0.4)] hover:scale-105 hover:bg-white focus-visible:scale-105 focus-visible:bg-white focus-visible:outline-none transition-all z-50 flex items-center gap-2 font-bold font-sans tracking-wide"
         >
-            <Bot size={24} />
+            <Bot size={24} aria-hidden="true" />
             <span className="hidden md:inline">ZEPHYR AI</span>
         </button>
     );
@@ -55,25 +62,30 @@ const RedTeamChat: React.FC = React.memo(() => {
         <div className="p-4 bg-cyber-lime flex justify-between items-center">
             <div className="flex items-center gap-3">
                 <div className="bg-black p-1.5 rounded-full">
-                    <Bot className="text-cyber-lime" size={18} />
+                    <Bot className="text-cyber-lime" size={18} aria-hidden="true" />
                 </div>
                 <span className="text-black font-black text-sm tracking-widest uppercase">RedTeam Consultant</span>
             </div>
             <button
                 onClick={() => setIsOpen(false)}
                 aria-label="Close Chat"
-                className="text-black hover:text-white transition-colors"
+                className="text-black hover:text-white focus-visible:text-white focus-visible:outline-none transition-colors"
             >
-                <X size={20} />
+                <X size={20} aria-hidden="true" />
             </button>
         </div>
 
         {/* Messages */}
-        <div ref={scrollRef} className="flex-1 overflow-y-auto p-5 space-y-6 bg-[#0a0a0a]">
+        <div
+            ref={scrollRef}
+            className="flex-1 overflow-y-auto p-5 space-y-6 bg-[#0a0a0a]"
+            role="log"
+            aria-live="polite"
+        >
             {messages.map((m, i) => (
                 <div key={i} className={`flex gap-3 ${m.role === 'user' ? 'flex-row-reverse' : ''}`}>
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 border border-gray-800 ${m.role === 'user' ? 'bg-gray-800' : 'bg-black text-cyber-lime'}`}>
-                        {m.role === 'user' ? <User size={14} /> : <Bot size={14} />}
+                        {m.role === 'user' ? <User size={14} aria-hidden="true" /> : <Bot size={14} aria-hidden="true" />}
                     </div>
                     <div className={`max-w-[80%] p-3 rounded-lg text-sm leading-relaxed ${
                         m.role === 'user' 
@@ -87,7 +99,7 @@ const RedTeamChat: React.FC = React.memo(() => {
             {isTyping && (
                 <div className="flex gap-3">
                     <div className="w-8 h-8 rounded-full bg-black border border-gray-800 text-cyber-lime flex items-center justify-center shrink-0">
-                        <Bot size={14} />
+                        <Bot size={14} aria-hidden="true" />
                     </div>
                     <div className="bg-cyber-lime/5 border border-cyber-lime/10 p-4 rounded-lg flex gap-1 items-center">
                         <span className="w-1.5 h-1.5 bg-cyber-lime rounded-full animate-bounce"></span>
@@ -101,19 +113,21 @@ const RedTeamChat: React.FC = React.memo(() => {
         {/* Input */}
         <div className="p-4 bg-cyber-black border-t border-gray-900 flex gap-2">
             <input 
+                ref={inputRef}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                 placeholder="Query RedTeam Database..."
+                aria-label="Chat message"
                 className="flex-1 bg-gray-900 border border-gray-800 rounded px-4 py-3 text-sm text-white focus:outline-none focus:border-cyber-lime focus:bg-black transition-colors font-mono"
             />
             <button 
                 onClick={handleSend}
                 disabled={isTyping || !input.trim()}
                 aria-label="Send message"
-                className="bg-cyber-lime text-black p-3 rounded hover:bg-white transition-colors disabled:opacity-50 disabled:bg-gray-800 disabled:text-gray-500"
+                className="bg-cyber-lime text-black p-3 rounded hover:bg-white focus-visible:bg-white focus-visible:outline-none transition-colors disabled:opacity-50 disabled:bg-gray-800 disabled:text-gray-500"
             >
-                <Send size={18} />
+                <Send size={18} aria-hidden="true" />
             </button>
         </div>
     </div>
