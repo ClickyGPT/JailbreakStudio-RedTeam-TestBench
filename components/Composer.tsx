@@ -217,6 +217,15 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
             {prompt.length.toLocaleString()} CHARS
         </div>
         
+        {/* Character Counter */}
+        <div
+            id="char-counter"
+            aria-live="polite"
+            className="absolute bottom-4 right-6 text-[10px] font-mono text-gray-600 pointer-events-none select-none tracking-widest uppercase"
+        >
+            {prompt.length.toLocaleString()} chars
+        </div>
+
         {isAugmenting && (
             <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-10">
                 <RefreshCw className="animate-spin text-cyber-lime w-8 h-8" />
