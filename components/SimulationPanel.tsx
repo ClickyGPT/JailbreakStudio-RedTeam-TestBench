@@ -12,6 +12,14 @@ const SimulationPanel: React.FC<SimulationPanelProps> = React.memo(({ result, is
   const [analysis, setAnalysis] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
+  // BOLT OPTIMIZATION: Reset analysis state during the render phase when the result changes.
+  // This avoids an extra useEffect-driven re-render cycle.
+  const [prevResult, setPrevResult] = useState(result);
+  if (result !== prevResult) {
+    setPrevResult(result);
+    setAnalysis(null);
+  }
+
   const handleAnalyze = async () => {
     if (!result) return;
     setIsAnalyzing(true);
@@ -19,10 +27,6 @@ const SimulationPanel: React.FC<SimulationPanelProps> = React.memo(({ result, is
     setAnalysis(analysisText);
     setIsAnalyzing(false);
   };
-
-  React.useEffect(() => {
-    setAnalysis(null);
-  }, [result]);
 
   if (isRunning) {
     return (
