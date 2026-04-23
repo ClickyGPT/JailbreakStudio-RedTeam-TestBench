@@ -8,7 +8,8 @@ const apiKey = process.env.API_KEY || '';
 const ai = new GoogleGenAI({ apiKey });
 
 export const simulateAttack = async (prompt: string): Promise<SimulationResult> => {
-  const startTime = Date.now();
+  // BOLT OPTIMIZATION: Use high-precision timing to track model latency more accurately.
+  const startTime = performance.now();
   if (!apiKey) {
     return {
       prompt,
@@ -28,7 +29,9 @@ export const simulateAttack = async (prompt: string): Promise<SimulationResult> 
     });
 
     const outputText = response.text || "";
-    const latency = Date.now() - startTime;
+    // High-precision latency calculation
+    const rawLatency = performance.now() - startTime;
+    const latency = parseFloat(rawLatency.toFixed(2));
     
     if (!outputText && response.candidates && response.candidates.length > 0) {
         const candidate = response.candidates[0];
@@ -43,8 +46,11 @@ export const simulateAttack = async (prompt: string): Promise<SimulationResult> 
         }
     }
 
+    // BOLT OPTIMIZATION: Single lowercase transformation for the entire output
+    // to improve matching performance with pre-lowercased keywords.
+    const lowerOutput = outputText.toLowerCase();
     const isRefusal = REFUSAL_KEYWORDS.some(keyword => 
-      outputText.toLowerCase().includes(keyword.toLowerCase())
+      lowerOutput.includes(keyword)
     );
 
     const status = isRefusal ? TestStatus.FAILED : TestStatus.PASSED;
@@ -58,7 +64,8 @@ export const simulateAttack = async (prompt: string): Promise<SimulationResult> 
     };
 
   } catch (error: any) {
-    const latency = Date.now() - startTime;
+    const rawLatency = performance.now() - startTime;
+    const latency = parseFloat(rawLatency.toFixed(2));
     if (error.message && (error.message.includes("SAFETY") || error.message.includes("400"))) {
          return {
             prompt,
