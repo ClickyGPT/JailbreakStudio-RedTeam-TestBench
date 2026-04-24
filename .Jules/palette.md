@@ -5,3 +5,7 @@
 ## 2025-05-15 - [Environment Dependencies for UI Rendering]
 **Learning:** Environment variables (like `GEMINI_API_KEY`) being required at initialization time can prevent even basic UI tests from running if not mocked or provided in a `.env.local`.
 **Action:** When a repository fails to render in dev mode, check for module-level initialization of third-party SDKs that might be crashing the app due to missing keys.
+
+## 2025-05-16 - [Keyboard Accessibility for Hover Dropdowns]
+**Learning:** Dropdowns that only use `group-hover` are inaccessible to keyboard users. Using `group-focus-within:block` along with a focus ring on the trigger element ensures the menu is both reachable and visually indicated when navigating via keyboard.
+**Action:** Always combine `group-focus-within` with `group-hover` for dropdown menus to support both mouse and keyboard interactions.
