@@ -5,3 +5,7 @@
 ## 2026-03-17 - [Keystroke-driven Re-render Bottleneck]
 **Learning:** Passing top-level state (like a live prompt string) as a prop to complex sibling components (like a results panel) causes expensive re-renders on every single keystroke.
 **Action:** Decouple the secondary components from live state by bundling the necessary snapshot (e.g., the prompt that triggered the test) into the result object, and use stable callback references (refs + useLayoutEffect) to prevent child component updates during high-frequency input.
+
+## 2026-03-20 - [Refusal Detection Hot Path Optimization]
+**Learning:** Using `some()` with `toLowerCase()` and `includes()` in a loop over a large model output (100KB+) for dozens of keywords creates significant overhead due to redundant full-text scans and string allocations.
+**Action:** Pre-compile a single case-insensitive `RegExp` with all keywords joined by pipes (`|`) to perform the check in a single pass without extra allocations.
