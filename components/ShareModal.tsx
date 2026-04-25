@@ -36,14 +36,16 @@ const ShareModal: React.FC<ShareModalProps> = ({ shareUrl, onClose }) => {
                 <div className="flex justify-center gap-4">
                     <button 
                         onClick={() => setVoted('up')}
-                        aria-label="Vote Up"
+                        aria-label="Vote up"
+                        title="Vote up"
                         className={`p-4 rounded-full border transition-all ${voted === 'up' ? 'bg-cyber-lime text-black border-cyber-lime' : 'border-gray-700 hover:border-cyber-lime text-gray-500 hover:text-cyber-lime'}`}
                     >
                         <ThumbsUp size={24} />
                     </button>
                     <button 
                         onClick={() => setVoted('down')}
-                        aria-label="Vote Down"
+                        aria-label="Vote down"
+                        title="Vote down"
                         className={`p-4 rounded-full border transition-all ${voted === 'down' ? 'bg-cyber-red text-black border-cyber-red' : 'border-gray-700 hover:border-cyber-red text-gray-500 hover:text-cyber-red'}`}
                     >
                         <ThumbsDown size={24} />
