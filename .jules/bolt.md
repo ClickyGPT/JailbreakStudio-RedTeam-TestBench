@@ -5,3 +5,7 @@
 ## 2026-03-17 - [Keystroke-driven Re-render Bottleneck]
 **Learning:** Passing top-level state (like a live prompt string) as a prop to complex sibling components (like a results panel) causes expensive re-renders on every single keystroke.
 **Action:** Decouple the secondary components from live state by bundling the necessary snapshot (e.g., the prompt that triggered the test) into the result object, and use stable callback references (refs + useLayoutEffect) to prevent child component updates during high-frequency input.
+
+## 2026-03-20 - [Efficient Keyword Detection on Large Strings]
+**Learning:** Using `Array.some()` with `toLowerCase().includes()` for keyword detection on large model outputs (100KB+) is a significant bottleneck due to redundant string allocations and N*M scans.
+**Action:** Pre-compile a case-insensitive `RegExp` from keywords to achieve ~5-6x faster detection and avoid repeated string transformations in the simulation hot path.
