@@ -45,7 +45,12 @@ const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({ template, onS
           <h3 className="font-mono text-white font-bold flex items-center gap-2">
             {template ? 'EDIT VECTOR' : 'NEW CUSTOM VECTOR'}
           </h3>
-          <button onClick={onClose} className="text-gray-500 hover:text-white">
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-white transition-colors"
+            aria-label="Close template editor"
+            title="Close"
+          >
             <X size={20} />
           </button>
         </div>

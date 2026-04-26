@@ -105,7 +105,12 @@ const VariableManagerModal: React.FC<VariableManagerModalProps> = ({ variables, 
           <h3 className="font-mono text-white font-bold flex items-center gap-2">
             <Tag size={16} className="text-cyber-blue"/> MANAGE VARIABLES
           </h3>
-          <button onClick={onClose} className="text-gray-500 hover:text-white">
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-white transition-colors"
+            aria-label="Close variable manager"
+            title="Close"
+          >
             <X size={20} />
           </button>
         </div>
@@ -187,8 +192,9 @@ const VariableManagerModal: React.FC<VariableManagerModalProps> = ({ variables, 
                             {!v.isSystem ? (
                                 <button 
                                     onClick={() => handleDelete(v.id)}
-                                    className="text-gray-600 hover:text-cyber-red p-1 opacity-50 group-hover:opacity-100 transition-opacity"
-                                    title="Delete Variable"
+                                    className="text-gray-600 hover:text-cyber-red p-1 opacity-50 group-hover:opacity-100 transition-opacity focus:opacity-100 outline-none"
+                                    aria-label={`Delete variable ${v.name}`}
+                                    title="Delete variable"
                                 >
                                     <Trash2 size={14} />
                                 </button>
