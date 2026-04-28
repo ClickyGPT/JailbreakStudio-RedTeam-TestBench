@@ -18,6 +18,20 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
   const [isAugmenting, setIsAugmenting] = useState(false);
   const [showVarManager, setShowVarManager] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
+  const [isMac, setIsMac] = useState(false);
+
+  useEffect(() => {
+    setIsMac(/Mac|iPod|iPhone|iPad/.test(navigator.userAgent));
+  }, []);
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if ((isMac ? e.metaKey : e.ctrlKey) && e.key === 'Enter') {
+      if (!isRunning && prompt.trim()) {
+        e.preventDefault();
+        onRunTest();
+      }
+    }
+  };
 
   // Variables State with Persistence
   const [variables, setVariables] = useState<PromptVariable[]>(() => {
@@ -203,6 +217,7 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
             ref={setTextAreaRef}
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
+            onKeyDown={handleKeyDown}
             placeholder="// Enter your adversarial prompt here..."
             aria-label="Adversarial prompt input"
             aria-describedby="char-counter"
@@ -247,16 +262,17 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
         <button
             onClick={onRunTest}
             disabled={isRunning || !prompt.trim()}
-            className={`flex items-center gap-2 px-8 py-3 text-sm font-bold font-sans tracking-wider transition-all duration-300 relative overflow-hidden group ${
+            className={`flex items-center gap-2 px-8 py-3 text-sm font-bold font-sans tracking-wider transition-all duration-300 relative overflow-hidden group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyber-lime focus-visible:ring-offset-2 focus-visible:ring-offset-black ${
                 isRunning 
                 ? 'bg-gray-800 text-gray-500 cursor-not-allowed' 
                 : 'bg-cyber-lime text-black hover:bg-[#c0ff00] hover:shadow-[0_0_20px_rgba(211,253,80,0.4)]'
             }`}
-            title="Simulate this attack against the safety filter"
+            title={`Simulate this attack against the safety filter (${isMac ? '⌘' : 'Ctrl+'}Enter)`}
         >
             <span className="relative z-10 flex items-center gap-2">
                 <Play size={16} fill="currentColor" />
                 {isRunning ? 'SIMULATING...' : 'INITIATE TEST'}
+                {!isRunning && <span className="text-[10px] opacity-50 font-mono hidden group-hover:inline group-focus-visible:inline ml-1">({isMac ? '⌘' : 'Ctrl+'}⏎)</span>}
             </span>
         </button>
       </div>
