@@ -61,7 +61,8 @@ const RedTeamChat: React.FC = React.memo(() => {
             </div>
             <button
                 onClick={() => setIsOpen(false)}
-                aria-label="Close Chat"
+                aria-label="Close chat"
+                title="Close chat"
                 className="text-black hover:text-white transition-colors"
             >
                 <X size={20} />
@@ -111,6 +112,7 @@ const RedTeamChat: React.FC = React.memo(() => {
                 onClick={handleSend}
                 disabled={isTyping || !input.trim()}
                 aria-label="Send message"
+                title="Send message"
                 className="bg-cyber-lime text-black p-3 rounded hover:bg-white transition-colors disabled:opacity-50 disabled:bg-gray-800 disabled:text-gray-500"
             >
                 <Send size={18} />
