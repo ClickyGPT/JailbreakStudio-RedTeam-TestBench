@@ -5,3 +5,7 @@
 ## 2026-03-17 - [Keystroke-driven Re-render Bottleneck]
 **Learning:** Passing top-level state (like a live prompt string) as a prop to complex sibling components (like a results panel) causes expensive re-renders on every single keystroke.
 **Action:** Decouple the secondary components from live state by bundling the necessary snapshot (e.g., the prompt that triggered the test) into the result object, and use stable callback references (refs + useLayoutEffect) to prevent child component updates during high-frequency input.
+
+## 2025-01-24 - [RegExp-based Refusal Detection]
+**Learning:** Replacing an iterative `.some()` loop that performs repeated `.toLowerCase()` and `.includes()` calls with a pre-compiled, case-insensitive `RegExp` provides a significant performance boost (up to 514x on very large strings).
+**Action:** Use pre-compiled regular expressions for keyword matching in high-frequency or large-input code paths, ensuring to escape special characters and handle empty lists.
