@@ -5,3 +5,7 @@
 ## 2025-05-15 - [Environment Dependencies for UI Rendering]
 **Learning:** Environment variables (like `GEMINI_API_KEY`) being required at initialization time can prevent even basic UI tests from running if not mocked or provided in a `.env.local`.
 **Action:** When a repository fails to render in dev mode, check for module-level initialization of third-party SDKs that might be crashing the app due to missing keys.
+
+## 2026-05-04 - [Keyboard Accessibility for Hover Dropdowns]
+**Learning:** Hover-only dropdown menus (common in "Studio" type interfaces for space-saving) are inaccessible to keyboard users and often lack visual focus indicators.
+**Action:** Wrap triggers and menus in a Tailwind `group` container. Use `group-focus-within:block` on the menu and ensure the trigger has a visible `:focus-visible` state. This maintains the "clean" hover-first UI while ensuring full keyboard parity.
