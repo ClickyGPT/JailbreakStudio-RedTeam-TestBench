@@ -17,6 +17,11 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
   const [textAreaRef, setTextAreaRef] = useState<HTMLTextAreaElement | null>(null);
   const [isAugmenting, setIsAugmenting] = useState(false);
   const [showVarManager, setShowVarManager] = useState(false);
+  const [isMac, setIsMac] = useState(false);
+
+  useEffect(() => {
+    setIsMac(/Mac|iPod|iPhone|iPad/.test(navigator.userAgent));
+  }, []);
   const [isCopied, setIsCopied] = useState(false);
 
   // Variables State with Persistence
@@ -52,6 +57,18 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
     const newPrompt = await augmentPrompt(prompt, type);
     setPrompt(newPrompt);
     setIsAugmenting(false);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    const isEnter = e.key === 'Enter';
+    const isModifier = isMac ? e.metaKey : e.ctrlKey;
+
+    if (isEnter && isModifier) {
+      e.preventDefault();
+      if (!isRunning && prompt.trim()) {
+        onRunTest();
+      }
+    }
   };
 
   const handleCopy = () => {
@@ -203,6 +220,7 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
             ref={setTextAreaRef}
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
+            onKeyDown={handleKeyDown}
             placeholder="// Enter your adversarial prompt here..."
             aria-label="Adversarial prompt input"
             aria-describedby="char-counter"
@@ -252,11 +270,16 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
                 ? 'bg-gray-800 text-gray-500 cursor-not-allowed' 
                 : 'bg-cyber-lime text-black hover:bg-[#c0ff00] hover:shadow-[0_0_20px_rgba(211,253,80,0.4)]'
             }`}
-            title="Simulate this attack against the safety filter"
+            title={`Simulate this attack against the safety filter ${isMac ? '(⌘↵)' : '(Ctrl+Enter)'}`}
         >
             <span className="relative z-10 flex items-center gap-2">
                 <Play size={16} fill="currentColor" />
                 {isRunning ? 'SIMULATING...' : 'INITIATE TEST'}
+                {!isRunning && (
+                    <span className="text-[10px] opacity-60 font-mono hidden group-hover:inline group-focus-visible:inline ml-1">
+                        {isMac ? '(⌘↵)' : '(CTRL+ENTER)'}
+                    </span>
+                )}
             </span>
         </button>
       </div>
