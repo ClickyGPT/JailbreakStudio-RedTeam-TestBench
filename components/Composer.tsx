@@ -16,6 +16,11 @@ interface ComposerProps {
 const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRunTest, isRunning, onShare }) => {
   const [textAreaRef, setTextAreaRef] = useState<HTMLTextAreaElement | null>(null);
   const [isAugmenting, setIsAugmenting] = useState(false);
+  const [isMac, setIsMac] = useState(false);
+
+  useEffect(() => {
+    setIsMac(/Mac|iPod|iPhone|iPad/.test(navigator.userAgent));
+  }, []);
   const [showVarManager, setShowVarManager] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
 
@@ -52,6 +57,15 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
     const newPrompt = await augmentPrompt(prompt, type);
     setPrompt(newPrompt);
     setIsAugmenting(false);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+      if (!isRunning && prompt.trim()) {
+        e.preventDefault();
+        onRunTest();
+      }
+    }
   };
 
   const handleCopy = () => {
@@ -203,6 +217,7 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
             ref={setTextAreaRef}
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
+            onKeyDown={handleKeyDown}
             placeholder="// Enter your adversarial prompt here..."
             aria-label="Adversarial prompt input"
             aria-describedby="char-counter"
@@ -252,11 +267,14 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
                 ? 'bg-gray-800 text-gray-500 cursor-not-allowed' 
                 : 'bg-cyber-lime text-black hover:bg-[#c0ff00] hover:shadow-[0_0_20px_rgba(211,253,80,0.4)]'
             }`}
-            title="Simulate this attack against the safety filter"
+            title={`Initiate Test (${isMac ? '⌘↵' : 'Ctrl+Enter'})`}
         >
             <span className="relative z-10 flex items-center gap-2">
                 <Play size={16} fill="currentColor" />
                 {isRunning ? 'SIMULATING...' : 'INITIATE TEST'}
+                <span className="hidden group-hover:inline group-focus-visible:inline text-[10px] opacity-60 ml-1">
+                    ({isMac ? '⌘↵' : 'Ctrl+Enter'})
+                </span>
             </span>
         </button>
       </div>
