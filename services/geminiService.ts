@@ -2,6 +2,16 @@ import { GoogleGenAI } from "@google/genai";
 import { REFUSAL_KEYWORDS } from '../constants';
 import { TestStatus, SimulationResult } from '../types';
 
+/**
+ * BOLT OPTIMIZATION: Pre-compiled regex for refusal detection.
+ * Using a single case-insensitive RegExp is significantly more performant than
+ * calling .toLowerCase().includes() in a loop for every simulation result.
+ * Safeguard: if REFUSAL_KEYWORDS is empty, match nothing ($.^).
+ */
+const REFUSAL_REGEX = REFUSAL_KEYWORDS.length > 0
+  ? new RegExp(REFUSAL_KEYWORDS.map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|'), 'i')
+  : /$.^/;
+
 // Use the environment variable for the API key
 const apiKey = process.env.API_KEY || '';
 
@@ -43,9 +53,8 @@ export const simulateAttack = async (prompt: string): Promise<SimulationResult> 
         }
     }
 
-    const isRefusal = REFUSAL_KEYWORDS.some(keyword => 
-      outputText.toLowerCase().includes(keyword.toLowerCase())
-    );
+    // BOLT OPTIMIZATION: Use pre-compiled regex for O(1) keyword scanning vs O(N*M) loop
+    const isRefusal = REFUSAL_REGEX.test(outputText);
 
     const status = isRefusal ? TestStatus.FAILED : TestStatus.PASSED;
 
