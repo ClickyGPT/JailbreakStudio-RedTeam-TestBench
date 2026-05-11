@@ -5,3 +5,7 @@
 ## 2026-03-17 - [Keystroke-driven Re-render Bottleneck]
 **Learning:** Passing top-level state (like a live prompt string) as a prop to complex sibling components (like a results panel) causes expensive re-renders on every single keystroke.
 **Action:** Decouple the secondary components from live state by bundling the necessary snapshot (e.g., the prompt that triggered the test) into the result object, and use stable callback references (refs + useLayoutEffect) to prevent child component updates during high-frequency input.
+
+## 2025-01-24 - [Inefficient Iterative String Matching]
+**Learning:** Using `.some()` with `.toLowerCase().includes()` over a large string and an array of keywords is highly inefficient as it re-processes the target string multiple times. A pre-compiled case-insensitive `RegExp` allows the engine to perform the match in a single pass.
+**Action:** Always prefer pre-compiled `RegExp` for keyword detection in hot paths or on large input strings.
