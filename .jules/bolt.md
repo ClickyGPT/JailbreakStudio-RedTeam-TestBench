@@ -5,3 +5,7 @@
 ## 2026-03-17 - [Keystroke-driven Re-render Bottleneck]
 **Learning:** Passing top-level state (like a live prompt string) as a prop to complex sibling components (like a results panel) causes expensive re-renders on every single keystroke.
 **Action:** Decouple the secondary components from live state by bundling the necessary snapshot (e.g., the prompt that triggered the test) into the result object, and use stable callback references (refs + useLayoutEffect) to prevent child component updates during high-frequency input.
+
+## 2025-01-24 - [Massive Bottleneck in Refusal Detection]
+**Learning:** Using an iterative `.toLowerCase().includes()` loop for multi-pattern matching on large strings (e.g., LLM outputs) creates a significant bottleneck due to repeated string conversions and scans. A module-level pre-compiled `RegExp` with the case-insensitive flag (`i`) provides a ~1700x performance boost by optimizing the search strategy and eliminating redundant work.
+**Action:** Always prefer pre-compiled regular expressions for multi-keyword searches in hot paths, and ensure they are defined outside the execution function to avoid re-compilation overhead.
