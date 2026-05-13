@@ -45,7 +45,12 @@ const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({ template, onS
           <h3 className="font-mono text-white font-bold flex items-center gap-2">
             {template ? 'EDIT VECTOR' : 'NEW CUSTOM VECTOR'}
           </h3>
-          <button onClick={onClose} className="text-gray-500 hover:text-white">
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-white transition-colors"
+            aria-label="Close modal"
+            title="Close modal"
+          >
             <X size={20} />
           </button>
         </div>
@@ -53,10 +58,14 @@ const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({ template, onS
         <form onSubmit={handleSubmit} className="flex-1 flex flex-col overflow-hidden">
           <div className="p-6 space-y-4 overflow-y-auto flex-1">
             <div className="space-y-1">
-              <label className="text-xs font-mono text-cyber-blue uppercase flex items-center gap-2">
+              <label
+                htmlFor="template-name"
+                className="text-xs font-mono text-cyber-blue uppercase flex items-center gap-2"
+              >
                 <FileText size={12} /> Template Name
               </label>
               <input
+                id="template-name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g., My Stealth Jailbreak"
@@ -66,10 +75,14 @@ const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({ template, onS
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs font-mono text-gray-500 uppercase flex items-center gap-2">
+              <label
+                htmlFor="template-desc"
+                className="text-xs font-mono text-gray-500 uppercase flex items-center gap-2"
+              >
                 <Info size={12} /> Description
               </label>
               <input
+                id="template-desc"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Short description of the strategy..."
@@ -78,10 +91,14 @@ const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({ template, onS
             </div>
 
             <div className="space-y-1 flex-1 flex flex-col">
-              <label className="text-xs font-mono text-gray-500 uppercase flex items-center gap-2">
+              <label
+                htmlFor="template-content"
+                className="text-xs font-mono text-gray-500 uppercase flex items-center gap-2"
+              >
                 <AlignLeft size={12} /> Prompt Content
               </label>
               <textarea
+                id="template-content"
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 placeholder="Enter the prompt text here. You can use [ROLE], [TARGET_QUERY], etc."
