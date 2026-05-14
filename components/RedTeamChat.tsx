@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { MessageSquare, X, Send, Bot, User } from 'lucide-react';
 import { chatWithExpert } from '../services/geminiService';
+import { useEscapeKey } from '../utils/useEscapeKey';
 
 const RedTeamChat: React.FC = React.memo(() => {
   const [isOpen, setIsOpen] = useState(false);
@@ -10,12 +11,21 @@ const RedTeamChat: React.FC = React.memo(() => {
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEscapeKey(() => setIsOpen(false), isOpen);
 
   useEffect(() => {
     if (scrollRef.current) {
         scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages, isOpen]);
+
+  useEffect(() => {
+    if (isOpen && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isOpen]);
 
   const handleSend = async () => {
     if (!input.trim() || isTyping) return;
@@ -69,7 +79,12 @@ const RedTeamChat: React.FC = React.memo(() => {
         </div>
 
         {/* Messages */}
-        <div ref={scrollRef} className="flex-1 overflow-y-auto p-5 space-y-6 bg-[#0a0a0a]">
+        <div
+          ref={scrollRef}
+          className="flex-1 overflow-y-auto p-5 space-y-6 bg-[#0a0a0a]"
+          role="log"
+          aria-live="polite"
+        >
             {messages.map((m, i) => (
                 <div key={i} className={`flex gap-3 ${m.role === 'user' ? 'flex-row-reverse' : ''}`}>
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 border border-gray-800 ${m.role === 'user' ? 'bg-gray-800' : 'bg-black text-cyber-lime'}`}>
@@ -101,10 +116,12 @@ const RedTeamChat: React.FC = React.memo(() => {
         {/* Input */}
         <div className="p-4 bg-cyber-black border-t border-gray-900 flex gap-2">
             <input 
+                ref={inputRef}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                 placeholder="Query RedTeam Database..."
+                aria-label="Chat message input"
                 className="flex-1 bg-gray-900 border border-gray-800 rounded px-4 py-3 text-sm text-white focus:outline-none focus:border-cyber-lime focus:bg-black transition-colors font-mono"
             />
             <button 
