@@ -100,12 +100,22 @@ const VariableManagerModal: React.FC<VariableManagerModalProps> = ({ variables, 
 
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[70] p-4 backdrop-blur-sm">
-      <div className="bg-cyber-gray border border-gray-700 w-full max-w-lg rounded-lg shadow-2xl overflow-hidden flex flex-col max-h-[80vh]">
+      <div
+        className="bg-cyber-gray border border-gray-700 w-full max-w-lg rounded-lg shadow-2xl overflow-hidden flex flex-col max-h-[80vh]"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="variable-manager-title"
+      >
         <div className="p-4 border-b border-gray-700 flex justify-between items-center bg-cyber-black">
-          <h3 className="font-mono text-white font-bold flex items-center gap-2">
+          <h3 id="variable-manager-title" className="font-mono text-white font-bold flex items-center gap-2">
             <Tag size={16} className="text-cyber-blue"/> MANAGE VARIABLES
           </h3>
-          <button onClick={onClose} className="text-gray-500 hover:text-white">
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-white"
+            aria-label="Close modal"
+            title="Close modal"
+          >
             <X size={20} />
           </button>
         </div>
@@ -120,12 +130,14 @@ const VariableManagerModal: React.FC<VariableManagerModalProps> = ({ variables, 
                         value={newName}
                         onChange={(e) => setNewName(e.target.value)}
                         placeholder="Name (e.g. [ATTACK])"
+                        aria-label="New variable name"
                         className="flex-1 bg-black border border-gray-700 rounded px-3 py-2 text-xs font-mono text-gray-300 focus:outline-none focus:border-cyber-blue"
                     />
                     <input 
                         value={newValue}
                         onChange={(e) => setNewValue(e.target.value)}
                         placeholder="Default Value / Description"
+                        aria-label="New variable value"
                         className="flex-1 bg-black border border-gray-700 rounded px-3 py-2 text-xs font-mono text-gray-300 focus:outline-none focus:border-cyber-blue"
                     />
                 </div>
@@ -171,6 +183,7 @@ const VariableManagerModal: React.FC<VariableManagerModalProps> = ({ variables, 
                                 onMouseDown={(e) => e.stopPropagation()} // Prevent drag start when interacting with input
                                 className={`bg-transparent border-b border-transparent focus:border-cyber-blue hover:border-gray-700 outline-none text-xs font-mono py-1 px-1 transition-colors ${v.isSystem ? 'text-gray-500 cursor-not-allowed' : 'text-cyber-green'}`}
                                 placeholder="[NAME]"
+                                aria-label="Edit variable name"
                                 title={v.isSystem ? "System variable name cannot be changed" : "Edit Name"}
                             />
                             <input 
@@ -179,6 +192,7 @@ const VariableManagerModal: React.FC<VariableManagerModalProps> = ({ variables, 
                                 onMouseDown={(e) => e.stopPropagation()} // Prevent drag start when interacting with input
                                 className="bg-transparent border-b border-transparent focus:border-cyber-blue hover:border-gray-700 outline-none text-[10px] text-gray-400 focus:text-gray-200 py-1 px-1 font-mono transition-colors"
                                 placeholder="Value..."
+                                aria-label="Edit variable value"
                                 title="Edit Default Value"
                             />
                         </div>
@@ -188,6 +202,7 @@ const VariableManagerModal: React.FC<VariableManagerModalProps> = ({ variables, 
                                 <button 
                                     onClick={() => handleDelete(v.id)}
                                     className="text-gray-600 hover:text-cyber-red p-1 opacity-50 group-hover:opacity-100 transition-opacity"
+                                    aria-label="Delete variable"
                                     title="Delete Variable"
                                 >
                                     <Trash2 size={14} />
