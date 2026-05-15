@@ -99,13 +99,22 @@ const VariableManagerModal: React.FC<VariableManagerModalProps> = ({ variables, 
   };
 
   return (
-    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[70] p-4 backdrop-blur-sm">
+    <div
+      className="fixed inset-0 bg-black/80 flex items-center justify-center z-[70] p-4 backdrop-blur-sm"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="variable-manager-title"
+    >
       <div className="bg-cyber-gray border border-gray-700 w-full max-w-lg rounded-lg shadow-2xl overflow-hidden flex flex-col max-h-[80vh]">
         <div className="p-4 border-b border-gray-700 flex justify-between items-center bg-cyber-black">
-          <h3 className="font-mono text-white font-bold flex items-center gap-2">
+          <h3 id="variable-manager-title" className="font-mono text-white font-bold flex items-center gap-2">
             <Tag size={16} className="text-cyber-blue"/> MANAGE VARIABLES
           </h3>
-          <button onClick={onClose} className="text-gray-500 hover:text-white">
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-white transition-colors"
+            aria-label="Close variable manager"
+          >
             <X size={20} />
           </button>
         </div>
@@ -120,19 +129,22 @@ const VariableManagerModal: React.FC<VariableManagerModalProps> = ({ variables, 
                         value={newName}
                         onChange={(e) => setNewName(e.target.value)}
                         placeholder="Name (e.g. [ATTACK])"
+                        aria-label="New variable name"
                         className="flex-1 bg-black border border-gray-700 rounded px-3 py-2 text-xs font-mono text-gray-300 focus:outline-none focus:border-cyber-blue"
                     />
                     <input 
                         value={newValue}
                         onChange={(e) => setNewValue(e.target.value)}
                         placeholder="Default Value / Description"
+                        aria-label="New variable value"
                         className="flex-1 bg-black border border-gray-700 rounded px-3 py-2 text-xs font-mono text-gray-300 focus:outline-none focus:border-cyber-blue"
                     />
                 </div>
                 <button 
                     onClick={handleAdd}
                     disabled={!newName.trim()}
-                    className="bg-cyber-blue/10 border border-cyber-blue/30 text-cyber-blue py-2 rounded text-xs font-bold font-mono hover:bg-cyber-blue/20 flex items-center justify-center gap-2 disabled:opacity-50"
+                    aria-label="Add variable"
+                    className="bg-cyber-blue/10 border border-cyber-blue/30 text-cyber-blue py-2 rounded text-xs font-bold font-mono hover:bg-cyber-blue/20 flex items-center justify-center gap-2 disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-cyber-blue outline-none"
                 >
                     <Plus size={14} /> ADD VARIABLE
                 </button>
@@ -171,6 +183,7 @@ const VariableManagerModal: React.FC<VariableManagerModalProps> = ({ variables, 
                                 onMouseDown={(e) => e.stopPropagation()} // Prevent drag start when interacting with input
                                 className={`bg-transparent border-b border-transparent focus:border-cyber-blue hover:border-gray-700 outline-none text-xs font-mono py-1 px-1 transition-colors ${v.isSystem ? 'text-gray-500 cursor-not-allowed' : 'text-cyber-green'}`}
                                 placeholder="[NAME]"
+                                aria-label={`Variable name: ${v.name}`}
                                 title={v.isSystem ? "System variable name cannot be changed" : "Edit Name"}
                             />
                             <input 
@@ -179,6 +192,7 @@ const VariableManagerModal: React.FC<VariableManagerModalProps> = ({ variables, 
                                 onMouseDown={(e) => e.stopPropagation()} // Prevent drag start when interacting with input
                                 className="bg-transparent border-b border-transparent focus:border-cyber-blue hover:border-gray-700 outline-none text-[10px] text-gray-400 focus:text-gray-200 py-1 px-1 font-mono transition-colors"
                                 placeholder="Value..."
+                                aria-label={`Variable value: ${v.value}`}
                                 title="Edit Default Value"
                             />
                         </div>
@@ -187,8 +201,9 @@ const VariableManagerModal: React.FC<VariableManagerModalProps> = ({ variables, 
                             {!v.isSystem ? (
                                 <button 
                                     onClick={() => handleDelete(v.id)}
-                                    className="text-gray-600 hover:text-cyber-red p-1 opacity-50 group-hover:opacity-100 transition-opacity"
+                                    className="text-gray-600 hover:text-cyber-red p-1 opacity-50 group-hover:opacity-100 transition-opacity focus:opacity-100 focus:outline-none focus:text-cyber-red"
                                     title="Delete Variable"
+                                    aria-label={`Delete variable ${v.name}`}
                                 >
                                     <Trash2 size={14} />
                                 </button>
@@ -211,7 +226,7 @@ const VariableManagerModal: React.FC<VariableManagerModalProps> = ({ variables, 
             </button>
             <button
               onClick={handleSaveAll}
-              className="bg-cyber-blue text-black px-6 py-2 rounded text-xs font-bold font-mono hover:bg-cyan-400 flex items-center gap-2"
+              className="bg-cyber-blue text-black px-6 py-2 rounded text-xs font-bold font-mono hover:bg-cyan-400 flex items-center gap-2 focus-visible:ring-2 focus-visible:ring-cyber-blue focus-visible:ring-offset-2 focus-visible:ring-offset-black outline-none transition-all"
             >
               <Save size={14} />
               SAVE CHANGES
