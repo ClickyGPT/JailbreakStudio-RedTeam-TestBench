@@ -43,8 +43,10 @@ export const simulateAttack = async (prompt: string): Promise<SimulationResult> 
         }
     }
 
+    // BOLT OPTIMIZATION: One-pass lowercase of output for efficient multi-keyword matching.
+    const lowerOutput = outputText.toLowerCase();
     const isRefusal = REFUSAL_KEYWORDS.some(keyword => 
-      outputText.toLowerCase().includes(keyword.toLowerCase())
+      lowerOutput.includes(keyword)
     );
 
     const status = isRefusal ? TestStatus.FAILED : TestStatus.PASSED;
