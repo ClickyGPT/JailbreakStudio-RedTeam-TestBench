@@ -18,6 +18,11 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
   const [isAugmenting, setIsAugmenting] = useState(false);
   const [showVarManager, setShowVarManager] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
+  const [isMac, setIsMac] = useState(false);
+
+  useEffect(() => {
+    setIsMac(/Mac|iPod|iPhone|iPad/.test(navigator.userAgent));
+  }, []);
 
   // Variables State with Persistence
   const [variables, setVariables] = useState<PromptVariable[]>(() => {
@@ -96,7 +101,8 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
                 onClick={() => handleAugment('clean')}
                 disabled={isAugmenting || !prompt.trim()}
                 className="px-3 py-1 text-xs font-mono font-bold bg-cyber-lime/5 text-cyber-lime border border-cyber-lime/30 rounded hover:bg-cyber-lime hover:text-black flex items-center gap-1 transition-all disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wider"
-                title="Optimize prompt for maximum viability (remove noise, fix structure)"
+                title="Clean prompt for maximum viability"
+                aria-label="Clean prompt"
              >
                 🧼 {isAugmenting ? 'CLEANING...' : 'CLEAN'}
              </button>
@@ -105,11 +111,12 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
                 <button 
                     className="px-3 py-1 text-xs font-mono font-bold bg-cyber-lime/5 text-cyber-lime border border-cyber-lime/30 rounded hover:bg-cyber-lime hover:text-black flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed transition-all uppercase tracking-wider"
                     disabled={isAugmenting}
-                    title="Use AI to rewrite and enhance your attack vector"
+                    title="AI augment options"
+                    aria-label="AI augment options"
                 >
                    <Wand2 size={12} /> {isAugmenting ? 'PROCESSING...' : 'AI AUGMENT'}
                 </button>
-                <div className="absolute right-0 top-full mt-1 w-48 bg-cyber-black border border-gray-800 rounded shadow-[0_0_20px_rgba(0,0,0,0.8)] hidden group-hover:block z-20 backdrop-blur-xl">
+                <div className="absolute right-0 top-full mt-1 w-48 bg-cyber-black border border-gray-800 rounded shadow-[0_0_20px_rgba(0,0,0,0.8)] hidden group-hover:block group-focus-within:block z-20 backdrop-blur-xl">
                     <button 
                         onClick={() => handleAugment('obfuscate')} 
                         className="block w-full text-left px-4 py-3 text-xs hover:bg-cyber-lime hover:text-black text-gray-300 transition-colors border-b border-gray-900"
@@ -137,11 +144,12 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
              <div className="relative group">
                 <button 
                     className="px-3 py-1 text-xs font-mono font-bold bg-gray-900 text-cyber-muted border border-gray-700 rounded hover:border-cyber-lime hover:text-cyber-lime transition-all uppercase tracking-wider"
-                    title="Insert predefined or custom prompt variables"
+                    title="Insert prompt variables"
+                    aria-label="Insert prompt variables"
                 >
                    + VARS
                 </button>
-                <div className="absolute right-0 top-full mt-1 w-64 bg-cyber-black border border-gray-800 rounded shadow-2xl hidden group-hover:block z-20 max-h-80 overflow-y-auto backdrop-blur-xl">
+                <div className="absolute right-0 top-full mt-1 w-64 bg-cyber-black border border-gray-800 rounded shadow-2xl hidden group-hover:block group-focus-within:block z-20 max-h-80 overflow-y-auto backdrop-blur-xl">
                     {systemVars.length > 0 && (
                         <div className="bg-gray-900/90 px-4 py-2 border-b border-gray-800 sticky top-0 z-10">
                         <span className="text-[10px] font-bold text-cyber-muted uppercase flex items-center gap-1 tracking-widest">
@@ -203,6 +211,13 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
             ref={setTextAreaRef}
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
+            onKeyDown={(e) => {
+                if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+                    if (!isRunning && prompt.trim()) {
+                        onRunTest();
+                    }
+                }
+            }}
             placeholder="// Enter your adversarial prompt here..."
             aria-label="Adversarial prompt input"
             aria-describedby="char-counter"
@@ -229,7 +244,8 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
             <button
                 onClick={onShare}
                 className="flex items-center gap-2 text-xs font-bold font-sans text-cyber-muted hover:text-white transition-colors uppercase tracking-widest"
-                title="Generate a unique link to share this prompt vector"
+                title="Share prompt vector"
+                aria-label="Share prompt vector"
             >
                 <Share2 size={14} /> SHARE VECTOR
             </button>
@@ -238,6 +254,7 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
                 disabled={!prompt.trim()}
                 className="flex items-center gap-2 text-xs font-bold font-sans text-cyber-muted hover:text-white transition-colors uppercase tracking-widest disabled:opacity-50 disabled:cursor-not-allowed"
                 title="Copy prompt to clipboard"
+                aria-label="Copy prompt to clipboard"
             >
                 {isCopied ? <Check size={14} className="text-cyber-lime" /> : <Copy size={14} />}
                 {isCopied ? 'COPIED' : 'COPY'}
@@ -252,7 +269,8 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
                 ? 'bg-gray-800 text-gray-500 cursor-not-allowed' 
                 : 'bg-cyber-lime text-black hover:bg-[#c0ff00] hover:shadow-[0_0_20px_rgba(211,253,80,0.4)]'
             }`}
-            title="Simulate this attack against the safety filter"
+            title={`Initiate test (${isMac ? '⌘↵' : 'Ctrl+Enter'})`}
+            aria-label={`Initiate test (${isMac ? 'Command plus Enter' : 'Control plus Enter'})`}
         >
             <span className="relative z-10 flex items-center gap-2">
                 <Play size={16} fill="currentColor" />
