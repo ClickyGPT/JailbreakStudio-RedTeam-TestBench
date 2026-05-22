@@ -5,3 +5,7 @@
 ## 2025-05-15 - [Environment Dependencies for UI Rendering]
 **Learning:** Environment variables (like `GEMINI_API_KEY`) being required at initialization time can prevent even basic UI tests from running if not mocked or provided in a `.env.local`.
 **Action:** When a repository fails to render in dev mode, check for module-level initialization of third-party SDKs that might be crashing the app due to missing keys.
+
+## 2025-05-16 - [Enhanced Modal Accessibility and Discovery]
+**Learning:** Standardizing ARIA roles (`dialog`, `aria-modal`) and explicit labels for all icon-only buttons in modals ensures the interface is usable by screen readers. Additionally, platform-aware keyboard shortcut hints (Mac vs non-Mac) in tooltips and button text significantly improve power-user discoverability.
+**Action:** Apply `role="dialog"` and `aria-modal="true"` to all future modal implementations and provide platform-specific shortcut strings using client-side OS detection.
