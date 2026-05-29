@@ -18,9 +18,9 @@ const Header: React.FC = React.memo(() => {
         </div>
       </div>
       <nav className="flex gap-6 text-sm font-sans font-medium text-cyber-muted">
-        <button type="button" className="hover:text-cyber-lime transition-colors duration-300 focus-visible:text-cyber-lime focus-visible:outline-none">DOCS</button>
-        <button type="button" className="hover:text-cyber-lime transition-colors duration-300 focus-visible:text-cyber-lime focus-visible:outline-none">ARSENAL</button>
-        <button type="button" className="hover:text-cyber-lime transition-colors duration-300 focus-visible:text-cyber-lime focus-visible:outline-none">FORUM</button>
+        <button type="button" className="hover:text-cyber-lime transition-colors duration-300 focus-visible:bg-cyber-lime focus-visible:text-black focus-visible:outline-none px-2 py-1 rounded">DOCS</button>
+        <button type="button" className="hover:text-cyber-lime transition-colors duration-300 focus-visible:bg-cyber-lime focus-visible:text-black focus-visible:outline-none px-2 py-1 rounded">ARSENAL</button>
+        <button type="button" className="hover:text-cyber-lime transition-colors duration-300 focus-visible:bg-cyber-lime focus-visible:text-black focus-visible:outline-none px-2 py-1 rounded">FORUM</button>
       </nav>
     </header>
   );
