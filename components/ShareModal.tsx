@@ -35,16 +35,18 @@ const ShareModal: React.FC<ShareModalProps> = ({ shareUrl, onClose }) => {
                 <p className="text-gray-400 text-sm font-sans">Did this prompt successfully bypass the target?</p>
                 <div className="flex justify-center gap-4">
                     <button 
+                        type="button"
                         onClick={() => setVoted('up')}
                         aria-label="Vote Up"
-                        className={`p-4 rounded-full border transition-all ${voted === 'up' ? 'bg-cyber-lime text-black border-cyber-lime' : 'border-gray-700 hover:border-cyber-lime text-gray-500 hover:text-cyber-lime'}`}
+                        className={`p-4 rounded-full border transition-all focus:outline-none focus:ring-2 focus:ring-cyber-lime ${voted === 'up' ? 'bg-cyber-lime text-black border-cyber-lime' : 'border-gray-700 hover:border-cyber-lime text-gray-500 hover:text-cyber-lime'}`}
                     >
                         <ThumbsUp size={24} />
                     </button>
                     <button 
+                        type="button"
                         onClick={() => setVoted('down')}
                         aria-label="Vote Down"
-                        className={`p-4 rounded-full border transition-all ${voted === 'down' ? 'bg-cyber-red text-black border-cyber-red' : 'border-gray-700 hover:border-cyber-red text-gray-500 hover:text-cyber-red'}`}
+                        className={`p-4 rounded-full border transition-all focus:outline-none focus:ring-2 focus:ring-cyber-red ${voted === 'down' ? 'bg-cyber-red text-black border-cyber-red' : 'border-gray-700 hover:border-cyber-red text-gray-500 hover:text-cyber-red'}`}
                     >
                         <ThumbsDown size={24} />
                     </button>
@@ -60,9 +62,10 @@ const ShareModal: React.FC<ShareModalProps> = ({ shareUrl, onClose }) => {
                         className="flex-1 bg-black border border-gray-800 rounded px-4 py-3 text-xs font-mono text-cyber-lime focus:outline-none focus:border-cyber-lime selection:bg-cyber-lime selection:text-black"
                     />
                     <button 
+                        type="button"
                         onClick={handleCopy}
                         aria-label="Copy share link"
-                        className="bg-cyber-lime/10 border border-cyber-lime/50 text-cyber-lime px-4 rounded hover:bg-cyber-lime hover:text-black transition-all font-bold"
+                        className="bg-cyber-lime/10 border border-cyber-lime/50 text-cyber-lime px-4 rounded hover:bg-cyber-lime hover:text-black transition-all font-bold focus:outline-none focus:bg-cyber-lime focus:text-black"
                     >
                         {copied ? 'COPIED' : <Copy size={18} />}
                     </button>

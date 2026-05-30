@@ -120,12 +120,14 @@ const VariableManagerModal: React.FC<VariableManagerModalProps> = ({ variables, 
                         value={newName}
                         onChange={(e) => setNewName(e.target.value)}
                         placeholder="Name (e.g. [ATTACK])"
+                        aria-label="New variable name"
                         className="flex-1 bg-black border border-gray-700 rounded px-3 py-2 text-xs font-mono text-gray-300 focus:outline-none focus:border-cyber-blue"
                     />
                     <input 
                         value={newValue}
                         onChange={(e) => setNewValue(e.target.value)}
                         placeholder="Default Value / Description"
+                        aria-label="New variable value"
                         className="flex-1 bg-black border border-gray-700 rounded px-3 py-2 text-xs font-mono text-gray-300 focus:outline-none focus:border-cyber-blue"
                     />
                 </div>
@@ -171,6 +173,7 @@ const VariableManagerModal: React.FC<VariableManagerModalProps> = ({ variables, 
                                 onMouseDown={(e) => e.stopPropagation()} // Prevent drag start when interacting with input
                                 className={`bg-transparent border-b border-transparent focus:border-cyber-blue hover:border-gray-700 outline-none text-xs font-mono py-1 px-1 transition-colors ${v.isSystem ? 'text-gray-500 cursor-not-allowed' : 'text-cyber-green'}`}
                                 placeholder="[NAME]"
+                                aria-label={`Variable name: ${v.name}`}
                                 title={v.isSystem ? "System variable name cannot be changed" : "Edit Name"}
                             />
                             <input 
@@ -179,6 +182,7 @@ const VariableManagerModal: React.FC<VariableManagerModalProps> = ({ variables, 
                                 onMouseDown={(e) => e.stopPropagation()} // Prevent drag start when interacting with input
                                 className="bg-transparent border-b border-transparent focus:border-cyber-blue hover:border-gray-700 outline-none text-[10px] text-gray-400 focus:text-gray-200 py-1 px-1 font-mono transition-colors"
                                 placeholder="Value..."
+                                aria-label={`Variable value: ${v.value}`}
                                 title="Edit Default Value"
                             />
                         </div>
@@ -204,14 +208,16 @@ const VariableManagerModal: React.FC<VariableManagerModalProps> = ({ variables, 
 
         <div className="p-4 border-t border-gray-700 bg-cyber-black flex justify-end gap-3">
             <button
+              type="button"
               onClick={onClose}
-              className="px-4 py-2 text-xs font-mono text-gray-400 hover:text-white"
+              className="px-4 py-2 text-xs font-mono text-gray-400 hover:text-white focus:outline-none focus:text-white"
             >
               CANCEL
             </button>
             <button
+              type="button"
               onClick={handleSaveAll}
-              className="bg-cyber-blue text-black px-6 py-2 rounded text-xs font-bold font-mono hover:bg-cyan-400 flex items-center gap-2"
+              className="bg-cyber-blue text-black px-6 py-2 rounded text-xs font-bold font-mono hover:bg-cyan-400 flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-cyber-blue"
             >
               <Save size={14} />
               SAVE CHANGES
