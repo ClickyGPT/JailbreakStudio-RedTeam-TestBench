@@ -30,8 +30,9 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = React.memo(({
             {CORE_TEMPLATES.map((template) => (
               <button
                 key={template.id}
+                type="button"
                 onClick={() => onSelectTemplate(template)}
-                className="w-full text-left p-4 rounded bg-gray-900/30 border border-gray-800 hover:border-cyber-lime hover:bg-gray-900 hover:shadow-[0_0_15px_rgba(211,253,80,0.1)] transition-all duration-300 group relative overflow-hidden"
+                className="w-full text-left p-4 rounded bg-gray-900/30 border border-gray-800 hover:border-cyber-lime hover:bg-gray-900 hover:shadow-[0_0_15px_rgba(211,253,80,0.1)] transition-all duration-300 group relative overflow-hidden focus:outline-none focus:border-cyber-lime"
               >
                 <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-cyber-lime opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 <div className="flex justify-between items-start mb-2">
@@ -55,8 +56,9 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = React.memo(({
             {RESEARCH_TEMPLATES.map((template) => (
               <button
                 key={template.id}
+                type="button"
                 onClick={() => onSelectTemplate(template)}
-                className="w-full text-left p-4 rounded bg-gray-900/30 border border-gray-800 hover:border-cyber-lime hover:bg-gray-900 hover:shadow-[0_0_15px_rgba(211,253,80,0.1)] transition-all duration-300 group relative overflow-hidden"
+                className="w-full text-left p-4 rounded bg-gray-900/30 border border-gray-800 hover:border-cyber-lime hover:bg-gray-900 hover:shadow-[0_0_15px_rgba(211,253,80,0.1)] transition-all duration-300 group relative overflow-hidden focus:outline-none focus:border-cyber-lime"
               >
                 <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-purple-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 <div className="flex justify-between items-start mb-2">
