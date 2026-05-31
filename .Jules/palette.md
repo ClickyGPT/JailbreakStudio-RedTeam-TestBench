@@ -5,3 +5,7 @@
 ## 2025-05-15 - [Environment Dependencies for UI Rendering]
 **Learning:** Environment variables (like `GEMINI_API_KEY`) being required at initialization time can prevent even basic UI tests from running if not mocked or provided in a `.env.local`.
 **Action:** When a repository fails to render in dev mode, check for module-level initialization of third-party SDKs that might be crashing the app due to missing keys.
+
+## 2025-05-16 - [Keyboard Shortcut Discoverability]
+**Learning:** For power-user interfaces like an adversarial prompt composer, keyboard shortcuts (e.g., Cmd/Ctrl + Enter) for primary actions are highly expected but often missing. Discoverability is key; users rarely guess these unless hinted.
+**Action:** Always pair keyboard shortcuts with platform-aware visual hints (using `title` or inline text) to ensure they are discoverable and reduce cognitive load for users on different operating systems.
