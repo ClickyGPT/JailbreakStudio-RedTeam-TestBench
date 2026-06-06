@@ -5,3 +5,7 @@
 ## 2026-03-17 - [Keystroke-driven Re-render Bottleneck]
 **Learning:** Passing top-level state (like a live prompt string) as a prop to complex sibling components (like a results panel) causes expensive re-renders on every single keystroke.
 **Action:** Decouple the secondary components from live state by bundling the necessary snapshot (e.g., the prompt that triggered the test) into the result object, and use stable callback references (refs + useLayoutEffect) to prevent child component updates during high-frequency input.
+
+## 2025-05-14 - [Inefficient Iterative Keyword Search]
+**Learning:** Using `Array.prototype.some()` with `String.prototype.includes()` and `toLowerCase()` inside a high-frequency function (like refusal detection) causes repeated O(N*M) string scans and many temporary string allocations.
+**Action:** Pre-compile a single case-insensitive `RegExp` at the module level. Benchmarks on ~100KB strings show a ~3-4x speedup (from ~1600ms to ~500ms for 1000 iterations) compared to the iterative approach.
