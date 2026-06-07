@@ -5,3 +5,7 @@
 ## 2025-05-15 - [Environment Dependencies for UI Rendering]
 **Learning:** Environment variables (like `GEMINI_API_KEY`) being required at initialization time can prevent even basic UI tests from running if not mocked or provided in a `.env.local`.
 **Action:** When a repository fails to render in dev mode, check for module-level initialization of third-party SDKs that might be crashing the app due to missing keys.
+
+## 2025-05-15 - [The "Micro" in Micro-UX]
+**Learning:** Combining multiple small improvements (like shortcuts, focus states, and ARIA labels) into a single PR can violate task constraints and lead to rejection, even if all changes are beneficial. Focused PRs are easier to review and less controversial.
+**Action:** Strictly adhere to one functional UX improvement per submission. Prioritize improvements that benefit both power users (shortcuts) and discoverability (hints).
