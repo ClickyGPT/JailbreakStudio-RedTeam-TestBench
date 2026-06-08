@@ -5,3 +5,7 @@
 ## 2025-05-15 - [Environment Dependencies for UI Rendering]
 **Learning:** Environment variables (like `GEMINI_API_KEY`) being required at initialization time can prevent even basic UI tests from running if not mocked or provided in a `.env.local`.
 **Action:** When a repository fails to render in dev mode, check for module-level initialization of third-party SDKs that might be crashing the app due to missing keys.
+
+## 2026-06-08 - [Platform-Aware Keyboard Shortcuts]
+**Learning:** To reliably handle platform-specific keyboard hints (e.g., ⌘↵ vs Ctrl+Enter) in React and avoid SSR hydration issues, use a `useEffect` hook to detect `navigator.userAgent` and store the result in a state variable. Additionally, always use `e.preventDefault()` to suppress default behavior like newline insertion in textareas.
+**Action:** Implement platform detection in `useEffect` and associate shortcuts with the `title` attribute of the corresponding action button to improve discoverability without cluttering the UI.
