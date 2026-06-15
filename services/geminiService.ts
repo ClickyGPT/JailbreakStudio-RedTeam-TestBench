@@ -7,6 +7,13 @@ const apiKey = process.env.API_KEY || '';
 
 const ai = new GoogleGenAI({ apiKey });
 
+// BOLT OPTIMIZATION: Pre-compile refusal keywords into a single case-insensitive regex.
+// This avoids iterative string scans and multiple .toLowerCase() allocations on every check.
+const REFUSAL_REGEX = new RegExp(
+  REFUSAL_KEYWORDS.map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|'),
+  'i'
+);
+
 export const simulateAttack = async (prompt: string): Promise<SimulationResult> => {
   const startTime = Date.now();
   if (!apiKey) {
@@ -43,9 +50,7 @@ export const simulateAttack = async (prompt: string): Promise<SimulationResult> 
         }
     }
 
-    const isRefusal = REFUSAL_KEYWORDS.some(keyword => 
-      outputText.toLowerCase().includes(keyword.toLowerCase())
-    );
+    const isRefusal = REFUSAL_REGEX.test(outputText);
 
     const status = isRefusal ? TestStatus.FAILED : TestStatus.PASSED;
 
