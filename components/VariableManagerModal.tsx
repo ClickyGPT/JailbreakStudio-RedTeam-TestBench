@@ -105,7 +105,7 @@ const VariableManagerModal: React.FC<VariableManagerModalProps> = ({ variables, 
           <h3 className="font-mono text-white font-bold flex items-center gap-2">
             <Tag size={16} className="text-cyber-blue"/> MANAGE VARIABLES
           </h3>
-          <button onClick={onClose} className="text-gray-500 hover:text-white">
+          <button onClick={onClose} className="text-gray-500 hover:text-white" aria-label="Close modal">
             <X size={20} />
           </button>
         </div>
@@ -120,18 +120,21 @@ const VariableManagerModal: React.FC<VariableManagerModalProps> = ({ variables, 
                         value={newName}
                         onChange={(e) => setNewName(e.target.value)}
                         placeholder="Name (e.g. [ATTACK])"
+                        aria-label="New variable name"
                         className="flex-1 bg-black border border-gray-700 rounded px-3 py-2 text-xs font-mono text-gray-300 focus:outline-none focus:border-cyber-blue"
                     />
                     <input 
                         value={newValue}
                         onChange={(e) => setNewValue(e.target.value)}
                         placeholder="Default Value / Description"
+                        aria-label="New variable value"
                         className="flex-1 bg-black border border-gray-700 rounded px-3 py-2 text-xs font-mono text-gray-300 focus:outline-none focus:border-cyber-blue"
                     />
                 </div>
                 <button 
                     onClick={handleAdd}
                     disabled={!newName.trim()}
+                    aria-label="Add variable"
                     className="bg-cyber-blue/10 border border-cyber-blue/30 text-cyber-blue py-2 rounded text-xs font-bold font-mono hover:bg-cyber-blue/20 flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                     <Plus size={14} /> ADD VARIABLE
@@ -169,17 +172,19 @@ const VariableManagerModal: React.FC<VariableManagerModalProps> = ({ variables, 
                                 onChange={(e) => updateVariable(v.id, 'name', e.target.value)}
                                 onBlur={(e) => handleNameBlur(v.id, e.target.value)}
                                 onMouseDown={(e) => e.stopPropagation()} // Prevent drag start when interacting with input
+                                aria-label="Edit variable name"
                                 className={`bg-transparent border-b border-transparent focus:border-cyber-blue hover:border-gray-700 outline-none text-xs font-mono py-1 px-1 transition-colors ${v.isSystem ? 'text-gray-500 cursor-not-allowed' : 'text-cyber-green'}`}
                                 placeholder="[NAME]"
-                                title={v.isSystem ? "System variable name cannot be changed" : "Edit Name"}
+                                title={v.isSystem ? "System variable name cannot be changed" : "Edit name"}
                             />
                             <input 
                                 value={v.value}
                                 onChange={(e) => updateVariable(v.id, 'value', e.target.value)}
                                 onMouseDown={(e) => e.stopPropagation()} // Prevent drag start when interacting with input
+                                aria-label="Edit variable value"
                                 className="bg-transparent border-b border-transparent focus:border-cyber-blue hover:border-gray-700 outline-none text-[10px] text-gray-400 focus:text-gray-200 py-1 px-1 font-mono transition-colors"
                                 placeholder="Value..."
-                                title="Edit Default Value"
+                                title="Edit default value"
                             />
                         </div>
 
@@ -188,7 +193,8 @@ const VariableManagerModal: React.FC<VariableManagerModalProps> = ({ variables, 
                                 <button 
                                     onClick={() => handleDelete(v.id)}
                                     className="text-gray-600 hover:text-cyber-red p-1 opacity-50 group-hover:opacity-100 transition-opacity"
-                                    title="Delete Variable"
+                                    title="Delete variable"
+                                    aria-label="Delete variable"
                                 >
                                     <Trash2 size={14} />
                                 </button>
@@ -206,12 +212,14 @@ const VariableManagerModal: React.FC<VariableManagerModalProps> = ({ variables, 
             <button
               onClick={onClose}
               className="px-4 py-2 text-xs font-mono text-gray-400 hover:text-white"
+              aria-label="Cancel and close"
             >
               CANCEL
             </button>
             <button
               onClick={handleSaveAll}
               className="bg-cyber-blue text-black px-6 py-2 rounded text-xs font-bold font-mono hover:bg-cyan-400 flex items-center gap-2"
+              aria-label="Save changes and close"
             >
               <Save size={14} />
               SAVE CHANGES
