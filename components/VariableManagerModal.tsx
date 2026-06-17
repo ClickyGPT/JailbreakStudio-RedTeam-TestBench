@@ -105,7 +105,11 @@ const VariableManagerModal: React.FC<VariableManagerModalProps> = ({ variables, 
           <h3 className="font-mono text-white font-bold flex items-center gap-2">
             <Tag size={16} className="text-cyber-blue"/> MANAGE VARIABLES
           </h3>
-          <button onClick={onClose} className="text-gray-500 hover:text-white">
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-white focus-visible:bg-cyber-lime focus-visible:text-black focus-visible:outline-none rounded transition-colors"
+            aria-label="Close modal"
+          >
             <X size={20} />
           </button>
         </div>
@@ -120,19 +124,21 @@ const VariableManagerModal: React.FC<VariableManagerModalProps> = ({ variables, 
                         value={newName}
                         onChange={(e) => setNewName(e.target.value)}
                         placeholder="Name (e.g. [ATTACK])"
-                        className="flex-1 bg-black border border-gray-700 rounded px-3 py-2 text-xs font-mono text-gray-300 focus:outline-none focus:border-cyber-blue"
+                        aria-label="New variable name"
+                        className="flex-1 bg-black border border-gray-700 rounded px-3 py-2 text-xs font-mono text-gray-300 focus:outline-none focus:border-cyber-blue focus-visible:ring-1 focus-visible:ring-cyber-blue"
                     />
                     <input 
                         value={newValue}
                         onChange={(e) => setNewValue(e.target.value)}
                         placeholder="Default Value / Description"
-                        className="flex-1 bg-black border border-gray-700 rounded px-3 py-2 text-xs font-mono text-gray-300 focus:outline-none focus:border-cyber-blue"
+                        aria-label="New variable value"
+                        className="flex-1 bg-black border border-gray-700 rounded px-3 py-2 text-xs font-mono text-gray-300 focus:outline-none focus:border-cyber-blue focus-visible:ring-1 focus-visible:ring-cyber-blue"
                     />
                 </div>
                 <button 
                     onClick={handleAdd}
                     disabled={!newName.trim()}
-                    className="bg-cyber-blue/10 border border-cyber-blue/30 text-cyber-blue py-2 rounded text-xs font-bold font-mono hover:bg-cyber-blue/20 flex items-center justify-center gap-2 disabled:opacity-50"
+                    className="bg-cyber-blue/10 border border-cyber-blue/30 text-cyber-blue py-2 rounded text-xs font-bold font-mono hover:bg-cyber-blue/20 focus-visible:bg-cyber-lime focus-visible:text-black focus-visible:outline-none flex items-center justify-center gap-2 disabled:opacity-50 transition-colors"
                 >
                     <Plus size={14} /> ADD VARIABLE
                 </button>
@@ -187,8 +193,9 @@ const VariableManagerModal: React.FC<VariableManagerModalProps> = ({ variables, 
                             {!v.isSystem ? (
                                 <button 
                                     onClick={() => handleDelete(v.id)}
-                                    className="text-gray-600 hover:text-cyber-red p-1 opacity-50 group-hover:opacity-100 transition-opacity"
+                                    className="text-gray-600 hover:text-cyber-red p-1 opacity-50 group-hover:opacity-100 focus-visible:opacity-100 focus-visible:bg-cyber-red focus-visible:text-white focus-visible:outline-none rounded transition-all"
                                     title="Delete Variable"
+                                    aria-label="Delete variable"
                                 >
                                     <Trash2 size={14} />
                                 </button>
