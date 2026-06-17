@@ -45,7 +45,11 @@ const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({ template, onS
           <h3 className="font-mono text-white font-bold flex items-center gap-2">
             {template ? 'EDIT VECTOR' : 'NEW CUSTOM VECTOR'}
           </h3>
-          <button onClick={onClose} className="text-gray-500 hover:text-white">
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-white focus-visible:bg-cyber-lime focus-visible:text-black focus-visible:outline-none rounded transition-colors"
+            aria-label="Close modal"
+          >
             <X size={20} />
           </button>
         </div>
@@ -53,39 +57,51 @@ const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({ template, onS
         <form onSubmit={handleSubmit} className="flex-1 flex flex-col overflow-hidden">
           <div className="p-6 space-y-4 overflow-y-auto flex-1">
             <div className="space-y-1">
-              <label className="text-xs font-mono text-cyber-blue uppercase flex items-center gap-2">
+              <label
+                htmlFor="template-name"
+                className="text-xs font-mono text-cyber-blue uppercase flex items-center gap-2 cursor-pointer"
+              >
                 <FileText size={12} /> Template Name
               </label>
               <input
+                id="template-name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g., My Stealth Jailbreak"
-                className="w-full bg-black border border-gray-700 rounded px-3 py-2 text-sm text-gray-300 focus:outline-none focus:border-cyber-blue font-mono"
+                className="w-full bg-black border border-gray-700 rounded px-3 py-2 text-sm text-gray-300 focus:outline-none focus:border-cyber-blue font-mono focus-visible:ring-1 focus-visible:ring-cyber-blue"
                 required
               />
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs font-mono text-gray-500 uppercase flex items-center gap-2">
+              <label
+                htmlFor="template-description"
+                className="text-xs font-mono text-gray-500 uppercase flex items-center gap-2 cursor-pointer"
+              >
                 <Info size={12} /> Description
               </label>
               <input
+                id="template-description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Short description of the strategy..."
-                className="w-full bg-black border border-gray-700 rounded px-3 py-2 text-sm text-gray-300 focus:outline-none focus:border-cyber-blue font-mono"
+                className="w-full bg-black border border-gray-700 rounded px-3 py-2 text-sm text-gray-300 focus:outline-none focus:border-cyber-blue font-mono focus-visible:ring-1 focus-visible:ring-cyber-blue"
               />
             </div>
 
             <div className="space-y-1 flex-1 flex flex-col">
-              <label className="text-xs font-mono text-gray-500 uppercase flex items-center gap-2">
+              <label
+                htmlFor="template-content"
+                className="text-xs font-mono text-gray-500 uppercase flex items-center gap-2 cursor-pointer"
+              >
                 <AlignLeft size={12} /> Prompt Content
               </label>
               <textarea
+                id="template-content"
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 placeholder="Enter the prompt text here. You can use [ROLE], [TARGET_QUERY], etc."
-                className="w-full h-48 bg-black border border-gray-700 rounded px-3 py-2 text-sm text-gray-300 focus:outline-none focus:border-cyber-blue font-mono resize-none"
+                className="w-full h-48 bg-black border border-gray-700 rounded px-3 py-2 text-sm text-gray-300 focus:outline-none focus:border-cyber-blue font-mono resize-none focus-visible:ring-1 focus-visible:ring-cyber-blue"
                 required
               />
             </div>
