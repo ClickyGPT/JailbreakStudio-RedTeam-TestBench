@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { PromptVariable } from '../types';
 import { X, Plus, Trash2, Save, Tag, GripVertical } from 'lucide-react';
+import { useEscapeKey } from '../utils/useEscapeKey';
 
 interface VariableManagerModalProps {
   variables: PromptVariable[];
@@ -10,6 +11,8 @@ interface VariableManagerModalProps {
 
 const VariableManagerModal: React.FC<VariableManagerModalProps> = ({ variables, onSave, onClose }) => {
   const [localVariables, setLocalVariables] = useState<PromptVariable[]>(variables);
+
+  useEscapeKey(onClose);
   const [newName, setNewName] = useState('');
   const [newValue, setNewValue] = useState('');
   
