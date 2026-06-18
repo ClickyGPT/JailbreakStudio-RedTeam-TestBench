@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { PromptVariable } from '../types';
 import { X, Plus, Trash2, Save, Tag, GripVertical } from 'lucide-react';
+import { useEscapeKey } from '../utils/useEscapeKey';
 
 interface VariableManagerModalProps {
   variables: PromptVariable[];
@@ -15,6 +16,8 @@ const VariableManagerModal: React.FC<VariableManagerModalProps> = ({ variables, 
   
   const dragItem = useRef<number | null>(null);
   const dragOverItem = useRef<number | null>(null);
+
+  useEscapeKey(onClose);
 
   const handleAdd = () => {
     if (!newName.trim()) return;

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { PromptTemplate } from '../types';
 import { X, Save, FileText, Info, AlignLeft } from 'lucide-react';
+import { useEscapeKey } from '../utils/useEscapeKey';
 
 interface TemplateEditorModalProps {
   template?: PromptTemplate | null; // null means creating new
@@ -12,6 +13,8 @@ const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({ template, onS
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [content, setContent] = useState('');
+
+  useEscapeKey(onClose);
 
   useEffect(() => {
     if (template) {
