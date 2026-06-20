@@ -39,6 +39,7 @@ const RedTeamChat: React.FC = React.memo(() => {
   if (!isOpen) {
     return (
         <button 
+            type="button"
             onClick={() => setIsOpen(true)}
             aria-label="Open Zephyr AI Chat"
             className="fixed bottom-6 right-6 bg-cyber-lime text-black p-4 rounded-full shadow-[0_0_20px_rgba(211,253,80,0.4)] hover:scale-105 hover:bg-white transition-all z-50 flex items-center gap-2 font-bold font-sans tracking-wide"
@@ -60,6 +61,7 @@ const RedTeamChat: React.FC = React.memo(() => {
                 <span className="text-black font-black text-sm tracking-widest uppercase">RedTeam Consultant</span>
             </div>
             <button
+                type="button"
                 onClick={() => setIsOpen(false)}
                 aria-label="Close Chat"
                 className="text-black hover:text-white transition-colors"
@@ -108,6 +110,7 @@ const RedTeamChat: React.FC = React.memo(() => {
                 className="flex-1 bg-gray-900 border border-gray-800 rounded px-4 py-3 text-sm text-white focus:outline-none focus:border-cyber-lime focus:bg-black transition-colors font-mono"
             />
             <button 
+                type="button"
                 onClick={handleSend}
                 disabled={isTyping || !input.trim()}
                 aria-label="Send message"
