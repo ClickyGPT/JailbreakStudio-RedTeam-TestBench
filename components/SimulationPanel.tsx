@@ -89,6 +89,7 @@ const SimulationPanel: React.FC<SimulationPanelProps> = React.memo(({ result, is
             <div className="border-t border-gray-900 pt-6">
                 {!analysis ? (
                     <button 
+                        type="button"
                         onClick={handleAnalyze}
                         disabled={isAnalyzing}
                         className="w-full flex items-center justify-center gap-2 p-4 border border-cyber-lime/30 bg-cyber-lime/5 hover:bg-cyber-lime/10 text-cyber-lime rounded-sm transition-all font-mono text-xs font-bold uppercase tracking-wider"

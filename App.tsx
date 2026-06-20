@@ -128,6 +128,7 @@ const App: React.FC = () => {
       {/* Mobile Template Trigger */}
       <div className="md:hidden fixed bottom-4 left-4 z-40">
         <button 
+            type="button"
             className="bg-cyber-gray border border-gray-600 rounded-full p-3 shadow-lg text-white hover:border-cyber-lime hover:text-cyber-lime transition-colors"
             onClick={() => { alert("Library access limited on mobile in MVP"); }}
             aria-label="Open Template Library"

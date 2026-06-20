@@ -29,6 +29,7 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = React.memo(({
           <div className="space-y-2">
             {CORE_TEMPLATES.map((template) => (
               <button
+                type="button"
                 key={template.id}
                 onClick={() => onSelectTemplate(template)}
                 className="w-full text-left p-4 rounded bg-gray-900/30 border border-gray-800 hover:border-cyber-lime hover:bg-gray-900 hover:shadow-[0_0_15px_rgba(211,253,80,0.1)] transition-all duration-300 group relative overflow-hidden"
@@ -54,6 +55,7 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = React.memo(({
           <div className="space-y-2">
             {RESEARCH_TEMPLATES.map((template) => (
               <button
+                type="button"
                 key={template.id}
                 onClick={() => onSelectTemplate(template)}
                 className="w-full text-left p-4 rounded bg-gray-900/30 border border-gray-800 hover:border-cyber-lime hover:bg-gray-900 hover:shadow-[0_0_15px_rgba(211,253,80,0.1)] transition-all duration-300 group relative overflow-hidden"
