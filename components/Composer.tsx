@@ -13,16 +13,15 @@ interface ComposerProps {
   onShare: () => void;
 }
 
+// BOLT OPTIMIZATION: Move platform detection outside the component or use lazy initialization
+// to avoid a redundant re-render after the first mount.
+const IS_MAC = typeof window !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.platform);
+
 const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRunTest, isRunning, onShare }) => {
   const [textAreaRef, setTextAreaRef] = useState<HTMLTextAreaElement | null>(null);
   const [isAugmenting, setIsAugmenting] = useState(false);
   const [showVarManager, setShowVarManager] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
-  const [isMac, setIsMac] = useState(false);
-
-  useEffect(() => {
-    setIsMac(navigator.platform.toUpperCase().indexOf('MAC') >= 0);
-  }, []);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
@@ -95,6 +94,8 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
   // BOLT OPTIMIZATION: Memoize variable filtering to avoid redundant array operations on every stroke.
   const systemVars = useMemo(() => variables.filter(v => v.isSystem), [variables]);
   const customVars = useMemo(() => variables.filter(v => !v.isSystem), [variables]);
+
+  const isMac = IS_MAC;
 
   return (
     <div className="flex-1 flex flex-col h-full relative">
