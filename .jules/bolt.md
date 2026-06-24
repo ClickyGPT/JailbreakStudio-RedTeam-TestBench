@@ -5,3 +5,7 @@
 ## 2026-03-17 - [Keystroke-driven Re-render Bottleneck]
 **Learning:** Passing top-level state (like a live prompt string) as a prop to complex sibling components (like a results panel) causes expensive re-renders on every single keystroke.
 **Action:** Decouple the secondary components from live state by bundling the necessary snapshot (e.g., the prompt that triggered the test) into the result object, and use stable callback references (refs + useLayoutEffect) to prevent child component updates during high-frequency input.
+
+## 2025-05-22 - [Isolating High-Frequency Decorative Effects]
+**Learning:** Purely decorative effects that rely on high-frequency events (like mouse position) should be isolated into memoized sub-components with direct DOM listeners to prevent the parent component from reconciling on every update, even when using CSS variables.
+**Action:** Always encapsulate cursor-following or spotlight effects in dedicated memoized components.
