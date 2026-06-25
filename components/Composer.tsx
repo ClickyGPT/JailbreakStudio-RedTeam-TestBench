@@ -13,16 +13,14 @@ interface ComposerProps {
   onShare: () => void;
 }
 
+// BOLT OPTIMIZATION: Detect platform at module level to avoid an extra render cycle on mount.
+const IS_MAC = typeof window !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.platform);
+
 const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRunTest, isRunning, onShare }) => {
   const [textAreaRef, setTextAreaRef] = useState<HTMLTextAreaElement | null>(null);
   const [isAugmenting, setIsAugmenting] = useState(false);
   const [showVarManager, setShowVarManager] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
-  const [isMac, setIsMac] = useState(false);
-
-  useEffect(() => {
-    setIsMac(navigator.platform.toUpperCase().indexOf('MAC') >= 0);
-  }, []);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
@@ -262,13 +260,13 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
         <button
             onClick={onRunTest}
             disabled={isRunning || !prompt.trim()}
-            aria-keyshortcuts={isMac ? 'Meta+Enter' : 'Control+Enter'}
+            aria-keyshortcuts={IS_MAC ? 'Meta+Enter' : 'Control+Enter'}
             className={`flex items-center gap-2 px-8 py-3 text-sm font-bold font-sans tracking-wider transition-all duration-300 relative overflow-hidden group ${
                 isRunning 
                 ? 'bg-gray-800 text-gray-500 cursor-not-allowed' 
                 : 'bg-cyber-lime text-black hover:bg-[#c0ff00] hover:shadow-[0_0_20px_rgba(211,253,80,0.4)]'
             }`}
-            title={`Simulate this attack against the safety filter (${isMac ? '⌘↵' : 'Ctrl+Enter'})`}
+            title={`Simulate this attack against the safety filter (${IS_MAC ? '⌘↵' : 'Ctrl+Enter'})`}
         >
             <span className="relative z-10 flex items-center gap-2">
                 <Play size={16} fill="currentColor" />
