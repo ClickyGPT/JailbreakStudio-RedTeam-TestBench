@@ -9,3 +9,11 @@
 ## 2025-05-15 - [Keyboard Accessibility for Hover Menus]
 **Learning:** Hover-only dropdown menus are a common accessibility blocker for keyboard and screen reader users. Using Tailwind's `group-focus-within` utility provides a non-disruptive way to reveal these menus when their trigger or child elements receive focus.
 **Action:** Always complement `hover:` based visibility with `group-focus-within:` on menu containers to ensure they are accessible to keyboard-only users without changing the mouse-driven experience.
+
+## 2025-05-16 - [Standardizing Brand Consistency]
+**Learning:** The primary brand color for RedTeam Studio is `cyber-lime` (#d3fd50). The use of `cyber-blue` or `cyber-green` in component styles is deprecated as they are unmapped in the Tailwind configuration, leading to fallback styles or visual inconsistency.
+**Action:** Always use `cyber-lime` for primary accents and interactive elements to ensure visual harmony and proper style application.
+
+## 2025-05-16 - [Modal Keyboard Accessibility]
+**Learning:** Dismissing modals with the 'Escape' key is a fundamental expectation for keyboard accessibility.
+**Action:** Implement a `useEffect` hook with a window event listener in all modal components to handle the 'Escape' key for closing the modal, ensuring proper cleanup.
