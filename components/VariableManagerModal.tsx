@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { PromptVariable } from '../types';
 import { X, Plus, Trash2, Save, Tag, GripVertical } from 'lucide-react';
 
@@ -15,6 +15,14 @@ const VariableManagerModal: React.FC<VariableManagerModalProps> = ({ variables, 
   
   const dragItem = useRef<number | null>(null);
   const dragOverItem = useRef<number | null>(null);
+
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleEsc);
+    return () => window.removeEventListener('keydown', handleEsc);
+  }, [onClose]);
 
   const handleAdd = () => {
     if (!newName.trim()) return;
@@ -99,13 +107,18 @@ const VariableManagerModal: React.FC<VariableManagerModalProps> = ({ variables, 
   };
 
   return (
-    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[70] p-4 backdrop-blur-sm">
+    <div
+      className="fixed inset-0 bg-black/80 flex items-center justify-center z-[70] p-4 backdrop-blur-sm"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="var-manager-title"
+    >
       <div className="bg-cyber-gray border border-gray-700 w-full max-w-lg rounded-lg shadow-2xl overflow-hidden flex flex-col max-h-[80vh]">
         <div className="p-4 border-b border-gray-700 flex justify-between items-center bg-cyber-black">
-          <h3 className="font-mono text-white font-bold flex items-center gap-2">
+          <h3 id="var-manager-title" className="font-mono text-white font-bold flex items-center gap-2">
             <Tag size={16} className="text-cyber-blue"/> MANAGE VARIABLES
           </h3>
-          <button onClick={onClose} className="text-gray-500 hover:text-white">
+          <button onClick={onClose} className="text-gray-500 hover:text-white" aria-label="Close modal">
             <X size={20} />
           </button>
         </div>
@@ -120,12 +133,14 @@ const VariableManagerModal: React.FC<VariableManagerModalProps> = ({ variables, 
                         value={newName}
                         onChange={(e) => setNewName(e.target.value)}
                         placeholder="Name (e.g. [ATTACK])"
+                        aria-label="New variable name"
                         className="flex-1 bg-black border border-gray-700 rounded px-3 py-2 text-xs font-mono text-gray-300 focus:outline-none focus:border-cyber-blue"
                     />
                     <input 
                         value={newValue}
                         onChange={(e) => setNewValue(e.target.value)}
                         placeholder="Default Value / Description"
+                        aria-label="New variable value"
                         className="flex-1 bg-black border border-gray-700 rounded px-3 py-2 text-xs font-mono text-gray-300 focus:outline-none focus:border-cyber-blue"
                     />
                 </div>
@@ -189,6 +204,7 @@ const VariableManagerModal: React.FC<VariableManagerModalProps> = ({ variables, 
                                     onClick={() => handleDelete(v.id)}
                                     className="text-gray-600 hover:text-cyber-red p-1 opacity-50 group-hover:opacity-100 transition-opacity"
                                     title="Delete Variable"
+                                    aria-label="Delete variable"
                                 >
                                     <Trash2 size={14} />
                                 </button>

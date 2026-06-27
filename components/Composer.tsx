@@ -120,6 +120,8 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
                     className="px-3 py-1 text-xs font-mono font-bold bg-cyber-lime/5 text-cyber-lime border border-cyber-lime/30 rounded hover:bg-cyber-lime hover:text-black flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed transition-all focus-visible:bg-cyber-lime focus-visible:text-black focus-visible:outline-none uppercase tracking-wider"
                     disabled={isAugmenting}
                     title="Use AI to rewrite and enhance your attack vector"
+                    aria-label="AI Augment options"
+                    aria-haspopup="true"
                 >
                    <Wand2 size={12} /> {isAugmenting ? 'PROCESSING...' : 'AI AUGMENT'}
                 </button>
@@ -152,6 +154,8 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
                 <button 
                     className="px-3 py-1 text-xs font-mono font-bold bg-gray-900 text-cyber-muted border border-gray-700 rounded hover:border-cyber-lime hover:text-cyber-lime transition-all focus-visible:border-cyber-lime focus-visible:text-cyber-lime focus-visible:outline-none uppercase tracking-wider"
                     title="Insert predefined or custom prompt variables"
+                    aria-label="Variable options"
+                    aria-haspopup="true"
                 >
                    + VARS
                 </button>
