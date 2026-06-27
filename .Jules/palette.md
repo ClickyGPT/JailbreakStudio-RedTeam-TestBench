@@ -9,3 +9,7 @@
 ## 2025-05-15 - [Keyboard Accessibility for Hover Menus]
 **Learning:** Hover-only dropdown menus are a common accessibility blocker for keyboard and screen reader users. Using Tailwind's `group-focus-within` utility provides a non-disruptive way to reveal these menus when their trigger or child elements receive focus.
 **Action:** Always complement `hover:` based visibility with `group-focus-within:` on menu containers to ensure they are accessible to keyboard-only users without changing the mouse-driven experience.
+
+## 2025-05-15 - [Standardized Modal Accessibility]
+**Learning:** In highly stylized "Cyberpunk" or "Studio" themes, modals often use custom overlays that don't natively support standard accessibility features. Explicitly implementing `role="dialog"`, `aria-modal="true"`, and `aria-labelledby` ensures that screen readers recognize the modal context. Additionally, global `Escape` key listeners are essential for keyboard-only dismissal when default browser behaviors are inhibited by the application structure.
+**Action:** Apply the standard accessible modal pattern (`role`, `aria-modal`, `aria-labelledby`, and `Escape` listener) to all new modal components to maintain a consistent and accessible user experience.
