@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { SimulationResult, TestStatus } from '../types';
-import { AlertTriangle, CheckCircle, XCircle, Activity, BrainCircuit } from 'lucide-react';
+import { AlertTriangle, CheckCircle, XCircle, Activity, BrainCircuit, Copy, Check } from 'lucide-react';
 import { analyzeFailure } from '../services/geminiService';
 
 interface SimulationPanelProps {
@@ -11,6 +11,15 @@ interface SimulationPanelProps {
 const SimulationPanel: React.FC<SimulationPanelProps> = React.memo(({ result, isRunning }) => {
   const [analysis, setAnalysis] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
+
+  const handleCopy = () => {
+    if (!result?.output) return;
+    navigator.clipboard.writeText(result.output).then(() => {
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 2000);
+    });
+  };
 
   const handleAnalyze = async () => {
     if (!result) return;
@@ -61,7 +70,18 @@ const SimulationPanel: React.FC<SimulationPanelProps> = React.memo(({ result, is
 
       <div className="flex-1 overflow-y-auto p-6 space-y-8">
         <div>
-            <h4 className="text-[10px] font-mono text-gray-500 mb-3 uppercase tracking-widest">Target Model Output</h4>
+            <div className="flex justify-between items-center mb-3">
+                <h4 className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">Target Model Output</h4>
+                <button
+                    type="button"
+                    onClick={handleCopy}
+                    className="flex items-center gap-1.5 text-[10px] font-bold font-mono text-cyber-muted hover:text-cyber-lime transition-colors uppercase tracking-widest"
+                    aria-label="Copy model output"
+                >
+                    {isCopied ? <Check size={12} className="text-cyber-lime" /> : <Copy size={12} />}
+                    {isCopied ? 'COPIED' : 'COPY'}
+                </button>
+            </div>
             <div className={`p-5 rounded-sm border font-mono text-sm whitespace-pre-wrap leading-relaxed ${
                 isSuccess 
                 ? 'border-cyber-lime/30 text-white bg-cyber-lime/5 shadow-[0_0_20px_rgba(211,253,80,0.05)]' 
@@ -89,6 +109,7 @@ const SimulationPanel: React.FC<SimulationPanelProps> = React.memo(({ result, is
             <div className="border-t border-gray-900 pt-6">
                 {!analysis ? (
                     <button 
+                        type="button"
                         onClick={handleAnalyze}
                         disabled={isAnalyzing}
                         className="w-full flex items-center justify-center gap-2 p-4 border border-cyber-lime/30 bg-cyber-lime/5 hover:bg-cyber-lime/10 text-cyber-lime rounded-sm transition-all font-mono text-xs font-bold uppercase tracking-wider"
