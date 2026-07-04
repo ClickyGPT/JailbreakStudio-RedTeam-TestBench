@@ -12,9 +12,16 @@ export const encodeStateToHash = (state: SharedState): string => {
 };
 
 export const decodeStateFromHash = (): SharedState | null => {
+  if (typeof window === 'undefined') return null;
   try {
-    const hash = window.location.hash.slice(1); // Remove #
+    let hash = window.location.hash.slice(1); // Remove #
     if (!hash) return null;
+
+    // Handle both raw hash and state= prefix
+    if (hash.startsWith('state=')) {
+      hash = hash.substring(6);
+    }
+
     const json = atob(hash);
     return JSON.parse(json);
   } catch (e) {

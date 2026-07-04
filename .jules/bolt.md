@@ -5,3 +5,7 @@
 ## 2026-03-17 - [Keystroke-driven Re-render Bottleneck]
 **Learning:** Passing top-level state (like a live prompt string) as a prop to complex sibling components (like a results panel) causes expensive re-renders on every single keystroke.
 **Action:** Decouple the secondary components from live state by bundling the necessary snapshot (e.g., the prompt that triggered the test) into the result object, and use stable callback references (refs + useLayoutEffect) to prevent child component updates during high-frequency input.
+
+## 2025-05-15 - [Eliminating Post-Mount Re-renders]
+**Learning:** Using `useEffect` to initialize state from external sources (URL hash, localStorage) after the initial mount causes a mandatory "double render" which delays interactivity.
+**Action:** Use lazy state initializers in `useState` to parse external state synchronously during the first render, and move platform-specific detection to module-level constants to ensure a single-cycle mount.

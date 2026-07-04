@@ -1,9 +1,12 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { DEFAULT_VARIABLES } from '../constants';
 import { PromptVariable } from '../types';
 import { Terminal, Play, Share2, Wand2, RefreshCw, Settings, Sparkles, Box, Copy, Check } from 'lucide-react';
 import { augmentPrompt } from '../services/geminiService';
 import VariableManagerModal from './VariableManagerModal';
+
+// BOLT OPTIMIZATION: Detect platform once at module level to avoid post-mount re-render.
+const IS_MAC = typeof window !== 'undefined' && navigator.platform.toUpperCase().indexOf('MAC') >= 0;
 
 interface ComposerProps {
   prompt: string;
@@ -14,15 +17,12 @@ interface ComposerProps {
 }
 
 const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRunTest, isRunning, onShare }) => {
-  const [textAreaRef, setTextAreaRef] = useState<HTMLTextAreaElement | null>(null);
+  // BOLT OPTIMIZATION: Use useRef for the textarea instead of useState to avoid an extra
+  // re-render when the reference is established on mount.
+  const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const [isAugmenting, setIsAugmenting] = useState(false);
   const [showVarManager, setShowVarManager] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
-  const [isMac, setIsMac] = useState(false);
-
-  useEffect(() => {
-    setIsMac(navigator.platform.toUpperCase().indexOf('MAC') >= 0);
-  }, []);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
@@ -48,15 +48,16 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
   }, [variables]);
 
   const insertVariable = (textToInsert: string) => {
-    if (!textAreaRef) return;
-    const start = textAreaRef.selectionStart;
-    const end = textAreaRef.selectionEnd;
+    const el = textAreaRef.current;
+    if (!el) return;
+    const start = el.selectionStart;
+    const end = el.selectionEnd;
     const text = prompt;
     const newText = text.substring(0, start) + textToInsert + text.substring(end);
     setPrompt(newText);
     setTimeout(() => {
-        textAreaRef.focus();
-        textAreaRef.setSelectionRange(start + textToInsert.length, start + textToInsert.length);
+        el.focus();
+        el.setSelectionRange(start + textToInsert.length, start + textToInsert.length);
     }, 0);
   };
 
@@ -214,7 +215,7 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
 
       <div className="flex-1 relative bg-[#0a0a0a] overflow-hidden group">
         <textarea
-            ref={setTextAreaRef}
+            ref={textAreaRef}
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             onKeyDown={handleKeyDown}
@@ -262,13 +263,13 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
         <button
             onClick={onRunTest}
             disabled={isRunning || !prompt.trim()}
-            aria-keyshortcuts={isMac ? 'Meta+Enter' : 'Control+Enter'}
+            aria-keyshortcuts={IS_MAC ? 'Meta+Enter' : 'Control+Enter'}
             className={`flex items-center gap-2 px-8 py-3 text-sm font-bold font-sans tracking-wider transition-all duration-300 relative overflow-hidden group ${
                 isRunning 
                 ? 'bg-gray-800 text-gray-500 cursor-not-allowed' 
                 : 'bg-cyber-lime text-black hover:bg-[#c0ff00] hover:shadow-[0_0_20px_rgba(211,253,80,0.4)]'
             }`}
-            title={`Simulate this attack against the safety filter (${isMac ? '⌘↵' : 'Ctrl+Enter'})`}
+            title={`Simulate this attack against the safety filter (${IS_MAC ? '⌘↵' : 'Ctrl+Enter'})`}
         >
             <span className="relative z-10 flex items-center gap-2">
                 <Play size={16} fill="currentColor" />
