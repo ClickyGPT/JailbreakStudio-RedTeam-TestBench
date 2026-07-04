@@ -9,3 +9,7 @@
 ## 2025-05-15 - [Keyboard Accessibility for Hover Menus]
 **Learning:** Hover-only dropdown menus are a common accessibility blocker for keyboard and screen reader users. Using Tailwind's `group-focus-within` utility provides a non-disruptive way to reveal these menus when their trigger or child elements receive focus.
 **Action:** Always complement `hover:` based visibility with `group-focus-within:` on menu containers to ensure they are accessible to keyboard-only users without changing the mouse-driven experience.
+
+## 2025-05-15 - Redundant ARIA Labels and Semantic Labels
+**Learning:** Including current values in ARIA labels for input fields (e.g., `aria-label="Variable name: [VALUE]"`) is redundant as screen readers already announce the value. Additionally, even in stylized UIs, semantic `<label htmlFor="...">` with `sr-only` classes is preferred over generic spans or placeholders for providing accessible names to form fields.
+**Action:** Use static ARIA labels or semantic labels with `id`/`htmlFor` associations. Avoid interpolating dynamic values into labels unless they provide unique context not already available in the field's value.
