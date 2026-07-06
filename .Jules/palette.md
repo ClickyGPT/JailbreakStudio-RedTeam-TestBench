@@ -13,3 +13,7 @@
 ## 2025-05-15 - [Minimalist Modal Accessibility]
 **Learning:** In dense, tool-heavy interfaces where visual labels create clutter, the `sr-only` class is essential for providing accessible names to input fields without impacting the minimalist aesthetic. Additionally, the `Escape` key listener is a non-negotiable standard for power-user productivity and accessibility in modals.
 **Action:** Use `sr-only` for labels in compact forms and always implement `Escape` key dismissal in modal components to balance "cyber" aesthetics with usability.
+
+## 2025-05-15 - [Consistency in Keyboard Navigation Focus]
+**Learning:** In multi-panel dashboard interfaces (like a Sidebar + Main Workspace + Results Panel), inconsistent focus indicators (`focus-visible`) can disorient keyboard users. If one panel uses rings but another only uses color shifts, the user may lose track of the focus position.
+**Action:** Apply consistent `focus-visible:ring-1` styles across all interactive elements (buttons, library items, copy triggers) to ensure a predictable and cohesive navigation experience throughout the entire application.
