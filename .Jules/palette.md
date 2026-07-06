@@ -9,3 +9,7 @@
 ## 2025-05-15 - [Keyboard Accessibility for Hover Menus]
 **Learning:** Hover-only dropdown menus are a common accessibility blocker for keyboard and screen reader users. Using Tailwind's `group-focus-within` utility provides a non-disruptive way to reveal these menus when their trigger or child elements receive focus.
 **Action:** Always complement `hover:` based visibility with `group-focus-within:` on menu containers to ensure they are accessible to keyboard-only users without changing the mouse-driven experience.
+
+## 2025-05-15 - [Minimalist Modal Accessibility]
+**Learning:** In dense, tool-heavy interfaces where visual labels create clutter, the `sr-only` class is essential for providing accessible names to input fields without impacting the minimalist aesthetic. Additionally, the `Escape` key listener is a non-negotiable standard for power-user productivity and accessibility in modals.
+**Action:** Use `sr-only` for labels in compact forms and always implement `Escape` key dismissal in modal components to balance "cyber" aesthetics with usability.
