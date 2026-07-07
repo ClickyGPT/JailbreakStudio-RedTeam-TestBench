@@ -5,3 +5,7 @@
 ## 2026-03-17 - [Keystroke-driven Re-render Bottleneck]
 **Learning:** Passing top-level state (like a live prompt string) as a prop to complex sibling components (like a results panel) causes expensive re-renders on every single keystroke.
 **Action:** Decouple the secondary components from live state by bundling the necessary snapshot (e.g., the prompt that triggered the test) into the result object, and use stable callback references (refs + useLayoutEffect) to prevent child component updates during high-frequency input.
+
+## 2026-07-02 - [Lazy State Initialization for URL-synced Apps]
+**Learning:** Initializing state with empty values and then syncing from URL/Storage in a `useEffect` on mount causes an unnecessary second render.
+**Action:** Parse the URL/Storage state once at the module level or inside a lazy initializer (`useState(() => parseState())`) to ensure the first render has the correct data, eliminating the need for a post-mount sync.
