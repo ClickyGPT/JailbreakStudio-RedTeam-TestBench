@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SimulationResult, TestStatus } from '../types';
-import { AlertTriangle, CheckCircle, XCircle, Activity, BrainCircuit } from 'lucide-react';
+import { AlertTriangle, CheckCircle, XCircle, Activity, BrainCircuit, Copy, Check } from 'lucide-react';
 import { analyzeFailure } from '../services/geminiService';
 
 interface SimulationPanelProps {
@@ -11,6 +11,30 @@ interface SimulationPanelProps {
 const SimulationPanel: React.FC<SimulationPanelProps> = React.memo(({ result, isRunning }) => {
   const [analysis, setAnalysis] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    if (!result?.output) return;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(result.output).then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      }).catch(err => console.error("Clipboard write failed", err));
+    } else {
+      try {
+        const el = document.createElement('textarea');
+        el.value = result.output;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      } catch (e) {
+        console.error("Fallback copy failed", e);
+      }
+    }
+  };
 
   const handleAnalyze = async () => {
     if (!result) return;
@@ -20,13 +44,18 @@ const SimulationPanel: React.FC<SimulationPanelProps> = React.memo(({ result, is
     setIsAnalyzing(false);
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     setAnalysis(null);
+    setCopied(false);
   }, [result]);
 
   if (isRunning) {
     return (
-        <div className="h-full flex flex-col items-center justify-center space-y-6 text-cyber-muted animate-pulse">
+        <div
+            className="h-full flex flex-col items-center justify-center space-y-6 text-cyber-muted animate-pulse"
+            role="status"
+            aria-live="polite"
+        >
             <Activity size={64} className="text-cyber-lime" />
             <p className="font-mono text-xs tracking-widest uppercase">Target Model Simulating Response...</p>
         </div>
@@ -60,8 +89,20 @@ const SimulationPanel: React.FC<SimulationPanelProps> = React.memo(({ result, is
       </div>
 
       <div className="flex-1 overflow-y-auto p-6 space-y-8">
-        <div>
-            <h4 className="text-[10px] font-mono text-gray-500 mb-3 uppercase tracking-widest">Target Model Output</h4>
+        <div className="group/output">
+            <div className="flex justify-between items-center mb-3">
+                <h4 className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">Target Model Output</h4>
+                <button
+                    onClick={handleCopy}
+                    className="text-[10px] font-mono text-cyber-lime/40 hover:text-cyber-lime flex items-center gap-1 transition-all uppercase tracking-widest px-2 py-1 rounded border border-cyber-lime/10 hover:border-cyber-lime/30 opacity-0 group-hover/output:opacity-100 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-cyber-lime/30"
+                    title="Copy model output to clipboard"
+                    aria-live="polite"
+                >
+                    {copied ? <Check size={10} className="text-green-400" /> : <Copy size={10} />}
+                    <span className="sr-only">{copied ? 'Output copied to clipboard' : 'Copy output'}</span>
+                    <span aria-hidden="true">{copied ? 'Copied' : 'Copy'}</span>
+                </button>
+            </div>
             <div className={`p-5 rounded-sm border font-mono text-sm whitespace-pre-wrap leading-relaxed ${
                 isSuccess 
                 ? 'border-cyber-lime/30 text-white bg-cyber-lime/5 shadow-[0_0_20px_rgba(211,253,80,0.05)]' 

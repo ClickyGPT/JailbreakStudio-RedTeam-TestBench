@@ -13,3 +13,7 @@
 ## 2025-05-15 - [Minimalist Modal Accessibility]
 **Learning:** In dense, tool-heavy interfaces where visual labels create clutter, the `sr-only` class is essential for providing accessible names to input fields without impacting the minimalist aesthetic. Additionally, the `Escape` key listener is a non-negotiable standard for power-user productivity and accessibility in modals.
 **Action:** Use `sr-only` for labels in compact forms and always implement `Escape` key dismissal in modal components to balance "cyber" aesthetics with usability.
+
+## 2025-05-14 - [Accessible Clipboard Feedback in Dense Interfaces]
+**Learning:** For high-density simulation results, a hover-triggered "Copy" button reduces visual clutter while maintaining utility. Providing immediate visual and screen-reader feedback (via `aria-live="polite"`) for clipboard actions is critical for confirming success in a single-page app where navigation doesn't change.
+**Action:** Use a combination of transient state (e.g., "Copied") and ARIA live regions to signal success for utility actions like copy/paste.
