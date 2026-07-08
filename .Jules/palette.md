@@ -13,3 +13,7 @@
 ## 2025-05-15 - [Minimalist Modal Accessibility]
 **Learning:** In dense, tool-heavy interfaces where visual labels create clutter, the `sr-only` class is essential for providing accessible names to input fields without impacting the minimalist aesthetic. Additionally, the `Escape` key listener is a non-negotiable standard for power-user productivity and accessibility in modals.
 **Action:** Use `sr-only` for labels in compact forms and always implement `Escape` key dismissal in modal components to balance "cyber" aesthetics with usability.
+
+## 2025-05-15 - [High-Utility Read-Only Inputs]
+**Learning:** For high-utility read-only inputs (like share links, API keys, or code snippets), users almost always want to select the entire text for copying.
+**Action:** Add `onFocus={(e) => e.target.select()}` to such inputs to provide a frictionless "one-click selection" experience.
