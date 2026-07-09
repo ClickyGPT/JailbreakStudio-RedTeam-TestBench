@@ -52,11 +52,13 @@ const ShareModal: React.FC<ShareModalProps> = ({ shareUrl, onClose }) => {
             </div>
 
             <div className="space-y-3">
-                <label className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">Secure Share Link</label>
+                <label htmlFor="share-link" className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">Secure Share Link</label>
                 <div className="flex gap-2">
                     <input 
+                        id="share-link"
                         readOnly 
                         value={shareUrl} 
+                        onFocus={(e) => e.target.select()}
                         className="flex-1 bg-black border border-gray-800 rounded px-4 py-3 text-xs font-mono text-cyber-lime focus:outline-none focus:border-cyber-lime selection:bg-cyber-lime selection:text-black"
                     />
                     <button 
