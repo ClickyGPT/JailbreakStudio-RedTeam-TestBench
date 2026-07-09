@@ -105,6 +105,7 @@ const RedTeamChat: React.FC = React.memo(() => {
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                 placeholder="Query RedTeam Database..."
+                aria-label="Query RedTeam Database"
                 className="flex-1 bg-gray-900 border border-gray-800 rounded px-4 py-3 text-sm text-white focus:outline-none focus:border-cyber-lime focus:bg-black transition-colors font-mono"
             />
             <button 
