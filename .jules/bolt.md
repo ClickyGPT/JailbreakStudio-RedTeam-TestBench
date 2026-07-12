@@ -5,3 +5,7 @@
 ## 2026-03-17 - [Keystroke-driven Re-render Bottleneck]
 **Learning:** Passing top-level state (like a live prompt string) as a prop to complex sibling components (like a results panel) causes expensive re-renders on every single keystroke.
 **Action:** Decouple the secondary components from live state by bundling the necessary snapshot (e.g., the prompt that triggered the test) into the result object, and use stable callback references (refs + useLayoutEffect) to prevent child component updates during high-frequency input.
+
+## 2026-07-12 - [Chat History Re-render Bottleneck]
+**Learning:** In chat components like RedTeamChat.tsx, keeping the message history in the same component as the input state causes O(N) re-renders on every keystroke, where N is the number of messages.
+**Action:** Isolate the message history into a memoized sub-component (e.g., MessageList) to ensure typing performance remains O(1) regardless of conversation length.
