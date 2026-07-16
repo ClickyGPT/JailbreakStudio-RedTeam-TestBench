@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Copy, ThumbsUp, ThumbsDown } from 'lucide-react';
 
 interface ShareModalProps {
@@ -10,6 +10,14 @@ const ShareModal: React.FC<ShareModalProps> = ({ shareUrl, onClose }) => {
   const [copied, setCopied] = useState(false);
   const [voted, setVoted] = useState<'up' | 'down' | null>(null);
 
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, [onClose]);
+
   const handleCopy = () => {
     navigator.clipboard.writeText(shareUrl);
     setCopied(true);
@@ -18,10 +26,16 @@ const ShareModal: React.FC<ShareModalProps> = ({ shareUrl, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4 backdrop-blur-md">
-      <div className="bg-cyber-black border border-gray-800 w-full max-w-md rounded-lg shadow-2xl overflow-hidden">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="share-modal-title"
+        className="bg-cyber-black border border-gray-800 w-full max-w-md rounded-lg shadow-2xl overflow-hidden"
+      >
         <div className="p-5 border-b border-gray-800 flex justify-between items-center bg-gray-900/50">
-          <h3 className="font-sans font-black text-white text-lg tracking-tight uppercase">Share Vector</h3>
+          <h3 id="share-modal-title" className="font-sans font-black text-white text-lg tracking-tight uppercase">Share Vector</h3>
           <button
+            type="button"
             onClick={onClose}
             aria-label="Close modal"
             className="text-gray-500 hover:text-white transition-colors"
@@ -35,6 +49,7 @@ const ShareModal: React.FC<ShareModalProps> = ({ shareUrl, onClose }) => {
                 <p className="text-gray-400 text-sm font-sans">Did this prompt successfully bypass the target?</p>
                 <div className="flex justify-center gap-4">
                     <button 
+                        type="button"
                         onClick={() => setVoted('up')}
                         aria-label="Vote Up"
                         className={`p-4 rounded-full border transition-all ${voted === 'up' ? 'bg-cyber-lime text-black border-cyber-lime' : 'border-gray-700 hover:border-cyber-lime text-gray-500 hover:text-cyber-lime'}`}
@@ -42,6 +57,7 @@ const ShareModal: React.FC<ShareModalProps> = ({ shareUrl, onClose }) => {
                         <ThumbsUp size={24} />
                     </button>
                     <button 
+                        type="button"
                         onClick={() => setVoted('down')}
                         aria-label="Vote Down"
                         className={`p-4 rounded-full border transition-all ${voted === 'down' ? 'bg-cyber-red text-black border-cyber-red' : 'border-gray-700 hover:border-cyber-red text-gray-500 hover:text-cyber-red'}`}
@@ -52,14 +68,17 @@ const ShareModal: React.FC<ShareModalProps> = ({ shareUrl, onClose }) => {
             </div>
 
             <div className="space-y-3">
-                <label className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">Secure Share Link</label>
+                <label htmlFor="share-url-input" className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">Secure Share Link</label>
                 <div className="flex gap-2">
                     <input 
+                        id="share-url-input"
                         readOnly 
                         value={shareUrl} 
+                        onFocus={(e) => e.target.select()}
                         className="flex-1 bg-black border border-gray-800 rounded px-4 py-3 text-xs font-mono text-cyber-lime focus:outline-none focus:border-cyber-lime selection:bg-cyber-lime selection:text-black"
                     />
                     <button 
+                        type="button"
                         onClick={handleCopy}
                         aria-label="Copy share link"
                         className="bg-cyber-lime/10 border border-cyber-lime/50 text-cyber-lime px-4 rounded hover:bg-cyber-lime hover:text-black transition-all font-bold"
