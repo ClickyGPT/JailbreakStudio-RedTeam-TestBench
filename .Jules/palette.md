@@ -13,3 +13,7 @@
 ## 2025-05-15 - [Minimalist Modal Accessibility]
 **Learning:** In dense, tool-heavy interfaces where visual labels create clutter, the `sr-only` class is essential for providing accessible names to input fields without impacting the minimalist aesthetic. Additionally, the `Escape` key listener is a non-negotiable standard for power-user productivity and accessibility in modals.
 **Action:** Use `sr-only` for labels in compact forms and always implement `Escape` key dismissal in modal components to balance "cyber" aesthetics with usability.
+
+## 2025-05-16 - [Coherent Brand Focus Rings and Theme Colors]
+**Learning:** Custom interactive elements (like card selectors or custom buttons) often omit default browser focus outlines for aesthetic reasons, rendering them completely inaccessible to keyboard navigators. Using custom, brand-coherent focus styles (`focus-visible:ring-1 focus-visible:ring-cyber-lime/30`) preserves both high-fidelity aesthetics and accessibility. Furthermore, visual color consistency (migrating off deprecated colors like `cyber-blue` to the primary brand `cyber-lime`) avoids cognitive confusion about interactive status.
+**Action:** Never rely on default focus outlines or completely disable them without supplying a high-contrast, brand-compliant alternative. Periodically audit interactive elements to align all hover/active focus states with the primary brand tokens.
