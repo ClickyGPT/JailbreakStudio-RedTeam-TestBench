@@ -31,12 +31,12 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = React.memo(({
               <button
                 key={template.id}
                 onClick={() => onSelectTemplate(template)}
-                className="w-full text-left p-4 rounded bg-gray-900/30 border border-gray-800 hover:border-cyber-lime hover:bg-gray-900 hover:shadow-[0_0_15px_rgba(211,253,80,0.1)] transition-all duration-300 group relative overflow-hidden"
+                className="w-full text-left p-4 rounded bg-gray-900/30 border border-gray-800 hover:border-cyber-lime hover:bg-gray-900 hover:shadow-[0_0_15px_rgba(211,253,80,0.1)] transition-all duration-300 group relative overflow-hidden focus-visible:outline-none focus-visible:border-cyber-lime focus-visible:bg-gray-900 focus-visible:shadow-[0_0_15px_rgba(211,253,80,0.2)] focus-visible:ring-1 focus-visible:ring-cyber-lime/30"
               >
-                <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-cyber-lime opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-cyber-lime opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity"></div>
                 <div className="flex justify-between items-start mb-2">
-                  <span className="font-bold text-sm text-gray-200 group-hover:text-cyber-lime font-sans">{template.name}</span>
-                  <ChevronRight size={14} className="text-gray-700 group-hover:text-cyber-lime transition-colors" />
+                  <span className="font-bold text-sm text-gray-200 group-hover:text-cyber-lime group-focus-visible:text-cyber-lime font-sans">{template.name}</span>
+                  <ChevronRight size={14} className="text-gray-700 group-hover:text-cyber-lime group-focus-visible:text-cyber-lime transition-colors" />
                 </div>
                 <p className="text-xs text-gray-500 line-clamp-2 font-sans">{template.description}</p>
               </button>
@@ -56,11 +56,11 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = React.memo(({
               <button
                 key={template.id}
                 onClick={() => onSelectTemplate(template)}
-                className="w-full text-left p-4 rounded bg-gray-900/30 border border-gray-800 hover:border-cyber-lime hover:bg-gray-900 hover:shadow-[0_0_15px_rgba(211,253,80,0.1)] transition-all duration-300 group relative overflow-hidden"
+                className="w-full text-left p-4 rounded bg-gray-900/30 border border-gray-800 hover:border-cyber-lime hover:bg-gray-900 hover:shadow-[0_0_15px_rgba(211,253,80,0.1)] transition-all duration-300 group relative overflow-hidden focus-visible:outline-none focus-visible:border-cyber-lime focus-visible:bg-gray-900 focus-visible:shadow-[0_0_15px_rgba(211,253,80,0.2)] focus-visible:ring-1 focus-visible:ring-cyber-lime/30"
               >
-                <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-purple-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-purple-500 opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity"></div>
                 <div className="flex justify-between items-start mb-2">
-                  <span className="font-bold text-sm text-gray-200 group-hover:text-white flex items-center gap-2 font-sans">
+                  <span className="font-bold text-sm text-gray-200 group-hover:text-white group-focus-visible:text-white flex items-center gap-2 font-sans">
                     <FlaskConical size={12} className="text-purple-500" />
                     {template.name}
                   </span>
