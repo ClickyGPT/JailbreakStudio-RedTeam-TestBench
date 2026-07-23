@@ -1,3 +1,7 @@
+## 2025-05-15 - [State-driven Accessible Clipboard Actions]
+**Learning:** In technical/cyberpunk themed UIs where multiple copy buttons exist, providing dynamic text in the UI (e.g., changing from a copy icon to "COPIED") should always be paired with a dynamic `aria-label` (e.g., `aria-label={copied ? "Copied share link" : "Copy share link"}`) to notify screen readers of the state transition. Additionally, pairing this with `onFocus={(e) => e.target.select()}` on read-only inputs delivers a highly fluid power-user sharing experience.
+**Action:** When implementing any clipboard copy trigger in this codebase, ensure both dynamic state-driven `aria-label` and `onFocus` input selection are used.
+
 ## 2025-05-15 - [Accessibility in Themed UIs]
 **Learning:** "Cyberpunk" or "Studio" themed UIs often use non-semantic elements (like `<span>` or `<div>`) to achieve a specific aesthetic for buttons and navigation. This makes them invisible to screen readers and keyboard users.
 **Action:** Always wrap stylized "links" in semantic `<button>` or `<a>` tags and add `aria-label` to icon-only buttons, regardless of how "technical" or "minimalist" the UI design is.
