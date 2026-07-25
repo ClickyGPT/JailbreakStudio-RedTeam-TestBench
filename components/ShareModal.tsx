@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Copy, ThumbsUp, ThumbsDown } from 'lucide-react';
 
 interface ShareModalProps {
@@ -10,6 +10,14 @@ const ShareModal: React.FC<ShareModalProps> = ({ shareUrl, onClose }) => {
   const [copied, setCopied] = useState(false);
   const [voted, setVoted] = useState<'up' | 'down' | null>(null);
 
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, [onClose]);
+
   const handleCopy = () => {
     navigator.clipboard.writeText(shareUrl);
     setCopied(true);
@@ -18,9 +26,14 @@ const ShareModal: React.FC<ShareModalProps> = ({ shareUrl, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4 backdrop-blur-md">
-      <div className="bg-cyber-black border border-gray-800 w-full max-w-md rounded-lg shadow-2xl overflow-hidden">
+      <div
+        className="bg-cyber-black border border-gray-800 w-full max-w-md rounded-lg shadow-2xl overflow-hidden"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="share-title"
+      >
         <div className="p-5 border-b border-gray-800 flex justify-between items-center bg-gray-900/50">
-          <h3 className="font-sans font-black text-white text-lg tracking-tight uppercase">Share Vector</h3>
+          <h3 id="share-title" className="font-sans font-black text-white text-lg tracking-tight uppercase">Share Vector</h3>
           <button
             onClick={onClose}
             aria-label="Close modal"
@@ -52,11 +65,13 @@ const ShareModal: React.FC<ShareModalProps> = ({ shareUrl, onClose }) => {
             </div>
 
             <div className="space-y-3">
-                <label className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">Secure Share Link</label>
+                <label htmlFor="share-link-input" className="text-[10px] font-mono text-gray-500 uppercase tracking-widest block">Secure Share Link</label>
                 <div className="flex gap-2">
                     <input 
+                        id="share-link-input"
                         readOnly 
                         value={shareUrl} 
+                        onFocus={(e) => e.target.select()}
                         className="flex-1 bg-black border border-gray-800 rounded px-4 py-3 text-xs font-mono text-cyber-lime focus:outline-none focus:border-cyber-lime selection:bg-cyber-lime selection:text-black"
                     />
                     <button 
