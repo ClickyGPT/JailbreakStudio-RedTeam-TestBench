@@ -5,3 +5,7 @@
 ## 2026-03-17 - [Keystroke-driven Re-render Bottleneck]
 **Learning:** Passing top-level state (like a live prompt string) as a prop to complex sibling components (like a results panel) causes expensive re-renders on every single keystroke.
 **Action:** Decouple the secondary components from live state by bundling the necessary snapshot (e.g., the prompt that triggered the test) into the result object, and use stable callback references (refs + useLayoutEffect) to prevent child component updates during high-frequency input.
+
+## 2026-03-18 - [Typing-Induced Chat List Re-renders]
+**Learning:** Storing current typing state (like a chat text input) in the same component that renders a chat history list causes the entire list of messages to re-evaluate and re-render on every single keystroke.
+**Action:** Extract the message list and typing indicators into a memoized sub-component (`React.memo`) to completely decouple the typing input's high-frequency state updates from the static message list.
