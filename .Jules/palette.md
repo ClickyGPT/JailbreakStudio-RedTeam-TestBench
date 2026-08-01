@@ -13,3 +13,7 @@
 ## 2025-05-15 - [Minimalist Modal Accessibility]
 **Learning:** In dense, tool-heavy interfaces where visual labels create clutter, the `sr-only` class is essential for providing accessible names to input fields without impacting the minimalist aesthetic. Additionally, the `Escape` key listener is a non-negotiable standard for power-user productivity and accessibility in modals.
 **Action:** Use `sr-only` for labels in compact forms and always implement `Escape` key dismissal in modal components to balance "cyber" aesthetics with usability.
+
+## 2025-08-01 - [High Utility Modal Access Patterns]
+**Learning:** For modal dialogues showcasing critical, read-only content such as generated URL hashes or sharing vectors, adding auto-select behaviors on focus combined with precise state-aware `aria-label` updates on dynamic toggle button actions yields a compound benefit of visual delight and assistive clarity.
+**Action:** Always use `.select()` on focus for high-utility copy-to-clipboard text targets, and ensure success-state confirmation transitions update associated labels dynamically for clear assistive narration.
