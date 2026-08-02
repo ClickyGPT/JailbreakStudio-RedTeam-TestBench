@@ -39,16 +39,36 @@ const App: React.FC = () => {
     }
   }, []);
 
-  // Track Mouse for Spotlight - Use CSS variables to avoid React re-renders
+  // Track Mouse for Spotlight - Use CSS variables to avoid React re-renders,
+  // and throttle updates using requestAnimationFrame to prevent style recalculation thrashing.
   useEffect(() => {
+    let animationFrameId: number;
+    let mouseX = 0;
+    let mouseY = 0;
+    let needsUpdate = false;
+
     const handleMouseMove = (e: MouseEvent) => {
-        if (containerRef.current) {
-            containerRef.current.style.setProperty('--mouse-x', `${e.clientX}px`);
-            containerRef.current.style.setProperty('--mouse-y', `${e.clientY}px`);
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        if (!needsUpdate) {
+            needsUpdate = true;
+            animationFrameId = requestAnimationFrame(updateSpotlight);
         }
     };
+
+    const updateSpotlight = () => {
+        if (containerRef.current) {
+            containerRef.current.style.setProperty('--mouse-x', `${mouseX}px`);
+            containerRef.current.style.setProperty('--mouse-y', `${mouseY}px`);
+        }
+        needsUpdate = false;
+    };
+
     window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    return () => {
+        window.removeEventListener('mousemove', handleMouseMove);
+        cancelAnimationFrame(animationFrameId);
+    };
   }, []);
 
   const handleSelectTemplate = React.useCallback((template: PromptTemplate) => {
