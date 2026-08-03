@@ -13,3 +13,7 @@
 ## 2025-05-15 - [Minimalist Modal Accessibility]
 **Learning:** In dense, tool-heavy interfaces where visual labels create clutter, the `sr-only` class is essential for providing accessible names to input fields without impacting the minimalist aesthetic. Additionally, the `Escape` key listener is a non-negotiable standard for power-user productivity and accessibility in modals.
 **Action:** Use `sr-only` for labels in compact forms and always implement `Escape` key dismissal in modal components to balance "cyber" aesthetics with usability.
+
+## 2025-08-03 - [Theme Branding and Color Palette Synchronization]
+**Learning:** Legacy design styles (e.g. cyber-blue colors) left behind in some components (like `TemplateEditorModal`) break visual consistency when the rest of the application is updated to a unified cyber-lime theme. Cleaning up and unifying component color schemes improves cognitive trust.
+**Action:** Always audit modified modal components to replace stale colors with unified brand colors (e.g. cyber-lime) and verify correct labeling associations with IDs.
