@@ -13,3 +13,7 @@
 ## 2025-05-15 - [Minimalist Modal Accessibility]
 **Learning:** In dense, tool-heavy interfaces where visual labels create clutter, the `sr-only` class is essential for providing accessible names to input fields without impacting the minimalist aesthetic. Additionally, the `Escape` key listener is a non-negotiable standard for power-user productivity and accessibility in modals.
 **Action:** Use `sr-only` for labels in compact forms and always implement `Escape` key dismissal in modal components to balance "cyber" aesthetics with usability.
+
+## 2025-10-24 - [Semantic Highlighting in Sidebar Navigations]
+**Learning:** When highlighting active items in lists/navigation elements (such as Arsenal sidebar templates), purely visual styling (e.g., border/background changes) does not convey state to screen readers.
+**Action:** Always couple visual selection indicators with semantic state properties like `aria-current="true"` (or `aria-selected` for tab-like elements) to ensure screen-reader users understand which option is currently active.
