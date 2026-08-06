@@ -13,3 +13,7 @@
 ## 2025-05-15 - [Minimalist Modal Accessibility]
 **Learning:** In dense, tool-heavy interfaces where visual labels create clutter, the `sr-only` class is essential for providing accessible names to input fields without impacting the minimalist aesthetic. Additionally, the `Escape` key listener is a non-negotiable standard for power-user productivity and accessibility in modals.
 **Action:** Use `sr-only` for labels in compact forms and always implement `Escape` key dismissal in modal components to balance "cyber" aesthetics with usability.
+
+## 2025-05-16 - [Aria-Current for Selection Clarity in Complex Sidebars]
+**Learning:** In complex visual UIs with dense sidebars (like template libraries), visual highlighting alone (such as borders or neon shadows) is insufficient for screen readers to recognize which item is currently active or loaded. Using `aria-current="true"` provides immediate semantic clarity to assistive technologies.
+**Action:** Always apply `aria-current="true"` to buttons or items representing the active/loaded state in lists, libraries, or sidebars to ensure visual state changes are programmatically accessible.
