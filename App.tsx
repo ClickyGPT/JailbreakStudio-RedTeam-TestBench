@@ -95,6 +95,7 @@ const App: React.FC = () => {
         {/* Left Sidebar: Library */}
         <div className="hidden md:block">
             <TemplateLibrary 
+              currentPrompt={prompt}
               onSelectTemplate={handleSelectTemplate}
             />
         </div>
