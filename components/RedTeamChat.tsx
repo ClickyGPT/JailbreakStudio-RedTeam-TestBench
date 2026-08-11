@@ -1,6 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { MessageSquare, X, Send, Bot, User } from 'lucide-react';
 import { chatWithExpert } from '../services/geminiService';
+import { useEscapeKey } from '../utils/useEscapeKey';
 
 const RedTeamChat: React.FC = React.memo(() => {
   const [isOpen, setIsOpen] = useState(false);
@@ -10,12 +11,26 @@ const RedTeamChat: React.FC = React.memo(() => {
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleClose = useCallback(() => setIsOpen(false), []);
+  useEscapeKey(handleClose, isOpen);
 
   useEffect(() => {
     if (scrollRef.current) {
         scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages, isOpen]);
+
+  // Auto-focus input when chat opens
+  useEffect(() => {
+    if (isOpen) {
+        const timer = setTimeout(() => {
+            inputRef.current?.focus();
+        }, 100);
+        return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
 
   const handleSend = async () => {
     if (!input.trim() || isTyping) return;
@@ -41,7 +56,7 @@ const RedTeamChat: React.FC = React.memo(() => {
         <button 
             onClick={() => setIsOpen(true)}
             aria-label="Open Zephyr AI Chat"
-            className="fixed bottom-6 right-6 bg-cyber-lime text-black p-4 rounded-full shadow-[0_0_20px_rgba(211,253,80,0.4)] hover:scale-105 hover:bg-white transition-all z-50 flex items-center gap-2 font-bold font-sans tracking-wide"
+            className="fixed bottom-6 right-6 bg-cyber-lime text-black p-4 rounded-full shadow-[0_0_20px_rgba(211,253,80,0.4)] hover:scale-105 hover:bg-white transition-all z-50 flex items-center gap-2 font-bold font-sans tracking-wide focus-visible:ring-2 focus-visible:ring-black outline-none"
         >
             <Bot size={24} />
             <span className="hidden md:inline">ZEPHYR AI</span>
@@ -60,16 +75,21 @@ const RedTeamChat: React.FC = React.memo(() => {
                 <span className="text-black font-black text-sm tracking-widest uppercase">RedTeam Consultant</span>
             </div>
             <button
-                onClick={() => setIsOpen(false)}
+                onClick={handleClose}
                 aria-label="Close Chat"
-                className="text-black hover:text-white transition-colors"
+                className="text-black hover:text-white transition-colors focus-visible:ring-2 focus-visible:ring-black outline-none rounded-sm"
             >
                 <X size={20} />
             </button>
         </div>
 
         {/* Messages */}
-        <div ref={scrollRef} className="flex-1 overflow-y-auto p-5 space-y-6 bg-[#0a0a0a]">
+        <div
+            ref={scrollRef}
+            role="log"
+            aria-live="polite"
+            className="flex-1 overflow-y-auto p-5 space-y-6 bg-[#0a0a0a]"
+        >
             {messages.map((m, i) => (
                 <div key={i} className={`flex gap-3 ${m.role === 'user' ? 'flex-row-reverse' : ''}`}>
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 border border-gray-800 ${m.role === 'user' ? 'bg-gray-800' : 'bg-black text-cyber-lime'}`}>
@@ -85,7 +105,7 @@ const RedTeamChat: React.FC = React.memo(() => {
                 </div>
             ))}
             {isTyping && (
-                <div className="flex gap-3">
+                <div className="flex gap-3" aria-live="polite" aria-label="Zephyr is thinking">
                     <div className="w-8 h-8 rounded-full bg-black border border-gray-800 text-cyber-lime flex items-center justify-center shrink-0">
                         <Bot size={14} />
                     </div>
@@ -101,10 +121,12 @@ const RedTeamChat: React.FC = React.memo(() => {
         {/* Input */}
         <div className="p-4 bg-cyber-black border-t border-gray-900 flex gap-2">
             <input 
+                ref={inputRef}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                 placeholder="Query RedTeam Database..."
+                aria-label="Message Zephyr AI"
                 className="flex-1 bg-gray-900 border border-gray-800 rounded px-4 py-3 text-sm text-white focus:outline-none focus:border-cyber-lime focus:bg-black transition-colors font-mono"
             />
             <button 
