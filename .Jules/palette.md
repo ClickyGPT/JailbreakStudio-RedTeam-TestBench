@@ -13,3 +13,7 @@
 ## 2025-05-15 - [Minimalist Modal Accessibility]
 **Learning:** In dense, tool-heavy interfaces where visual labels create clutter, the `sr-only` class is essential for providing accessible names to input fields without impacting the minimalist aesthetic. Additionally, the `Escape` key listener is a non-negotiable standard for power-user productivity and accessibility in modals.
 **Action:** Use `sr-only` for labels in compact forms and always implement `Escape` key dismissal in modal components to balance "cyber" aesthetics with usability.
+
+## 2025-05-16 - [Sidebar Selection Synchronization]
+**Learning:** In layout patterns where content can be populated from a sidebar library (like templates), visual selection feedback should be synchronized with the active editor state, accompanied by `aria-current="true"` on the active item to ensure programmatic clarity for screen readers.
+**Action:** Dynamically compute and highlight active states in sidebars based on the current editor state, and ensure correct ARIA properties are updated in real-time.
