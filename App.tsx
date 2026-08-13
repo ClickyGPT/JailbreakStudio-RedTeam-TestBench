@@ -40,15 +40,30 @@ const App: React.FC = () => {
   }, []);
 
   // Track Mouse for Spotlight - Use CSS variables to avoid React re-renders
+  // BOLT OPTIMIZATION: Throttle cursor physics updates with requestAnimationFrame to prevent style/layout calculation thrashing on high-frequency mice,
+  // and use passive event listener to optimize browser thread scrolling and rendering.
   useEffect(() => {
+    let rafId: number | null = null;
+
     const handleMouseMove = (e: MouseEvent) => {
-        if (containerRef.current) {
-            containerRef.current.style.setProperty('--mouse-x', `${e.clientX}px`);
-            containerRef.current.style.setProperty('--mouse-y', `${e.clientY}px`);
+        if (rafId !== null) return;
+
+        rafId = requestAnimationFrame(() => {
+            if (containerRef.current) {
+                containerRef.current.style.setProperty('--mouse-x', `${e.clientX}px`);
+                containerRef.current.style.setProperty('--mouse-y', `${e.clientY}px`);
+            }
+            rafId = null;
+        });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    return () => {
+        window.removeEventListener('mousemove', handleMouseMove);
+        if (rafId !== null) {
+            cancelAnimationFrame(rafId);
         }
     };
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
   const handleSelectTemplate = React.useCallback((template: PromptTemplate) => {
