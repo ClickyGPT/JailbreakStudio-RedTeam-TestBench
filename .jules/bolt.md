@@ -5,3 +5,7 @@
 ## 2026-03-17 - [Keystroke-driven Re-render Bottleneck]
 **Learning:** Passing top-level state (like a live prompt string) as a prop to complex sibling components (like a results panel) causes expensive re-renders on every single keystroke.
 **Action:** Decouple the secondary components from live state by bundling the necessary snapshot (e.g., the prompt that triggered the test) into the result object, and use stable callback references (refs + useLayoutEffect) to prevent child component updates during high-frequency input.
+
+## 2026-07-03 - [Eliminating Redundant Mount-time Re-renders]
+**Learning:** Using `useEffect` or `ref` callbacks to initialize state (like URL parsing, platform detection, or DOM references) causes React to perform an initial "empty" render followed immediately by a second render once the state is set.
+**Action:** Use lazy state initialization with a module-level constant (SSR-guarded) for data available at load time, and use `useRef` instead of state for DOM element references to keep the initial mount clean and single-cycle.
