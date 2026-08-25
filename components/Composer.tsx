@@ -109,7 +109,9 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
              <button
                 onClick={() => handleAugment('clean')}
                 disabled={isAugmenting || !prompt.trim()}
-                className="px-3 py-1 text-xs font-mono font-bold bg-cyber-lime/5 text-cyber-lime border border-cyber-lime/30 rounded hover:bg-cyber-lime hover:text-black flex items-center gap-1 transition-all disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wider"
+                aria-label={isAugmenting ? "Cleaning prompt for maximum viability" : "Optimize prompt for maximum viability"}
+                aria-busy={isAugmenting}
+                className="px-3 py-1 text-xs font-mono font-bold bg-cyber-lime/5 text-cyber-lime border border-cyber-lime/30 rounded hover:bg-cyber-lime hover:text-black flex items-center gap-1 transition-all disabled:opacity-50 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-cyber-lime focus-visible:outline-none uppercase tracking-wider"
                 title="Optimize prompt for maximum viability (remove noise, fix structure)"
              >
                 🧼 {isAugmenting ? 'CLEANING...' : 'CLEAN'}
@@ -150,6 +152,8 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
 
              <div className="relative group">
                 <button 
+                    aria-label="Insert prompt variables"
+                    aria-haspopup="true"
                     className="px-3 py-1 text-xs font-mono font-bold bg-gray-900 text-cyber-muted border border-gray-700 rounded hover:border-cyber-lime hover:text-cyber-lime transition-all focus-visible:border-cyber-lime focus-visible:text-cyber-lime focus-visible:outline-none uppercase tracking-wider"
                     title="Insert predefined or custom prompt variables"
                 >
