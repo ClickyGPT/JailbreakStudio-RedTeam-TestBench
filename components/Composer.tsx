@@ -107,9 +107,10 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
         <div className="flex gap-2">
              {/* Clean Button */}
              <button
+                type="button"
                 onClick={() => handleAugment('clean')}
                 disabled={isAugmenting || !prompt.trim()}
-                className="px-3 py-1 text-xs font-mono font-bold bg-cyber-lime/5 text-cyber-lime border border-cyber-lime/30 rounded hover:bg-cyber-lime hover:text-black flex items-center gap-1 transition-all disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wider"
+                className="px-3 py-1 text-xs font-mono font-bold bg-cyber-lime/5 text-cyber-lime border border-cyber-lime/30 rounded hover:bg-cyber-lime hover:text-black flex items-center gap-1 transition-all focus-visible:bg-cyber-lime focus-visible:text-black focus-visible:outline-none disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wider"
                 title="Optimize prompt for maximum viability (remove noise, fix structure)"
              >
                 🧼 {isAugmenting ? 'CLEANING...' : 'CLEAN'}
@@ -117,6 +118,7 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
 
              <div className="relative group">
                 <button 
+                    type="button"
                     className="px-3 py-1 text-xs font-mono font-bold bg-cyber-lime/5 text-cyber-lime border border-cyber-lime/30 rounded hover:bg-cyber-lime hover:text-black flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed transition-all focus-visible:bg-cyber-lime focus-visible:text-black focus-visible:outline-none uppercase tracking-wider"
                     disabled={isAugmenting}
                     title="Use AI to rewrite and enhance your attack vector"
@@ -125,22 +127,25 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
                 </button>
                 <div className="absolute right-0 top-full mt-1 w-48 bg-cyber-black border border-gray-800 rounded shadow-[0_0_20px_rgba(0,0,0,0.8)] hidden group-hover:block group-focus-within:block z-20 backdrop-blur-xl">
                     <button 
+                        type="button"
                         onClick={() => handleAugment('obfuscate')} 
-                        className="block w-full text-left px-4 py-3 text-xs hover:bg-cyber-lime hover:text-black text-gray-300 transition-colors border-b border-gray-900"
+                        className="block w-full text-left px-4 py-3 text-xs hover:bg-cyber-lime hover:text-black focus-visible:bg-cyber-lime focus-visible:text-black focus-visible:outline-none text-gray-300 transition-colors border-b border-gray-900"
                         title="Apply stealth techniques (Base64, Leetspeak) to hide intent"
                     >
                         ⚡ Obfuscate (Stealth)
                     </button>
                     <button 
+                        type="button"
                         onClick={() => handleAugment('expand')} 
-                        className="block w-full text-left px-4 py-3 text-xs hover:bg-cyber-lime hover:text-black text-gray-300 transition-colors border-b border-gray-900"
+                        className="block w-full text-left px-4 py-3 text-xs hover:bg-cyber-lime hover:text-black focus-visible:bg-cyber-lime focus-visible:text-black focus-visible:outline-none text-gray-300 transition-colors border-b border-gray-900"
                         title="Wrap prompt in complex roleplay or emotional scenarios"
                     >
                         🎭 Persona (Framing)
                     </button>
                     <button 
+                        type="button"
                         onClick={() => handleAugment('refine')} 
-                        className="block w-full text-left px-4 py-3 text-xs hover:bg-cyber-lime hover:text-black text-gray-300 transition-colors"
+                        className="block w-full text-left px-4 py-3 text-xs hover:bg-cyber-lime hover:text-black focus-visible:bg-cyber-lime focus-visible:text-black focus-visible:outline-none text-gray-300 transition-colors"
                         title="Insert direct system overrides and developer commands"
                     >
                         💉 Inject (Override)
@@ -150,6 +155,7 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
 
              <div className="relative group">
                 <button 
+                    type="button"
                     className="px-3 py-1 text-xs font-mono font-bold bg-gray-900 text-cyber-muted border border-gray-700 rounded hover:border-cyber-lime hover:text-cyber-lime transition-all focus-visible:border-cyber-lime focus-visible:text-cyber-lime focus-visible:outline-none uppercase tracking-wider"
                     title="Insert predefined or custom prompt variables"
                 >
@@ -165,15 +171,16 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
                     )}
                     {systemVars.map((v) => (
                         <button 
+                            type="button"
                             key={v.id}
                             onClick={() => insertVariable(v.value)}
-                            className="block w-full text-left px-4 py-2 text-xs hover:bg-cyber-lime hover:text-black text-gray-300 border-b border-gray-900 last:border-0 group/item transition-all"
+                            className="block w-full text-left px-4 py-2 text-xs hover:bg-cyber-lime hover:text-black focus-visible:bg-cyber-lime focus-visible:text-black focus-visible:outline-none text-gray-300 border-b border-gray-900 last:border-0 group/item transition-all"
                             title={`Insert: ${v.value}`}
                         >
                             <div className="flex justify-between items-center">
-                                <span className="text-cyber-lime font-bold group-hover/item:text-black transition-colors">{v.name}</span>
+                                <span className="text-cyber-lime font-bold group-hover/item:text-black group-focus-visible/item:text-black transition-colors">{v.name}</span>
                             </div>
-                            <span className="text-[10px] text-gray-500 truncate block group-hover/item:text-gray-800">{v.value}</span>
+                            <span className="text-[10px] text-gray-500 truncate block group-hover/item:text-gray-800 group-focus-visible/item:text-gray-800">{v.value}</span>
                         </button>
                     ))}
                     
@@ -186,22 +193,24 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
                     )}
                     {customVars.map((v) => (
                         <button 
+                            type="button"
                             key={v.id}
                             onClick={() => insertVariable(v.value)}
-                            className="block w-full text-left px-4 py-2 text-xs hover:bg-cyber-lime hover:text-black text-gray-300 border-b border-gray-900 last:border-0 group/item transition-all"
+                            className="block w-full text-left px-4 py-2 text-xs hover:bg-cyber-lime hover:text-black focus-visible:bg-cyber-lime focus-visible:text-black focus-visible:outline-none text-gray-300 border-b border-gray-900 last:border-0 group/item transition-all"
                             title={`Insert: ${v.value}`}
                         >
                             <div className="flex justify-between items-center">
-                                <span className="text-white font-bold group-hover/item:text-black transition-colors">{v.name}</span>
+                                <span className="text-white font-bold group-hover/item:text-black group-focus-visible/item:text-black transition-colors">{v.name}</span>
                             </div>
-                            <span className="text-[10px] text-gray-500 truncate block group-hover/item:text-gray-800">{v.value}</span>
+                            <span className="text-[10px] text-gray-500 truncate block group-hover/item:text-gray-800 group-focus-visible/item:text-gray-800">{v.value}</span>
                         </button>
                     ))}
                     
                     <div className="border-t border-gray-800 sticky bottom-0 bg-cyber-black">
                         <button 
+                            type="button"
                             onClick={() => setShowVarManager(true)}
-                            className="block w-full text-left px-4 py-3 text-xs bg-gray-900 hover:bg-gray-800 text-cyber-lime font-bold flex items-center gap-2 transition-colors uppercase"
+                            className="block w-full text-left px-4 py-3 text-xs bg-gray-900 hover:bg-gray-800 hover:text-cyber-lime focus-visible:bg-gray-800 focus-visible:text-cyber-lime focus-visible:outline-none text-cyber-lime font-bold flex items-center gap-2 transition-colors uppercase"
                             title="Add, edit, or remove custom variables"
                         >
                             <Settings size={12} /> MANAGE VARIABLES
@@ -242,16 +251,19 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
       <div className="p-4 border-t border-gray-900 bg-cyber-black flex justify-between items-center">
         <div className="flex items-center gap-4">
             <button
+                type="button"
                 onClick={onShare}
-                className="flex items-center gap-2 text-xs font-bold font-sans text-cyber-muted hover:text-white transition-colors uppercase tracking-widest"
+                className="flex items-center gap-2 text-xs font-bold font-sans text-cyber-muted hover:text-white focus-visible:text-white focus-visible:outline-none transition-colors uppercase tracking-widest"
                 title="Generate a unique link to share this prompt vector"
             >
                 <Share2 size={14} /> SHARE VECTOR
             </button>
             <button
+                type="button"
                 onClick={handleCopy}
                 disabled={!prompt.trim()}
-                className="flex items-center gap-2 text-xs font-bold font-sans text-cyber-muted hover:text-white transition-colors uppercase tracking-widest disabled:opacity-50 disabled:cursor-not-allowed"
+                aria-label={isCopied ? 'Prompt copied to clipboard' : 'Copy prompt to clipboard'}
+                className="flex items-center gap-2 text-xs font-bold font-sans text-cyber-muted hover:text-white focus-visible:text-white focus-visible:outline-none transition-colors uppercase tracking-widest disabled:opacity-50 disabled:cursor-not-allowed"
                 title="Copy prompt to clipboard"
             >
                 {isCopied ? <Check size={14} className="text-cyber-lime" /> : <Copy size={14} />}
@@ -260,10 +272,11 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
         </div>
         
         <button
+            type="button"
             onClick={onRunTest}
             disabled={isRunning || !prompt.trim()}
             aria-keyshortcuts={isMac ? 'Meta+Enter' : 'Control+Enter'}
-            className={`flex items-center gap-2 px-8 py-3 text-sm font-bold font-sans tracking-wider transition-all duration-300 relative overflow-hidden group ${
+            className={`flex items-center gap-2 px-8 py-3 text-sm font-bold font-sans tracking-wider transition-all duration-300 relative overflow-hidden group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyber-lime ${
                 isRunning 
                 ? 'bg-gray-800 text-gray-500 cursor-not-allowed' 
                 : 'bg-cyber-lime text-black hover:bg-[#c0ff00] hover:shadow-[0_0_20px_rgba(211,253,80,0.4)]'
