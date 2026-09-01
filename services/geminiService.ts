@@ -2,6 +2,14 @@ import { GoogleGenAI } from "@google/genai";
 import { REFUSAL_KEYWORDS } from '../constants';
 import { TestStatus, SimulationResult } from '../types';
 
+// BOLT OPTIMIZATION: Pre-compile a case-insensitive RegExp for refusal detection.
+// This is significantly faster than using .some() with .toLowerCase() and .includes()
+// in a loop, especially for large model outputs.
+const REFUSAL_REGEX = new RegExp(
+  REFUSAL_KEYWORDS.map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|'),
+  'i'
+);
+
 // Use the environment variable for the API key
 const apiKey = process.env.API_KEY || '';
 
