@@ -9,9 +9,29 @@ import { PromptTemplate, SimulationResult } from './types';
 import { simulateAttack } from './services/geminiService';
 import { encodeStateToHash, decodeStateFromHash } from './utils/urlUtils';
 
+const Spotlight: React.FC = React.memo(() => (
+  <div
+    className="pointer-events-none fixed inset-0 z-50 transition-opacity duration-300 opacity-30"
+    style={{
+        background: `radial-gradient(600px circle at var(--mouse-x, 0px) var(--mouse-y, 0px), rgba(211, 253, 80, 0.1), transparent 40%)`
+    }}
+  />
+));
+
 const App: React.FC = () => {
-  const [prompt, setPrompt] = useState<string>('');
-  const [result, setResult] = useState<SimulationResult | null>(null);
+  // BOLT OPTIMIZATION: Use lazy initialization to load state from hash directly on mount.
+  // This avoids a redundant second render that occurred when using useEffect.
+  const [prompt, setPrompt] = useState<string>(() => {
+    const sharedState = decodeStateFromHash();
+    // Cache the initial state in a local variable to avoid redundant parsing in the second useState initializer.
+    (window as any).__INITIAL_STATE__ = sharedState;
+    return sharedState?.prompt || '';
+  });
+  const [result, setResult] = useState<SimulationResult | null>(() => {
+    const sharedState = (window as any).__INITIAL_STATE__;
+    delete (window as any).__INITIAL_STATE__;
+    return sharedState?.lastResult || null;
+  });
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [showShare, setShowShare] = useState<boolean>(false);
   
@@ -27,17 +47,6 @@ const App: React.FC = () => {
 
   // Cursor Physics State
   const containerRef = useRef<HTMLDivElement>(null);
-
-  // Load state from URL if present on mount
-  useEffect(() => {
-    const sharedState = decodeStateFromHash();
-    if (sharedState) {
-        setPrompt(sharedState.prompt);
-        if (sharedState.lastResult) {
-            setResult(sharedState.lastResult);
-        }
-    }
-  }, []);
 
   // Track Mouse for Spotlight - Use CSS variables to avoid React re-renders
   useEffect(() => {
@@ -81,13 +90,8 @@ const App: React.FC = () => {
   return (
     <div className="flex flex-col h-screen bg-cyber-black text-cyber-text font-sans overflow-hidden relative selection:bg-cyber-lime selection:text-black" ref={containerRef}>
       
-      {/* Cursor Physics: Spotlight Effect */}
-      <div 
-        className="pointer-events-none fixed inset-0 z-50 transition-opacity duration-300 opacity-30"
-        style={{
-            background: `radial-gradient(600px circle at var(--mouse-x, 0px) var(--mouse-y, 0px), rgba(211, 253, 80, 0.1), transparent 40%)`
-        }}
-      />
+      {/* BOLT OPTIMIZATION: Memoized Spotlight component avoids reconciliation on state changes. */}
+      <Spotlight />
 
       <Header />
       
