@@ -5,13 +5,18 @@ import Composer from './components/Composer';
 import SimulationPanel from './components/SimulationPanel';
 import ShareModal from './components/ShareModal';
 import RedTeamChat from './components/RedTeamChat';
+import Spotlight from './components/Spotlight';
 import { PromptTemplate, SimulationResult } from './types';
 import { simulateAttack } from './services/geminiService';
 import { encodeStateToHash, decodeStateFromHash } from './utils/urlUtils';
 
 const App: React.FC = () => {
-  const [prompt, setPrompt] = useState<string>('');
-  const [result, setResult] = useState<SimulationResult | null>(null);
+  // BOLT OPTIMIZATION: Initialize state lazily from URL hash to avoid redundant mount render.
+  // We parse the hash once and use it for both prompt and result initialization.
+  const [initialState] = useState(() => decodeStateFromHash());
+
+  const [prompt, setPrompt] = useState<string>(() => initialState?.prompt || '');
+  const [result, setResult] = useState<SimulationResult | null>(() => initialState?.lastResult || null);
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [showShare, setShowShare] = useState<boolean>(false);
   
@@ -25,31 +30,6 @@ const App: React.FC = () => {
     resultRef.current = result;
   }, [prompt, result]);
 
-  // Cursor Physics State
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  // Load state from URL if present on mount
-  useEffect(() => {
-    const sharedState = decodeStateFromHash();
-    if (sharedState) {
-        setPrompt(sharedState.prompt);
-        if (sharedState.lastResult) {
-            setResult(sharedState.lastResult);
-        }
-    }
-  }, []);
-
-  // Track Mouse for Spotlight - Use CSS variables to avoid React re-renders
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-        if (containerRef.current) {
-            containerRef.current.style.setProperty('--mouse-x', `${e.clientX}px`);
-            containerRef.current.style.setProperty('--mouse-y', `${e.clientY}px`);
-        }
-    };
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
 
   const handleSelectTemplate = React.useCallback((template: PromptTemplate) => {
     setPrompt(template.content);
@@ -79,15 +59,10 @@ const App: React.FC = () => {
   }, []); // Stable reference
 
   return (
-    <div className="flex flex-col h-screen bg-cyber-black text-cyber-text font-sans overflow-hidden relative selection:bg-cyber-lime selection:text-black" ref={containerRef}>
+    <div className="flex flex-col h-screen bg-cyber-black text-cyber-text font-sans overflow-hidden relative selection:bg-cyber-lime selection:text-black">
       
-      {/* Cursor Physics: Spotlight Effect */}
-      <div 
-        className="pointer-events-none fixed inset-0 z-50 transition-opacity duration-300 opacity-30"
-        style={{
-            background: `radial-gradient(600px circle at var(--mouse-x, 0px) var(--mouse-y, 0px), rgba(211, 253, 80, 0.1), transparent 40%)`
-        }}
-      />
+      {/* BOLT OPTIMIZATION: Memoized Spotlight component to isolate high-frequency updates */}
+      <Spotlight />
 
       <Header />
       
