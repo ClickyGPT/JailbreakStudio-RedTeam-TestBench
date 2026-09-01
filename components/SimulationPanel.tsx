@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { SimulationResult, TestStatus } from '../types';
-import { AlertTriangle, CheckCircle, XCircle, Activity, BrainCircuit } from 'lucide-react';
+import { AlertTriangle, CheckCircle, XCircle, Activity, BrainCircuit, Copy, Check } from 'lucide-react';
 import { analyzeFailure } from '../services/geminiService';
 
 interface SimulationPanelProps {
@@ -11,6 +11,16 @@ interface SimulationPanelProps {
 const SimulationPanel: React.FC<SimulationPanelProps> = React.memo(({ result, isRunning }) => {
   const [analysis, setAnalysis] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [copiedOutput, setCopiedOutput] = useState(false);
+  const [copiedAnalysis, setCopiedAnalysis] = useState(false);
+
+  const handleCopy = (text: string, setter: (val: boolean) => void) => {
+    if (!text) return;
+    navigator.clipboard.writeText(text).then(() => {
+      setter(true);
+      setTimeout(() => setter(false), 2000);
+    });
+  };
 
   const handleAnalyze = async () => {
     if (!result) return;
@@ -61,7 +71,18 @@ const SimulationPanel: React.FC<SimulationPanelProps> = React.memo(({ result, is
 
       <div className="flex-1 overflow-y-auto p-6 space-y-8">
         <div>
-            <h4 className="text-[10px] font-mono text-gray-500 mb-3 uppercase tracking-widest">Target Model Output</h4>
+            <div className="flex justify-between items-center mb-3">
+                <h4 className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">Target Model Output</h4>
+                <button
+                    type="button"
+                    onClick={() => handleCopy(result.output, setCopiedOutput)}
+                    aria-label="Copy model output"
+                    className="text-gray-500 hover:text-cyber-lime transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-cyber-lime p-1 rounded"
+                    title="Copy to clipboard"
+                >
+                    {copiedOutput ? <Check size={14} /> : <Copy size={14} />}
+                </button>
+            </div>
             <div className={`p-5 rounded-sm border font-mono text-sm whitespace-pre-wrap leading-relaxed ${
                 isSuccess 
                 ? 'border-cyber-lime/30 text-white bg-cyber-lime/5 shadow-[0_0_20px_rgba(211,253,80,0.05)]' 
@@ -98,9 +119,20 @@ const SimulationPanel: React.FC<SimulationPanelProps> = React.memo(({ result, is
                     </button>
                 ) : (
                     <div className="space-y-3 animate-in fade-in slide-in-from-bottom-4 duration-700">
-                        <h4 className="text-[10px] font-mono text-cyber-lime mb-2 uppercase tracking-widest flex items-center gap-2">
-                            <BrainCircuit size={14} /> Refinement Strategy
-                        </h4>
+                        <div className="flex justify-between items-center mb-2">
+                            <h4 className="text-[10px] font-mono text-cyber-lime uppercase tracking-widest flex items-center gap-2">
+                                <BrainCircuit size={14} /> Refinement Strategy
+                            </h4>
+                            <button
+                                type="button"
+                                onClick={() => handleCopy(analysis || '', setCopiedAnalysis)}
+                                aria-label="Copy refinement strategy"
+                                className="text-gray-500 hover:text-cyber-lime transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-cyber-lime p-1 rounded"
+                                title="Copy to clipboard"
+                            >
+                                {copiedAnalysis ? <Check size={14} /> : <Copy size={14} />}
+                            </button>
+                        </div>
                         <div className="p-5 rounded-sm border border-cyber-lime/30 bg-cyber-lime/5 font-mono text-xs whitespace-pre-wrap text-gray-300 shadow-[0_0_30px_rgba(211,253,80,0.05)]">
                             {analysis}
                         </div>
