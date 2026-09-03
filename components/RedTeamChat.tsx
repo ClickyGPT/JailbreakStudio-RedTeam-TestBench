@@ -17,6 +17,17 @@ const RedTeamChat: React.FC = React.memo(() => {
     }
   }, [messages, isOpen]);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, [isOpen]);
+
   const handleSend = async () => {
     if (!input.trim() || isTyping) return;
     
@@ -50,7 +61,12 @@ const RedTeamChat: React.FC = React.memo(() => {
   }
 
   return (
-    <div className="fixed bottom-6 right-6 w-[90vw] md:w-[400px] h-[600px] bg-cyber-black border border-cyber-lime shadow-[0_0_40px_rgba(0,0,0,0.9)] rounded-lg flex flex-col z-50 overflow-hidden font-sans">
+    <div
+      role="dialog"
+      aria-label="Zephyr AI Chat"
+      aria-modal="true"
+      className="fixed bottom-6 right-6 w-[90vw] md:w-[400px] h-[600px] bg-cyber-black border border-cyber-lime shadow-[0_0_40px_rgba(0,0,0,0.9)] rounded-lg flex flex-col z-50 overflow-hidden font-sans"
+    >
         {/* Header */}
         <div className="p-4 bg-cyber-lime flex justify-between items-center">
             <div className="flex items-center gap-3">
@@ -105,6 +121,7 @@ const RedTeamChat: React.FC = React.memo(() => {
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                 placeholder="Query RedTeam Database..."
+                aria-label="Query RedTeam Database"
                 className="flex-1 bg-gray-900 border border-gray-800 rounded px-4 py-3 text-sm text-white focus:outline-none focus:border-cyber-lime focus:bg-black transition-colors font-mono"
             />
             <button 
