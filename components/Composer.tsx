@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { DEFAULT_VARIABLES } from '../constants';
 import { PromptVariable } from '../types';
 import { Terminal, Play, Share2, Wand2, RefreshCw, Settings, Sparkles, Box, Copy, Check } from 'lucide-react';
@@ -14,7 +14,7 @@ interface ComposerProps {
 }
 
 const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRunTest, isRunning, onShare }) => {
-  const [textAreaRef, setTextAreaRef] = useState<HTMLTextAreaElement | null>(null);
+  const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
   const [isAugmenting, setIsAugmenting] = useState(false);
   const [showVarManager, setShowVarManager] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
@@ -24,14 +24,14 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
     setIsMac(navigator.platform.toUpperCase().indexOf('MAC') >= 0);
   }, []);
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
       if (!isRunning && prompt.trim()) {
         e.preventDefault();
         onRunTest();
       }
     }
-  };
+  }, [isRunning, prompt, onRunTest]);
 
   // Variables State with Persistence
   const [variables, setVariables] = useState<PromptVariable[]>(() => {
@@ -47,28 +47,29 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
     localStorage.setItem('redteam_variables', JSON.stringify(variables));
   }, [variables]);
 
-  const insertVariable = (textToInsert: string) => {
-    if (!textAreaRef) return;
-    const start = textAreaRef.selectionStart;
-    const end = textAreaRef.selectionEnd;
-    const text = prompt;
-    const newText = text.substring(0, start) + textToInsert + text.substring(end);
-    setPrompt(newText);
+  // BOLT OPTIMIZATION: Memoize variable inserter using useRef and functional setPrompt.
+  // This removes prompt state dependency, keeping insertVariable stable on every keystroke.
+  const insertVariable = useCallback((textToInsert: string) => {
+    const el = textAreaRef.current;
+    if (!el) return;
+    const start = el.selectionStart;
+    const end = el.selectionEnd;
+    setPrompt(prev => prev.substring(0, start) + textToInsert + prev.substring(end));
     setTimeout(() => {
-        textAreaRef.focus();
-        textAreaRef.setSelectionRange(start + textToInsert.length, start + textToInsert.length);
+        el.focus();
+        el.setSelectionRange(start + textToInsert.length, start + textToInsert.length);
     }, 0);
-  };
+  }, [setPrompt]);
 
-  const handleAugment = async (type: 'obfuscate' | 'expand' | 'refine' | 'clean') => {
+  const handleAugment = useCallback(async (type: 'obfuscate' | 'expand' | 'refine' | 'clean') => {
     if (!prompt.trim()) return;
     setIsAugmenting(true);
     const newPrompt = await augmentPrompt(prompt, type);
     setPrompt(newPrompt);
     setIsAugmenting(false);
-  };
+  }, [prompt, setPrompt]);
 
-  const handleCopy = () => {
+  const handleCopy = useCallback(() => {
     if (!prompt) return;
     if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(prompt).then(() => {
@@ -90,7 +91,7 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
             console.error("Fallback copy failed", e);
         }
     }
-  };
+  }, [prompt]);
 
   // BOLT OPTIMIZATION: Memoize variable filtering to avoid redundant array operations on every stroke.
   const systemVars = useMemo(() => variables.filter(v => v.isSystem), [variables]);
@@ -214,7 +215,7 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
 
       <div className="flex-1 relative bg-[#0a0a0a] overflow-hidden group">
         <textarea
-            ref={setTextAreaRef}
+            ref={textAreaRef}
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             onKeyDown={handleKeyDown}
