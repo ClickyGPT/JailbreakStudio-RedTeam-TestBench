@@ -18,9 +18,9 @@ const Header: React.FC = React.memo(() => {
         </div>
       </div>
       <nav className="flex gap-6 text-sm font-sans font-medium text-cyber-muted">
-        <button type="button" className="hover:text-cyber-lime transition-colors duration-300 focus-visible:text-cyber-lime focus-visible:outline-none">DOCS</button>
-        <button type="button" className="hover:text-cyber-lime transition-colors duration-300 focus-visible:text-cyber-lime focus-visible:outline-none">ARSENAL</button>
-        <button type="button" className="hover:text-cyber-lime transition-colors duration-300 focus-visible:text-cyber-lime focus-visible:outline-none">FORUM</button>
+        <button type="button" className="hover:text-cyber-lime transition-colors duration-300 focus-visible:text-cyber-lime focus-visible:ring-2 focus-visible:ring-cyber-lime focus-visible:ring-offset-2 focus-visible:ring-offset-cyber-black rounded-sm focus-visible:outline-none">DOCS</button>
+        <button type="button" className="hover:text-cyber-lime transition-colors duration-300 focus-visible:text-cyber-lime focus-visible:ring-2 focus-visible:ring-cyber-lime focus-visible:ring-offset-2 focus-visible:ring-offset-cyber-black rounded-sm focus-visible:outline-none">ARSENAL</button>
+        <button type="button" className="hover:text-cyber-lime transition-colors duration-300 focus-visible:text-cyber-lime focus-visible:ring-2 focus-visible:ring-cyber-lime focus-visible:ring-offset-2 focus-visible:ring-offset-cyber-black rounded-sm focus-visible:outline-none">FORUM</button>
       </nav>
     </header>
   );
