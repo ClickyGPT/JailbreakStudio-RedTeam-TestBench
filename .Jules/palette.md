@@ -13,3 +13,7 @@
 ## 2025-05-15 - [Minimalist Modal Accessibility]
 **Learning:** In dense, tool-heavy interfaces where visual labels create clutter, the `sr-only` class is essential for providing accessible names to input fields without impacting the minimalist aesthetic. Additionally, the `Escape` key listener is a non-negotiable standard for power-user productivity and accessibility in modals.
 **Action:** Use `sr-only` for labels in compact forms and always implement `Escape` key dismissal in modal components to balance "cyber" aesthetics with usability.
+
+## 2025-05-16 - [Active Selection in Template Libraries]
+**Learning:** Visual selection indicators in template lists are often missed by screen readers if communicated only via visual color changes. Adding `aria-current="true"` alongside theme-consistent active styling ensures screen readers programmatically understand the current selection.
+**Action:** Always include `aria-current="true"` on the currently active template button when matching prompt or selection state in template libraries.
