@@ -78,6 +78,8 @@ const VariableManagerModal: React.FC<VariableManagerModalProps> = ({ variables, 
   };
 
   // Drag & Drop Logic
+  // BOLT OPTIMIZATION: Defer array re-ordering state updates to handleDragEnd/handleDrop.
+  // Updating state on every high-frequency handleDragEnter event causes unnecessary re-renders.
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>, position: number) => {
     dragItem.current = position;
     if (e.dataTransfer) {
@@ -85,23 +87,28 @@ const VariableManagerModal: React.FC<VariableManagerModalProps> = ({ variables, 
     }
   };
 
-  const handleDragEnter = (e: React.DragEvent<HTMLDivElement>, position: number) => {
-    e.preventDefault();
+  const handleDragEnter = (_e: React.DragEvent<HTMLDivElement>, position: number) => {
     dragOverItem.current = position;
-
-    if (dragItem.current !== null && dragItem.current !== position) {
-        const newVars = [...localVariables];
-        const draggedItemContent = newVars[dragItem.current];
-        newVars.splice(dragItem.current, 1);
-        newVars.splice(position, 0, draggedItemContent);
-        
-        dragItem.current = position;
-        setLocalVariables(newVars);
-    }
   };
 
   const handleDragOver = (e: React.DragEvent) => {
       e.preventDefault();
+  };
+
+  const handleDragEnd = () => {
+    if (
+      dragItem.current !== null &&
+      dragOverItem.current !== null &&
+      dragItem.current !== dragOverItem.current
+    ) {
+      const newVars = [...localVariables];
+      const draggedItemContent = newVars[dragItem.current];
+      newVars.splice(dragItem.current, 1);
+      newVars.splice(dragOverItem.current, 0, draggedItemContent);
+      setLocalVariables(newVars);
+    }
+    dragItem.current = null;
+    dragOverItem.current = null;
   };
 
   return (
@@ -177,6 +184,7 @@ const VariableManagerModal: React.FC<VariableManagerModalProps> = ({ variables, 
                         onDragStart={(e) => handleDragStart(e, index)}
                         onDragEnter={(e) => handleDragEnter(e, index)}
                         onDragOver={handleDragOver}
+                        onDragEnd={handleDragEnd}
                         className="flex items-center gap-2 p-2 bg-black/40 border border-gray-800 rounded group transition-colors hover:border-gray-600 cursor-move"
                     >
                         <div className="text-gray-600 hover:text-gray-400 cursor-grab active:cursor-grabbing px-1">
