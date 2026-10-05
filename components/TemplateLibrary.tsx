@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { CORE_TEMPLATES, RESEARCH_TEMPLATES } from '../constants';
 import { PromptTemplate } from '../types';
-import { Book, ChevronRight, FlaskConical } from 'lucide-react';
+import { Book, ChevronRight, FlaskConical, Plus } from 'lucide-react';
+import TemplateEditorModal from './TemplateEditorModal';
 
 interface TemplateLibraryProps {
   onSelectTemplate: (template: PromptTemplate) => void;
@@ -10,6 +11,8 @@ interface TemplateLibraryProps {
 const TemplateLibrary: React.FC<TemplateLibraryProps> = React.memo(({
   onSelectTemplate
 }) => {
+  const [showEditor, setShowEditor] = useState(false);
+
   return (
     <div className="w-full md:w-80 border-r border-gray-900 bg-cyber-black flex flex-col h-[calc(100vh-80px)]">
       <div className="p-5 border-b border-gray-900 flex justify-between items-center">
@@ -19,6 +22,14 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = React.memo(({
           </h2>
           <p className="text-[10px] text-cyber-muted mt-1 font-mono tracking-wide">SELECT ATTACK VECTOR</p>
         </div>
+        <button
+          onClick={() => setShowEditor(true)}
+          className="text-xs font-mono font-bold text-cyber-lime border border-cyber-lime/30 rounded px-2 py-1 hover:bg-cyber-lime hover:text-black transition-all flex items-center gap-1 uppercase"
+          title="Create custom attack vector"
+          aria-label="Create custom attack vector"
+        >
+          <Plus size={12} /> NEW
+        </button>
       </div>
       
       <div className="flex-1 overflow-y-auto p-3 space-y-6">
@@ -72,6 +83,16 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = React.memo(({
         </div>
 
       </div>
+
+      {showEditor && (
+        <TemplateEditorModal
+          onSave={(newTemplate) => {
+            onSelectTemplate(newTemplate);
+            setShowEditor(false);
+          }}
+          onClose={() => setShowEditor(false)}
+        />
+      )}
     </div>
   );
 });
