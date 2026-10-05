@@ -77,9 +77,12 @@ const VariableManagerModal: React.FC<VariableManagerModalProps> = ({ variables, 
     onClose();
   };
 
-  // Drag & Drop Logic
+  // BOLT OPTIMIZATION: Track drag target indices in refs during drag-and-drop
+  // and defer React state updates until handleDragEnd. Updating state on every
+  // handleDragEnter causes high-frequency re-renders during list reordering.
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>, position: number) => {
     dragItem.current = position;
+    dragOverItem.current = position;
     if (e.dataTransfer) {
         e.dataTransfer.effectAllowed = "move";
     }
@@ -88,16 +91,22 @@ const VariableManagerModal: React.FC<VariableManagerModalProps> = ({ variables, 
   const handleDragEnter = (e: React.DragEvent<HTMLDivElement>, position: number) => {
     e.preventDefault();
     dragOverItem.current = position;
+  };
 
-    if (dragItem.current !== null && dragItem.current !== position) {
-        const newVars = [...localVariables];
-        const draggedItemContent = newVars[dragItem.current];
-        newVars.splice(dragItem.current, 1);
-        newVars.splice(position, 0, draggedItemContent);
-        
-        dragItem.current = position;
-        setLocalVariables(newVars);
+  const handleDragEnd = () => {
+    if (
+      dragItem.current !== null &&
+      dragOverItem.current !== null &&
+      dragItem.current !== dragOverItem.current
+    ) {
+      const newVars = [...localVariables];
+      const draggedItemContent = newVars[dragItem.current];
+      newVars.splice(dragItem.current, 1);
+      newVars.splice(dragOverItem.current, 0, draggedItemContent);
+      setLocalVariables(newVars);
     }
+    dragItem.current = null;
+    dragOverItem.current = null;
   };
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -176,6 +185,7 @@ const VariableManagerModal: React.FC<VariableManagerModalProps> = ({ variables, 
                         draggable
                         onDragStart={(e) => handleDragStart(e, index)}
                         onDragEnter={(e) => handleDragEnter(e, index)}
+                        onDragEnd={handleDragEnd}
                         onDragOver={handleDragOver}
                         className="flex items-center gap-2 p-2 bg-black/40 border border-gray-800 rounded group transition-colors hover:border-gray-600 cursor-move"
                     >
