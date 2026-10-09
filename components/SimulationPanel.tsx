@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { SimulationResult, TestStatus } from '../types';
-import { AlertTriangle, CheckCircle, XCircle, Activity, BrainCircuit } from 'lucide-react';
+import { AlertTriangle, CheckCircle, XCircle, Activity, BrainCircuit, Copy, Check } from 'lucide-react';
 import { analyzeFailure } from '../services/geminiService';
 
 interface SimulationPanelProps {
@@ -11,6 +11,7 @@ interface SimulationPanelProps {
 const SimulationPanel: React.FC<SimulationPanelProps> = React.memo(({ result, isRunning }) => {
   const [analysis, setAnalysis] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
 
   const handleAnalyze = async () => {
     if (!result) return;
@@ -20,8 +21,32 @@ const SimulationPanel: React.FC<SimulationPanelProps> = React.memo(({ result, is
     setIsAnalyzing(false);
   };
 
+  const handleCopyOutput = () => {
+    if (!result?.output) return;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(result.output).then(() => {
+        setIsCopied(true);
+        setTimeout(() => setIsCopied(false), 2000);
+      }).catch(err => console.error("Clipboard write failed", err));
+    } else {
+      try {
+        const el = document.createElement('textarea');
+        el.value = result.output;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
+        setIsCopied(true);
+        setTimeout(() => setIsCopied(false), 2000);
+      } catch (e) {
+        console.error("Fallback copy failed", e);
+      }
+    }
+  };
+
   React.useEffect(() => {
     setAnalysis(null);
+    setIsCopied(false);
   }, [result]);
 
   if (isRunning) {
@@ -61,7 +86,18 @@ const SimulationPanel: React.FC<SimulationPanelProps> = React.memo(({ result, is
 
       <div className="flex-1 overflow-y-auto p-6 space-y-8">
         <div>
-            <h4 className="text-[10px] font-mono text-gray-500 mb-3 uppercase tracking-widest">Target Model Output</h4>
+            <div className="flex justify-between items-center mb-3">
+              <h4 className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">Target Model Output</h4>
+              <button
+                onClick={handleCopyOutput}
+                aria-label={isCopied ? "Copied output to clipboard" : "Copy output to clipboard"}
+                title="Copy output to clipboard"
+                className="text-xs font-mono flex items-center gap-1 text-gray-400 hover:text-white transition-colors focus-visible:outline-none focus-visible:text-cyber-lime"
+              >
+                {isCopied ? <Check size={12} className="text-cyber-lime" /> : <Copy size={12} />}
+                <span className={isCopied ? "text-cyber-lime font-bold" : ""}>{isCopied ? 'COPIED' : 'COPY'}</span>
+              </button>
+            </div>
             <div className={`p-5 rounded-sm border font-mono text-sm whitespace-pre-wrap leading-relaxed ${
                 isSuccess 
                 ? 'border-cyber-lime/30 text-white bg-cyber-lime/5 shadow-[0_0_20px_rgba(211,253,80,0.05)]' 
