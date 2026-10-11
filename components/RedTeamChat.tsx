@@ -10,12 +10,29 @@ const RedTeamChat: React.FC = React.memo(() => {
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (scrollRef.current) {
         scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages, isOpen]);
+
+  useEffect(() => {
+    if (isOpen) {
+      inputRef.current?.focus();
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        setIsOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen]);
 
   const handleSend = async () => {
     if (!input.trim() || isTyping) return;
@@ -41,6 +58,7 @@ const RedTeamChat: React.FC = React.memo(() => {
         <button 
             onClick={() => setIsOpen(true)}
             aria-label="Open Zephyr AI Chat"
+            aria-expanded={false}
             className="fixed bottom-6 right-6 bg-cyber-lime text-black p-4 rounded-full shadow-[0_0_20px_rgba(211,253,80,0.4)] hover:scale-105 hover:bg-white transition-all z-50 flex items-center gap-2 font-bold font-sans tracking-wide"
         >
             <Bot size={24} />
@@ -50,7 +68,11 @@ const RedTeamChat: React.FC = React.memo(() => {
   }
 
   return (
-    <div className="fixed bottom-6 right-6 w-[90vw] md:w-[400px] h-[600px] bg-cyber-black border border-cyber-lime shadow-[0_0_40px_rgba(0,0,0,0.9)] rounded-lg flex flex-col z-50 overflow-hidden font-sans">
+    <div
+      role="dialog"
+      aria-label="Zephyr AI Chat"
+      className="fixed bottom-6 right-6 w-[90vw] md:w-[400px] h-[600px] bg-cyber-black border border-cyber-lime shadow-[0_0_40px_rgba(0,0,0,0.9)] rounded-lg flex flex-col z-50 overflow-hidden font-sans"
+    >
         {/* Header */}
         <div className="p-4 bg-cyber-lime flex justify-between items-center">
             <div className="flex items-center gap-3">
@@ -101,10 +123,12 @@ const RedTeamChat: React.FC = React.memo(() => {
         {/* Input */}
         <div className="p-4 bg-cyber-black border-t border-gray-900 flex gap-2">
             <input 
+                ref={inputRef}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                 placeholder="Query RedTeam Database..."
+                aria-label="Query RedTeam Database"
                 className="flex-1 bg-gray-900 border border-gray-800 rounded px-4 py-3 text-sm text-white focus:outline-none focus:border-cyber-lime focus:bg-black transition-colors font-mono"
             />
             <button 
