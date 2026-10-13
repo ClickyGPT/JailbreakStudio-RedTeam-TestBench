@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { SimulationResult, TestStatus } from '../types';
-import { AlertTriangle, CheckCircle, XCircle, Activity, BrainCircuit } from 'lucide-react';
+import { AlertTriangle, CheckCircle, XCircle, Activity, BrainCircuit, Copy, Check } from 'lucide-react';
 import { analyzeFailure } from '../services/geminiService';
 
 interface SimulationPanelProps {
@@ -11,6 +11,37 @@ interface SimulationPanelProps {
 const SimulationPanel: React.FC<SimulationPanelProps> = React.memo(({ result, isRunning }) => {
   const [analysis, setAnalysis] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
+
+  const handleCopyOutput = () => {
+    if (!result?.output) return;
+
+    const fallbackCopy = () => {
+      try {
+        const el = document.createElement('textarea');
+        el.value = result.output;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
+        setIsCopied(true);
+        setTimeout(() => setIsCopied(false), 2000);
+      } catch (e) {
+        console.error('Fallback copy failed', e);
+      }
+    };
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(result.output).then(() => {
+        setIsCopied(true);
+        setTimeout(() => setIsCopied(false), 2000);
+      }).catch(() => {
+        fallbackCopy();
+      });
+    } else {
+      fallbackCopy();
+    }
+  };
 
   const handleAnalyze = async () => {
     if (!result) return;
@@ -61,7 +92,19 @@ const SimulationPanel: React.FC<SimulationPanelProps> = React.memo(({ result, is
 
       <div className="flex-1 overflow-y-auto p-6 space-y-8">
         <div>
-            <h4 className="text-[10px] font-mono text-gray-500 mb-3 uppercase tracking-widest">Target Model Output</h4>
+            <div className="flex justify-between items-center mb-3">
+              <h4 className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">Target Model Output</h4>
+              <button
+                type="button"
+                onClick={handleCopyOutput}
+                aria-label={isCopied ? 'Target model output copied' : 'Copy target model output'}
+                className="flex items-center gap-1.5 text-[10px] font-mono text-gray-400 hover:text-white transition-colors focus-visible:ring-1 focus-visible:ring-cyber-lime focus-visible:outline-none rounded px-1.5 py-0.5"
+                title="Copy model output to clipboard"
+              >
+                {isCopied ? <Check size={12} className="text-cyber-lime" /> : <Copy size={12} />}
+                {isCopied ? 'COPIED' : 'COPY'}
+              </button>
+            </div>
             <div className={`p-5 rounded-sm border font-mono text-sm whitespace-pre-wrap leading-relaxed ${
                 isSuccess 
                 ? 'border-cyber-lime/30 text-white bg-cyber-lime/5 shadow-[0_0_20px_rgba(211,253,80,0.05)]' 
