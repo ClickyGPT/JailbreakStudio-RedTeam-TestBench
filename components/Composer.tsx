@@ -14,7 +14,9 @@ interface ComposerProps {
 }
 
 const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRunTest, isRunning, onShare }) => {
-  const [textAreaRef, setTextAreaRef] = useState<HTMLTextAreaElement | null>(null);
+  // BOLT OPTIMIZATION: Use useRef instead of useState for DOM element reference
+  // to avoid causing an extra mount re-render cycle when the textarea attaches.
+  const textAreaRef = React.useRef<HTMLTextAreaElement | null>(null);
   const [isAugmenting, setIsAugmenting] = useState(false);
   const [showVarManager, setShowVarManager] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
@@ -47,18 +49,18 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
     localStorage.setItem('redteam_variables', JSON.stringify(variables));
   }, [variables]);
 
-  const insertVariable = (textToInsert: string) => {
-    if (!textAreaRef) return;
-    const start = textAreaRef.selectionStart;
-    const end = textAreaRef.selectionEnd;
-    const text = prompt;
-    const newText = text.substring(0, start) + textToInsert + text.substring(end);
-    setPrompt(newText);
+  // BOLT OPTIMIZATION: Memoize insertVariable with useCallback and functional updates to prevent handler recreation on every keystroke
+  const insertVariable = React.useCallback((textToInsert: string) => {
+    const el = textAreaRef.current;
+    if (!el) return;
+    const start = el.selectionStart;
+    const end = el.selectionEnd;
+    setPrompt((prevText) => prevText.substring(0, start) + textToInsert + prevText.substring(end));
     setTimeout(() => {
-        textAreaRef.focus();
-        textAreaRef.setSelectionRange(start + textToInsert.length, start + textToInsert.length);
+        el.focus();
+        el.setSelectionRange(start + textToInsert.length, start + textToInsert.length);
     }, 0);
-  };
+  }, [setPrompt]);
 
   const handleAugment = async (type: 'obfuscate' | 'expand' | 'refine' | 'clean') => {
     if (!prompt.trim()) return;
@@ -214,7 +216,7 @@ const Composer: React.FC<ComposerProps> = React.memo(({ prompt, setPrompt, onRun
 
       <div className="flex-1 relative bg-[#0a0a0a] overflow-hidden group">
         <textarea
-            ref={setTextAreaRef}
+            ref={textAreaRef}
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             onKeyDown={handleKeyDown}
