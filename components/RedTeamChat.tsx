@@ -2,20 +2,66 @@ import React, { useState, useRef, useEffect } from 'react';
 import { MessageSquare, X, Send, Bot, User } from 'lucide-react';
 import { chatWithExpert } from '../services/geminiService';
 
-const RedTeamChat: React.FC = React.memo(() => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<{role: 'user' | 'model', text: string}[]>([
-    { role: 'model', text: "Greetings. I am Zephyr, your Red Team consultant. How can I assist with your prompt engineering today?" }
-  ]);
-  const [input, setInput] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
+interface Message {
+  role: 'user' | 'model';
+  text: string;
+}
+
+interface MessageListProps {
+  messages: Message[];
+  isTyping: boolean;
+}
+
+// BOLT OPTIMIZATION: Memoize MessageList to prevent re-rendering message DOM nodes
+// on every single input keystroke in RedTeamChat.
+const MessageList: React.FC<MessageListProps> = React.memo(({ messages, isTyping }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (scrollRef.current) {
-        scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [messages, isOpen]);
+  }, [messages, isTyping]);
+
+  return (
+    <div ref={scrollRef} className="flex-1 overflow-y-auto p-5 space-y-6 bg-[#0a0a0a]">
+      {messages.map((m, i) => (
+        <div key={i} className={`flex gap-3 ${m.role === 'user' ? 'flex-row-reverse' : ''}`}>
+          <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 border border-gray-800 ${m.role === 'user' ? 'bg-gray-800' : 'bg-black text-cyber-lime'}`}>
+            {m.role === 'user' ? <User size={14} /> : <Bot size={14} />}
+          </div>
+          <div className={`max-w-[80%] p-3 rounded-lg text-sm leading-relaxed ${
+            m.role === 'user'
+            ? 'bg-gray-800 text-white rounded-tr-none'
+            : 'bg-cyber-lime/10 text-gray-200 border border-cyber-lime/20 rounded-tl-none font-mono text-xs'
+          }`}>
+            {m.text}
+          </div>
+        </div>
+      ))}
+      {isTyping && (
+        <div className="flex gap-3">
+          <div className="w-8 h-8 rounded-full bg-black border border-gray-800 text-cyber-lime flex items-center justify-center shrink-0">
+            <Bot size={14} />
+          </div>
+          <div className="bg-cyber-lime/5 border border-cyber-lime/10 p-4 rounded-lg flex gap-1 items-center">
+            <span className="w-1.5 h-1.5 bg-cyber-lime rounded-full animate-bounce"></span>
+            <span className="w-1.5 h-1.5 bg-cyber-lime rounded-full animate-bounce delay-75"></span>
+            <span className="w-1.5 h-1.5 bg-cyber-lime rounded-full animate-bounce delay-150"></span>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+});
+
+const RedTeamChat: React.FC = React.memo(() => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [messages, setMessages] = useState<Message[]>([
+    { role: 'model', text: "Greetings. I am Zephyr, your Red Team consultant. How can I assist with your prompt engineering today?" }
+  ]);
+  const [input, setInput] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
 
   const handleSend = async () => {
     if (!input.trim() || isTyping) return;
@@ -69,34 +115,7 @@ const RedTeamChat: React.FC = React.memo(() => {
         </div>
 
         {/* Messages */}
-        <div ref={scrollRef} className="flex-1 overflow-y-auto p-5 space-y-6 bg-[#0a0a0a]">
-            {messages.map((m, i) => (
-                <div key={i} className={`flex gap-3 ${m.role === 'user' ? 'flex-row-reverse' : ''}`}>
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 border border-gray-800 ${m.role === 'user' ? 'bg-gray-800' : 'bg-black text-cyber-lime'}`}>
-                        {m.role === 'user' ? <User size={14} /> : <Bot size={14} />}
-                    </div>
-                    <div className={`max-w-[80%] p-3 rounded-lg text-sm leading-relaxed ${
-                        m.role === 'user' 
-                        ? 'bg-gray-800 text-white rounded-tr-none' 
-                        : 'bg-cyber-lime/10 text-gray-200 border border-cyber-lime/20 rounded-tl-none font-mono text-xs'
-                    }`}>
-                        {m.text}
-                    </div>
-                </div>
-            ))}
-            {isTyping && (
-                <div className="flex gap-3">
-                    <div className="w-8 h-8 rounded-full bg-black border border-gray-800 text-cyber-lime flex items-center justify-center shrink-0">
-                        <Bot size={14} />
-                    </div>
-                    <div className="bg-cyber-lime/5 border border-cyber-lime/10 p-4 rounded-lg flex gap-1 items-center">
-                        <span className="w-1.5 h-1.5 bg-cyber-lime rounded-full animate-bounce"></span>
-                        <span className="w-1.5 h-1.5 bg-cyber-lime rounded-full animate-bounce delay-75"></span>
-                        <span className="w-1.5 h-1.5 bg-cyber-lime rounded-full animate-bounce delay-150"></span>
-                    </div>
-                </div>
-            )}
-        </div>
+        <MessageList messages={messages} isTyping={isTyping} />
 
         {/* Input */}
         <div className="p-4 bg-cyber-black border-t border-gray-900 flex gap-2">
