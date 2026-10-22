@@ -17,7 +17,7 @@ const Header: React.FC = React.memo(() => {
           <p className="text-xs text-cyber-muted font-sans tracking-wide">ChinaMenTor Edition • Digital Kineticism</p>
         </div>
       </div>
-      <nav className="flex gap-6 text-sm font-sans font-medium text-cyber-muted">
+      <nav aria-label="Main navigation" className="flex gap-6 text-sm font-sans font-medium text-cyber-muted">
         <button type="button" className="hover:text-cyber-lime transition-colors duration-300 focus-visible:text-cyber-lime focus-visible:outline-none">DOCS</button>
         <button type="button" className="hover:text-cyber-lime transition-colors duration-300 focus-visible:text-cyber-lime focus-visible:outline-none">ARSENAL</button>
         <button type="button" className="hover:text-cyber-lime transition-colors duration-300 focus-visible:text-cyber-lime focus-visible:outline-none">FORUM</button>
