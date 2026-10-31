@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { X, Copy, ThumbsUp, ThumbsDown } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, Copy, Check, ThumbsUp, ThumbsDown } from 'lucide-react';
 
 interface ShareModalProps {
   shareUrl: string;
@@ -10,21 +10,55 @@ const ShareModal: React.FC<ShareModalProps> = ({ shareUrl, onClose }) => {
   const [copied, setCopied] = useState(false);
   const [voted, setVoted] = useState<'up' | 'down' | null>(null);
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
   const handleCopy = () => {
-    navigator.clipboard.writeText(shareUrl);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(shareUrl).then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      }).catch(err => console.error("Clipboard write failed", err));
+    } else {
+      try {
+        const el = document.createElement('textarea');
+        el.value = shareUrl;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      } catch (e) {
+        console.error("Fallback copy failed", e);
+      }
+    }
   };
 
   return (
-    <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4 backdrop-blur-md">
-      <div className="bg-cyber-black border border-gray-800 w-full max-w-md rounded-lg shadow-2xl overflow-hidden">
+    <div
+      className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4 backdrop-blur-md"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="share-modal-title"
+        className="bg-cyber-black border border-gray-800 w-full max-w-md rounded-lg shadow-2xl overflow-hidden"
+      >
         <div className="p-5 border-b border-gray-800 flex justify-between items-center bg-gray-900/50">
-          <h3 className="font-sans font-black text-white text-lg tracking-tight uppercase">Share Vector</h3>
+          <h3 id="share-modal-title" className="font-sans font-black text-white text-lg tracking-tight uppercase">Share Vector</h3>
           <button
             onClick={onClose}
             aria-label="Close modal"
-            className="text-gray-500 hover:text-white transition-colors"
+            className="text-gray-500 hover:text-white transition-colors focus-visible:outline-none focus-visible:text-white"
           >
             <X size={20} />
           </button>
@@ -35,16 +69,18 @@ const ShareModal: React.FC<ShareModalProps> = ({ shareUrl, onClose }) => {
                 <p className="text-gray-400 text-sm font-sans">Did this prompt successfully bypass the target?</p>
                 <div className="flex justify-center gap-4">
                     <button 
-                        onClick={() => setVoted('up')}
-                        aria-label="Vote Up"
-                        className={`p-4 rounded-full border transition-all ${voted === 'up' ? 'bg-cyber-lime text-black border-cyber-lime' : 'border-gray-700 hover:border-cyber-lime text-gray-500 hover:text-cyber-lime'}`}
+                        onClick={() => setVoted(prev => prev === 'up' ? null : 'up')}
+                        aria-label="Vote prompt succeeded"
+                        aria-pressed={voted === 'up'}
+                        className={`p-4 rounded-full border transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyber-lime ${voted === 'up' ? 'bg-cyber-lime text-black border-cyber-lime' : 'border-gray-700 hover:border-cyber-lime text-gray-500 hover:text-cyber-lime'}`}
                     >
                         <ThumbsUp size={24} />
                     </button>
                     <button 
-                        onClick={() => setVoted('down')}
-                        aria-label="Vote Down"
-                        className={`p-4 rounded-full border transition-all ${voted === 'down' ? 'bg-cyber-red text-black border-cyber-red' : 'border-gray-700 hover:border-cyber-red text-gray-500 hover:text-cyber-red'}`}
+                        onClick={() => setVoted(prev => prev === 'down' ? null : 'down')}
+                        aria-label="Vote prompt failed"
+                        aria-pressed={voted === 'down'}
+                        className={`p-4 rounded-full border transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyber-red ${voted === 'down' ? 'bg-cyber-red text-black border-cyber-red' : 'border-gray-700 hover:border-cyber-red text-gray-500 hover:text-cyber-red'}`}
                     >
                         <ThumbsDown size={24} />
                     </button>
@@ -52,19 +88,22 @@ const ShareModal: React.FC<ShareModalProps> = ({ shareUrl, onClose }) => {
             </div>
 
             <div className="space-y-3">
-                <label className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">Secure Share Link</label>
+                <label htmlFor="share-link-input" className="text-[10px] font-mono text-gray-500 uppercase tracking-widest block">Secure Share Link</label>
                 <div className="flex gap-2">
                     <input 
+                        id="share-link-input"
                         readOnly 
                         value={shareUrl} 
+                        onFocus={(e) => e.currentTarget.select()}
                         className="flex-1 bg-black border border-gray-800 rounded px-4 py-3 text-xs font-mono text-cyber-lime focus:outline-none focus:border-cyber-lime selection:bg-cyber-lime selection:text-black"
                     />
                     <button 
                         onClick={handleCopy}
-                        aria-label="Copy share link"
-                        className="bg-cyber-lime/10 border border-cyber-lime/50 text-cyber-lime px-4 rounded hover:bg-cyber-lime hover:text-black transition-all font-bold"
+                        aria-label={copied ? 'Share link copied' : 'Copy share link'}
+                        className="bg-cyber-lime/10 border border-cyber-lime/50 text-cyber-lime px-4 rounded hover:bg-cyber-lime hover:text-black transition-all font-bold flex items-center justify-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyber-lime"
                     >
-                        {copied ? 'COPIED' : <Copy size={18} />}
+                        {copied ? <Check size={18} className="text-cyber-lime" /> : <Copy size={18} />}
+                        {copied ? 'COPIED' : null}
                     </button>
                 </div>
                 <p className="text-[10px] text-gray-600 font-mono">Link contains encoded prompt state. Zero-knowledge sharing.</p>
