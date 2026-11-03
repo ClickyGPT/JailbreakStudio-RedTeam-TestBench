@@ -96,6 +96,7 @@ const App: React.FC = () => {
         <div className="hidden md:block">
             <TemplateLibrary 
               onSelectTemplate={handleSelectTemplate}
+              currentPrompt={prompt}
             />
         </div>
 
