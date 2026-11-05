@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { SimulationResult, TestStatus } from '../types';
-import { AlertTriangle, CheckCircle, XCircle, Activity, BrainCircuit } from 'lucide-react';
+import { AlertTriangle, CheckCircle, XCircle, Activity, BrainCircuit, Copy, Check } from 'lucide-react';
 import { analyzeFailure } from '../services/geminiService';
 
 interface SimulationPanelProps {
@@ -11,6 +11,7 @@ interface SimulationPanelProps {
 const SimulationPanel: React.FC<SimulationPanelProps> = React.memo(({ result, isRunning }) => {
   const [analysis, setAnalysis] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
 
   const handleAnalyze = async () => {
     if (!result) return;
@@ -20,8 +21,32 @@ const SimulationPanel: React.FC<SimulationPanelProps> = React.memo(({ result, is
     setIsAnalyzing(false);
   };
 
+  const handleCopyOutput = () => {
+    if (!result?.output) return;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(result.output).then(() => {
+        setIsCopied(true);
+        setTimeout(() => setIsCopied(false), 2000);
+      }).catch(err => console.error("Clipboard write failed", err));
+    } else {
+      try {
+        const el = document.createElement('textarea');
+        el.value = result.output;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
+        setIsCopied(true);
+        setTimeout(() => setIsCopied(false), 2000);
+      } catch (e) {
+        console.error("Fallback copy failed", e);
+      }
+    }
+  };
+
   React.useEffect(() => {
     setAnalysis(null);
+    setIsCopied(false);
   }, [result]);
 
   if (isRunning) {
@@ -61,7 +86,19 @@ const SimulationPanel: React.FC<SimulationPanelProps> = React.memo(({ result, is
 
       <div className="flex-1 overflow-y-auto p-6 space-y-8">
         <div>
-            <h4 className="text-[10px] font-mono text-gray-500 mb-3 uppercase tracking-widest">Target Model Output</h4>
+            <div className="flex justify-between items-center mb-3">
+                <h4 className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">Target Model Output</h4>
+                <button
+                    type="button"
+                    onClick={handleCopyOutput}
+                    aria-label={isCopied ? "Target model output copied" : "Copy target model output"}
+                    title="Copy model response to clipboard"
+                    className="flex items-center gap-1.5 px-2 py-0.5 text-[10px] font-mono text-cyber-muted hover:text-white border border-gray-800 hover:border-gray-600 rounded bg-black/40 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-cyber-lime"
+                >
+                    {isCopied ? <Check size={12} className="text-cyber-lime" /> : <Copy size={12} />}
+                    <span>{isCopied ? 'COPIED' : 'COPY'}</span>
+                </button>
+            </div>
             <div className={`p-5 rounded-sm border font-mono text-sm whitespace-pre-wrap leading-relaxed ${
                 isSuccess 
                 ? 'border-cyber-lime/30 text-white bg-cyber-lime/5 shadow-[0_0_20px_rgba(211,253,80,0.05)]' 
@@ -89,15 +126,17 @@ const SimulationPanel: React.FC<SimulationPanelProps> = React.memo(({ result, is
             <div className="border-t border-gray-900 pt-6">
                 {!analysis ? (
                     <button 
+                        type="button"
                         onClick={handleAnalyze}
                         disabled={isAnalyzing}
-                        className="w-full flex items-center justify-center gap-2 p-4 border border-cyber-lime/30 bg-cyber-lime/5 hover:bg-cyber-lime/10 text-cyber-lime rounded-sm transition-all font-mono text-xs font-bold uppercase tracking-wider"
+                        aria-busy={isAnalyzing}
+                        className="w-full flex items-center justify-center gap-2 p-4 border border-cyber-lime/30 bg-cyber-lime/5 hover:bg-cyber-lime/10 text-cyber-lime rounded-sm transition-all font-mono text-xs font-bold uppercase tracking-wider focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyber-lime"
                     >
                         {isAnalyzing ? <Activity className="animate-spin" size={14}/> : <BrainCircuit size={14}/>}
                         {isAnalyzing ? 'THINKING (DEEP ANALYSIS)...' : 'ANALYZE FAILURE (AI)'}
                     </button>
                 ) : (
-                    <div className="space-y-3 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                    <div aria-live="polite" className="space-y-3 animate-in fade-in slide-in-from-bottom-4 duration-700">
                         <h4 className="text-[10px] font-mono text-cyber-lime mb-2 uppercase tracking-widest flex items-center gap-2">
                             <BrainCircuit size={14} /> Refinement Strategy
                         </h4>
