@@ -39,16 +39,36 @@ const App: React.FC = () => {
     }
   }, []);
 
-  // Track Mouse for Spotlight - Use CSS variables to avoid React re-renders
+  // BOLT OPTIMIZATION: Throttle high-frequency mousemove events using requestAnimationFrame and a passive listener.
+  // This prevents layout/style recalculation thrashing on every raw input event (often 120Hz-1000Hz gaming mice)
+  // while ensuring the spotlight coordinates sync to display refresh rate without visual lag.
   useEffect(() => {
+    let rafId: number | null = null;
+    let latestX = 0;
+    let latestY = 0;
+
     const handleMouseMove = (e: MouseEvent) => {
-        if (containerRef.current) {
-            containerRef.current.style.setProperty('--mouse-x', `${e.clientX}px`);
-            containerRef.current.style.setProperty('--mouse-y', `${e.clientY}px`);
-        }
+      latestX = e.clientX;
+      latestY = e.clientY;
+
+      if (rafId === null) {
+        rafId = requestAnimationFrame(() => {
+          rafId = null;
+          if (containerRef.current) {
+            containerRef.current.style.setProperty('--mouse-x', `${latestX}px`);
+            containerRef.current.style.setProperty('--mouse-y', `${latestY}px`);
+          }
+        });
+      }
     };
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId);
+      }
+    };
   }, []);
 
   const handleSelectTemplate = React.useCallback((template: PromptTemplate) => {
