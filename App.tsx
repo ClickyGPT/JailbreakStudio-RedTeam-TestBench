@@ -11,6 +11,7 @@ import { encodeStateToHash, decodeStateFromHash } from './utils/urlUtils';
 
 const App: React.FC = () => {
   const [prompt, setPrompt] = useState<string>('');
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string | undefined>(undefined);
   const [result, setResult] = useState<SimulationResult | null>(null);
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [showShare, setShowShare] = useState<boolean>(false);
@@ -52,8 +53,14 @@ const App: React.FC = () => {
   }, []);
 
   const handleSelectTemplate = React.useCallback((template: PromptTemplate) => {
+    setSelectedTemplateId(template.id);
     setPrompt(template.content);
     setResult(null); // Reset result on new template
+  }, []);
+
+  const handlePromptChange = React.useCallback((newPrompt: string) => {
+    setPrompt(newPrompt);
+    setSelectedTemplateId(undefined);
   }, []);
 
   const handleRunTest = React.useCallback(async () => {
@@ -96,6 +103,7 @@ const App: React.FC = () => {
         <div className="hidden md:block">
             <TemplateLibrary 
               onSelectTemplate={handleSelectTemplate}
+              selectedTemplateId={selectedTemplateId}
             />
         </div>
 
@@ -105,7 +113,7 @@ const App: React.FC = () => {
             <div className="flex-1 border-r border-gray-900 min-w-0">
                 <Composer 
                     prompt={prompt} 
-                    setPrompt={setPrompt} 
+                    setPrompt={handlePromptChange}
                     onRunTest={handleRunTest}
                     isRunning={isRunning}
                     onShare={handleShare}
